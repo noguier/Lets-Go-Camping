@@ -7,7 +7,7 @@ import Login from "/pages/Login"
 import Favorites from "/pages/Favorites"
 import Compare from "/pages/Compare"
 
-
+//these are all the pages, we can change Compare page to include both features later
 
 function App() {
     return (
