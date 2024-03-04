@@ -6,13 +6,15 @@ import Search from "./pages/Search"
 import Login from "./pages/Login"
 import Favorites from "./pages/Favorites"
 import Compare from "./pages/Compare"
+import Header from "./pages/Header"
+import Footer from "./pages/Footer"
 
 //these are all the pages, we can change Compare page to include both features later
 
 function App() {
     return (
         <div>
-            {/*<Header/>*/}
+            <Header/>
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/login" element={<Login />} />
@@ -21,7 +23,7 @@ function App() {
                 <Route path="/compare" element={<Compare />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
-            {/*<Footer/>*/}
+            <Footer/>
         </div>
     )
 }
