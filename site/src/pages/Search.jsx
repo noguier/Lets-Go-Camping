@@ -4,6 +4,7 @@ function Search() {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('name');
     const [searchResults, setSearchResults] = useState([]);
+    const [searchResultsAmenity, setSearchResultsAmenity] = useState([]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -28,7 +29,14 @@ function Search() {
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
-                setSearchResults(data.data);
+                if (searchType === 'amenity') {
+                    setSearchResultsAmenity(data.data);
+                }
+                else {
+                    setSearchResults(data.data);
+                    console.log(data.data);
+                    // console.log("printing out search results array", searchResults);
+                }
             })
             .catch(error => {
                 alert('Fetch Error');
@@ -140,32 +148,52 @@ function Search() {
                 </div>
             </div>
 
-            {searchType === 'activity'  && (
+            {searchType === 'activity' && (
                 <div className="row mt-4">
-                    {searchResults.map((result, index) => (
+                    {searchResults.map((activity, index) => (
                         <div key={index} className="col-12">
-                            {result.name && <h3>{result.name}</h3>}
-                            {result.parks && (
+                            {activity.parks && (
                                 <div>
-                                    {result.parks.map((park, parkIndex) => (
-                                        <li key={parkIndex}>{park.name}</li>
+                                    {activity.parks.map((park, parkIndex) => (
+                                        <div key={parkIndex}>
+                                            <h3>{park.fullName}</h3>
+                                            <p><strong>Activity:</strong> {activity.name}</p>
+                                            <hr />
+                                        </div>
                                     ))}
                                 </div>
                             )}
-                            <hr />
+                        </div>
+                    ))}
+                </div>
+            )}
+            {searchType === 'amenity' && (
+                <div className="row mt-4">
+                    {searchResultsAmenity.map((amenityArray, index) => (
+                        <div key={index} className="col-12">
+                            {amenityArray.map((amenity, innerIndex) => (
+                                <div key={innerIndex}>
+                                    <h3>{amenity.name}</h3>
+                                    {amenity.parks && amenity.parks.map((park, parkIndex) => (
+                                        <div key={parkIndex}>
+                                            <p><strong>Park Name:</strong> {park.fullName}</p>
+                                            <hr/>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>
             )}
 
-
-            {searchType !== 'activity' && (
+            {(searchType !== 'activity' && searchType !== 'amenity') && (
                 <div className="row mt-4">
                     {searchResults.map((park, index) => (
                         <div key={index} className="col-12">
-                            <h3>{park.name}</h3>
+                            <h3>{park.fullName}</h3>
                             <p><strong>Description:</strong> {park.description}</p>
-                            <hr />
+                            <hr/>
                         </div>
                     ))}
                 </div>
