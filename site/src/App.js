@@ -16,7 +16,7 @@ function App() {
                 <Header/>
             </header>
             <Routes>
-                <Route path="/" element={<Login/>}/>
+                <Route path="/" element={<Search/>}/>
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/search" element={<Search/>}/>
                 <Route path="/favorites" element={<Favorites/>}/>
