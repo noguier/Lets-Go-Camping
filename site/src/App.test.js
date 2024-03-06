@@ -49,9 +49,9 @@ describe('Search component', () => {
 
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
-                data: [{ fullName: 'Park 1', description: 'Description of Park 1' },
-                    { fullName: 'Park 2', description: 'Description of Park 2' },
-                    { fullName: 'Park 3', description: 'Description of Park 3' }]
+                data: [{ fullName: 'Castle Mountains National Monument', description: 'Description: Castle Mountains represents some of the most unique elements of the Mojave Desert. Nestled between the Nevada state line and Mojave National Preserve, the nearly 21,000 acres of Castle Mountains boasts Joshua tree forests, unbroken natural landscapes, rare desert grasslands, and rich human history. This intriguing area provides serenity and solitude from nearby metropolitan areas.'},
+                    { fullName: 'Joshua Tree National Park', description: 'Description: Two distinct desert ecosystems, the Mojave and the Colorado, come together in Joshua Tree National Park. A fascinating variety of plants and animals make their homes in a land sculpted by strong winds and occasional torrents of rain. Dark night skies, a rich cultural history, and surreal geologic features add to the wonder of this vast wilderness in southern California. Come explore for yourself!' },
+                    { fullName: 'Mojave National Preserve', description: 'Description: Mojave preserves a diverse mosaic of ecological habitats and a 10,000 year history of human connection with the desert. Offering extensive opportunities to experience desert landscapes, the preserve promotes understanding and appreciation for the increasingly threatened resources of the Mojave Desert. This remote preserve encourages a sense of discovery and a connection to wild places.' }]
             })
         });
 
@@ -61,23 +61,23 @@ describe('Search component', () => {
 
 
         await waitFor(() => {
-            expect(screen.getByText("Park 1")).toBeInTheDocument();
-            expect(screen.getByText("Description of Park 1")).toBeInTheDocument();
+            expect(screen.getByText("Castle Mountains National Monument")).toBeInTheDocument();
+            expect(screen.getByText("Description: Castle Mountains represents some of the most unique elements of the Mojave Desert. Nestled between the Nevada state line and Mojave National Preserve, the nearly 21,000 acres of Castle Mountains boasts Joshua tree forests, unbroken natural landscapes, rare desert grasslands, and rich human history. This intriguing area provides serenity and solitude from nearby metropolitan areas.")).toBeInTheDocument();
 
-            expect(screen.getByText("Park 2")).toBeInTheDocument();
-            expect(screen.getByText("Description of Park 2")).toBeInTheDocument();
+            expect(screen.getByText("Joshua Tree National Park")).toBeInTheDocument();
+            expect(screen.getByText("Description: Two distinct desert ecosystems, the Mojave and the Colorado, come together in Joshua Tree National Park. A fascinating variety of plants and animals make their homes in a land sculpted by strong winds and occasional torrents of rain. Dark night skies, a rich cultural history, and surreal geologic features add to the wonder of this vast wilderness in southern California. Come explore for yourself!")).toBeInTheDocument();
 
-            expect(screen.getByText("Park 3")).toBeInTheDocument();
-            expect(screen.getByText("Description of Park 3")).toBeInTheDocument();
+            expect(screen.getByText("Mojave National Preserve")).toBeInTheDocument();
+            expect(screen.getByText("Description: Mojave preserves a diverse mosaic of ecological habitats and a 10,000 year history of human connection with the desert. Offering extensive opportunities to experience desert landscapes, the preserve promotes understanding and appreciation for the increasingly threatened resources of the Mojave Desert. This remote preserve encourages a sense of discovery and a connection to wild places.")).toBeInTheDocument();
         });
     });
     test('search by state', async () => {
         render(<Search />);
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
-                data: [{ fullName: 'Park 1', description: 'Description of Park 1' },
-                    { fullName: 'Park 2', description: 'Description of Park 2' },
-                    { fullName: 'Park 3', description: 'Description of Park 3' }]
+                data: [{ fullName: 'Alcatraz Island', description: 'Description: Alcatraz reveals stories of American incarceration, justice, and our common humanity. This small island was once a fort, a military prison, and a maximum security federal penitentiary. In 1969, the Indians of All Tribes occupied Alcatraz for 19 months in the name of freedom and Native American civil rights. We invite you to explore Alcatraz\'s complex history and natural beauty.' },
+                    { fullName: 'Butterfield Overland National Historic Trail', description: 'Description: In 1857, businessman and transportation entrepreneur John Butterfield was awarded a contract to establish an overland mail route between the eastern United States and growing populations in the Far West. What became known as the Butterfield Overland Trail made an arcing sweep across the southern rim of the country. Stagecoaches left twice a week carrying passengers, freight, and mail.' },
+                    { fullName: 'Cabrillo National Monument', description: 'Description: Climbing out of his boat and onto shore in 1542, Juan Rodriguez Cabrillo stepped into history as the first European to set foot on what is now the West Coast of the United States. In addition to telling the story of 16th century exploration, the park is home to a wealth of cultural and natural resources. Join us and embark on your own Voyage of Exploration.' }]
             })
         });
 
@@ -86,14 +86,14 @@ describe('Search component', () => {
         fireEvent.click(screen.getByText('Search'));
 
         await waitFor(() => {
-            expect(screen.getByText("Park 1")).toBeInTheDocument();
-            expect(screen.getByText("Description of Park 1")).toBeInTheDocument();
+            expect(screen.getByText("Alcatraz Island")).toBeInTheDocument();
+            expect(screen.getByText("Description: Alcatraz reveals stories of American incarceration, justice, and our common humanity. This small island was once a fort, a military prison, and a maximum security federal penitentiary. In 1969, the Indians of All Tribes occupied Alcatraz for 19 months in the name of freedom and Native American civil rights. We invite you to explore Alcatraz's complex history and natural beauty.")).toBeInTheDocument();
 
-            expect(screen.getByText("Park 2")).toBeInTheDocument();
-            expect(screen.getByText("Description of Park 2")).toBeInTheDocument();
+            expect(screen.getByText("Butterfield Overland National Historic Trail")).toBeInTheDocument();
+            expect(screen.getByText("Description: In 1857, businessman and transportation entrepreneur John Butterfield was awarded a contract to establish an overland mail route between the eastern United States and growing populations in the Far West. What became known as the Butterfield Overland Trail made an arcing sweep across the southern rim of the country. Stagecoaches left twice a week carrying passengers, freight, and mail.")).toBeInTheDocument();
 
-            expect(screen.getByText("Park 3")).toBeInTheDocument();
-            expect(screen.getByText("Description of Park 3")).toBeInTheDocument();
+            expect(screen.getByText("Cabrillo National Monument")).toBeInTheDocument();
+            expect(screen.getByText("Description: Climbing out of his boat and onto shore in 1542, Juan Rodriguez Cabrillo stepped into history as the first European to set foot on what is now the West Coast of the United States. In addition to telling the story of 16th century exploration, the park is home to a wealth of cultural and natural resources. Join us and embark on your own Voyage of Exploration.")).toBeInTheDocument();
         });
     });
     test('search by activity', async () => {
@@ -105,8 +105,7 @@ describe('Search component', () => {
                 data: [
                     {
                         name: 'Hiking',
-                        parks: [{ fullName: 'Park 1', description: 'Description of Park 1' },
-                            { fullName: 'Park 2', description: 'Description of Park 2' }]
+                        parks: [{ fullName: 'Acadia National Park'} ]
                     },
                 ]
             })
@@ -120,8 +119,7 @@ describe('Search component', () => {
 
         // Wait for search results to be displayed
         await waitFor(() => {
-            expect(screen.getByText('Park 1')).toBeInTheDocument();
-            expect(screen.getByText('Park 2')).toBeInTheDocument();
+            expect(screen.getByText('Acadia National Park')).toBeInTheDocument();
         });
     });
     test('search by amenity', async () => {
@@ -131,20 +129,20 @@ describe('Search component', () => {
             json: async () => ({
                 data: [
                     [
-                        { name: 'Amenity 1', parks: [{ fullName: 'Park 1' }, { fullName: 'Park 2' }] },
+                        { name: 'ATM/Cash Machine', parks: [{ fullName: 'Park Name: Badlands National Park' }, { fullName: 'Park Name: Big Bend National Park' }] },
                     ]
                 ]
             })
         });
 
         fireEvent.click(screen.getByLabelText('Search by Amenity'));
-        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'Picnic Area' } });
+        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'ATM/Cash Machine' } });
         fireEvent.click(screen.getByText('Search'));
 
         await waitFor(() => {
-            expect(screen.getByText('Amenity 1')).toBeInTheDocument();
-            expect(screen.getByText('Park 1')).toBeInTheDocument();
-            expect(screen.getByText('Park 2')).toBeInTheDocument();
+            expect(screen.getByText('ATM/Cash Machine')).toBeInTheDocument();
+            expect(screen.getByText('Park Name: Badlands National Park')).toBeInTheDocument();
+            expect(screen.getByText('Park Name: Big Bend National Park')).toBeInTheDocument();
         });
     });
     test('blank search term', async () => {
