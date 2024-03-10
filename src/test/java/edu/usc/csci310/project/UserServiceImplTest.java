@@ -146,6 +146,74 @@ class UserServiceImplTest {
 
         verify(userRepository, never()).findByUsername(any());
     }
+
+
+    @Test
+    void authenticateUser_SuccessfulAuthentication() throws NoSuchAlgorithmException {
+        String username = "username";
+        String password = "password";
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(user.hashPassword(password));
+
+        when(userRepository.findByUsername(user.hashPassword(username))).thenReturn(user);
+
+        assertTrue(userService.authenticateUser(username, password));
+    }
+
+    @Test
+    void authenticateUser_AuthenticationFailed() throws NoSuchAlgorithmException {
+        String username = "username";
+        String password = "password";
+
+        when(userRepository.findByUsername(any())).thenReturn(null);
+
+        assertFalse(userService.authenticateUser(username, password));
+    }
+
+    @Test
+    void isValidPassword_ValidPassword() {
+        String validPassword = "ValidPassword1";
+
+        assertTrue(userService.isValidPassword(validPassword));
+    }
+
+    @Test
+    void isValidPassword_InvalidPassword_NoLowercase() {
+        String invalidPassword = "INVALIDPASSWORD1";
+
+        assertFalse(userService.isValidPassword(invalidPassword));
+    }
+
+    @Test
+    void isValidPassword_InvalidPassword_NoUppercase() {
+        String invalidPassword = "invalidpassword1";
+
+        assertFalse(userService.isValidPassword(invalidPassword));
+    }
+
+    @Test
+    void isValidPassword_InvalidPassword_NoDigit() {
+        String invalidPassword = "InvalidPassword";
+
+        assertFalse(userService.isValidPassword(invalidPassword));
+    }
+
+    @Test
+    void authenticateUser_AuthenticationFailed_PasswordMismatch() throws NoSuchAlgorithmException {
+        String username = "username";
+        String password = "password";
+        String incorrectPassword = "incorrectPassword";
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(user.hashPassword(password));
+
+        when(userRepository.findByUsername(user.hashPassword(username))).thenReturn(user);
+
+        assertFalse(userService.authenticateUser(username, incorrectPassword));
+    }
 }
 
 

@@ -115,7 +115,7 @@ class UserControllerTest {
 
         ResponseEntity<String> invalidPasswordResponse = userController.createUser(invalidPasswordRequest);
         assertEquals(HttpStatus.BAD_REQUEST, invalidPasswordResponse.getStatusCode());
-        assertEquals("Account Creation Unsuccessful, password must contain at least one capital letter and one number", invalidPasswordResponse.getBody());
+        assertEquals("Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number", invalidPasswordResponse.getBody());
     }
 
     @Test

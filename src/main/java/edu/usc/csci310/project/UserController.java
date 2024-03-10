@@ -31,7 +31,7 @@ public class UserController {
 
         // Validate password
         if (!userService.isValidPassword(request.getPassword())) {
-            return ResponseEntity.badRequest().body("Account Creation Unsuccessful, password must contain at least one capital letter and one number");
+            return ResponseEntity.badRequest().body("Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number");
         }
 
         // Create user

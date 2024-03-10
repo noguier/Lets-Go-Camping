@@ -32,9 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isValidPassword(String password) {
-        // Implement password validation logic (e.g., minimum length, contains capital letters, etc.)
-        // Example: Password must be at least 8 characters long and contain at least one uppercase letter and one digit
-        return password.matches(".*[A-Z].*") && password.matches(".*\\d.*");
+        return password.matches(".*[a-z].*") && // At least one lowercase letter
+                password.matches(".*[A-Z].*") && // At least one uppercase letter
+                password.matches(".*\\d.*");     // At least one digit
     }
 
 

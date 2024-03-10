@@ -41,7 +41,7 @@ Feature: test the create account functionality of the national park app
     And I enter the password "trojan123"
     And I enter the confirm password "trojan123"
     And I press the Create Account button
-    Then I should get a "Account Creation Unsuccessful, password must contain at least one capital letter and one number" message
+    Then I should get a "Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number" message
 
   Scenario: no number in password
     Given I am on the create account page
@@ -49,7 +49,15 @@ Feature: test the create account functionality of the national park app
     And I enter the password "Trojan"
     And I enter the confirm password "Trojan"
     And I press the Create Account button
-    Then I should get a "Account Creation Unsuccessful, password must contain at least one capital letter and one number" message
+    Then I should get a "Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number" message
+
+  Scenario: no lowercase in password
+    Given I am on the create account page
+    When I enter the username "TommyTrojan"
+    And I enter the password "TROJAN"
+    And I enter the confirm password "TROJAN"
+    And I press the Create Account button
+    Then I should get a "Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number" message
 
   Scenario: successful account creation
     Given I am on the create account page
