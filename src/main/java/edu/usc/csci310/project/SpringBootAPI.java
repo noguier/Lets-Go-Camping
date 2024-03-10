@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+
 @Controller
 @SpringBootApplication
 public class SpringBootAPI {
@@ -18,4 +19,5 @@ public class SpringBootAPI {
         // Forward to home page so that route is preserved.(i.e forward:/index.html)
         return "forward:/";
     }
+
 }
