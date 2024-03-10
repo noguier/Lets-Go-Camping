@@ -35,7 +35,7 @@ const Login = () => {
             setPassword('');
 
             // Redirect to dashboard or home page
-            navigate('/dashboard'); // Change '/dashboard' to the appropriate path
+            navigate('/search'); // Change '/dashboard' to the appropriate path
         } catch (err) {
             setError(err.response.data);
         }

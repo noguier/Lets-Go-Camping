@@ -16,10 +16,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
-    User user = new User();
+
 
     @Override
     public User createUser(String username, String password) throws NoSuchAlgorithmException {
+        User user = new User();
         user.setUsername(user.hashPassword(username));
         user.setPassword(user.hashPassword(password));
         return userRepository.save(user);
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean usernameExists(String username) throws NoSuchAlgorithmException {
+        User user = new User();
         return userRepository.findByUsername(user.hashPassword(username)) != null;
     }
 

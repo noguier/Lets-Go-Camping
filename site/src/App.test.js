@@ -8,6 +8,11 @@ import {BrowserRouter} from "react-router-dom";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 import Search from './pages/Search';
+import "@testing-library/jest-dom/extend-expect";
+import axios from 'axios';
+import Login from "./pages/Login";
+import Create from "./pages/Create";
+import Dashboard from "./pages/Dashboard";
 
 test("renders header text", () => {
     const { getByText } = render(<Header />);
@@ -170,19 +175,14 @@ afterEach(() => {
 });
 
 
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
-import { BrowserRouter } from "react-router-dom";
-import axios from 'axios';
-import App from "./App";
-import Login from "./pages/Login";
-import Create from "./pages/Create";
-import Dashboard from "./pages/Dashboard";
+
+
+
+
+
+
 
 jest.mock('axios');
-
-
 
 describe('App component', () => {
     test('renders login page by default', () => {
@@ -255,7 +255,10 @@ describe('App component', () => {
 
         // Wait for Dashboard to appear asynchronously
         await waitFor(() => {
-            expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
+            expect(screen.getByText((content, element) => {
+                // Custom logic to match text
+                return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
+            })).toBeInTheDocument();
         });
     });
 

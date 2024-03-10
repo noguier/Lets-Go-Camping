@@ -187,7 +187,7 @@ public class CreateLoginStepDefs {
 
     @Then("I should be redirected to the Dashboard page")
     public void iShouldBeRedirectedToTheDashboardPage() {
-        driver.get(ROOT_URL + "dashboard");
+        driver.get(ROOT_URL + "search");
     }
 
 
