@@ -6,6 +6,7 @@ import Search from "./pages/Search"
 import Login from "./pages/Login"
 import Favorites from "./pages/Favorites"
 import Compare from "./pages/Compare"
+import Create from "./pages/Create"
 
 //these are all the pages, we can change Compare page to include both features later
 
@@ -16,8 +17,9 @@ function App() {
                 <Header/>
             </header>
             <Routes>
-                <Route path="/" element={<Search/>}/>
+                <Route path="/" element={<Login/>}/>
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/create" element={<Create/>}/>
                 <Route path="/search" element={<Search/>}/>
                 <Route path="/favorites" element={<Favorites/>}/>
                 <Route path="/compare" element={<Compare/>}/>

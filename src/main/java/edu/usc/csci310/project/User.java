@@ -1,67 +1,60 @@
 package edu.usc.csci310.project;
-import java.util.ArrayList;
-import java.util.List;
 
+import jakarta.persistence.*;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+
+
+@Entity
+@Table(name = "park_users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String username;
-    private String email;
-    private String password;
+    private String passwordHash; // Hashed password
 
-    //Private Park p;
-    //private List<Park> favoriteParks;
+    // Getters and setters
 
-    public User(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        //this.favoriteParks = new ArrayList<Park>(); // Initialize favoriteParks with an empty list
+    public void setPassword(String password) {
+        this.passwordHash = password;
     }
 
-//    public User(String username, String email, String password, List<Park> favoriteParks) {
-//        this.username = username;
-//        this.email = email;
-//        this.password = password;
-//        this.favoriteParks = favoriteParks != null ? new ArrayList<>(favoriteParks) : new ArrayList<>();
-//    }
-
-
-
-
-    // Getters and Setters
-    public String getUsername() {
-        return username;
+    public String getPassword() {
+        return passwordHash;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String hashPassword(String password) throws NoSuchAlgorithmException {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
 
-    public String getPassword() {
-        return password;
-    }
+            // Convert bytes to hexadecimal string manually
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+            return hexString.toString();
 
-//    public List<Park> getFavoriteParks() {
-//        return favoriteParks;
-//    }
-//
-//    public void addFavoritePark(Park park) {
-//        favoriteParks.add(park);
-//    }
-//
-//    public void removeFavoritePark(Park park) {
-//        favoriteParks.remove(park);
-//    }
+    }
 }
+
+
+
+
 
