@@ -1,0 +1,11 @@
+.footer-container {
+    font-family: "Verdana", sans-serif;
+    background-color: lightgray;
+    text-align: center;
+    padding: 20px;
+}
+
+.header-container {
+    font-family: "Verdana", sans-serif;
+    color: cadetblue;
+}
