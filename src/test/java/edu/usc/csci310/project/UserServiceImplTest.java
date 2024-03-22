@@ -96,16 +96,14 @@ class UserServiceImplTest {
         attempts.add(firstAttempt);
         attempts.add(firstAttempt);
         userService.loginAttempts.put("username", attempts);
-
-        assertTrue(userService.handleLoginAttempts("username", false));
-
-        verify(userRepository, never()).findByUsername(any());
     }
     @Test
     void handleLoginAttempts_AttemptsWithinMinute() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime firstAttempt = now.minusSeconds(15);
         handleLoginAttempts_SetUp(firstAttempt);
+        assertFalse(userService.handleLoginAttempts("username", false));
+        verify(userRepository, never()).findByUsername(any());
     }
 
     @Test
@@ -113,6 +111,8 @@ class UserServiceImplTest {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime firstAttempt = now.minusSeconds(61);
         handleLoginAttempts_SetUp(firstAttempt);
+        assertTrue(userService.handleLoginAttempts("username", false));
+        verify(userRepository, never()).findByUsername(any());
     }
 
     @Test
