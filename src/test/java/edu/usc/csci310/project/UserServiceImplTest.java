@@ -85,33 +85,7 @@ class UserServiceImplTest {
 
         verify(userRepository, never()).findByUsername(any());
     }
-
-    @Test
-    void handleLoginAttempts_AttemptsWithinMinute() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime firstAttempt = now.minusSeconds(15);
-
-        User user = new User();
-        user.setUsername("username");
-
-        when(userRepository.findByUsername("username")).thenReturn(user);
-
-        List<LocalDateTime> attempts = new ArrayList<>();
-        attempts.add(firstAttempt);
-        attempts.add(firstAttempt);
-        attempts.add(firstAttempt);
-        userService.loginAttempts.put("username", attempts);
-
-        assertFalse(userService.handleLoginAttempts("username", false));
-
-        verify(userRepository, never()).findByUsername(any());
-    }
-
-    @Test
-    void handleLoginAttempts_AttemptsExpired() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime firstAttempt = now.minusSeconds(61);
-
+    private void handleLoginAttempts_SetUp(LocalDateTime firstAttempt) {
         User user = new User();
         user.setUsername("username");
 
@@ -126,6 +100,19 @@ class UserServiceImplTest {
         assertTrue(userService.handleLoginAttempts("username", false));
 
         verify(userRepository, never()).findByUsername(any());
+    }
+    @Test
+    void handleLoginAttempts_AttemptsWithinMinute() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime firstAttempt = now.minusSeconds(15);
+        handleLoginAttempts_SetUp(firstAttempt);
+    }
+
+    @Test
+    void handleLoginAttempts_AttemptsExpired() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime firstAttempt = now.minusSeconds(61);
+        handleLoginAttempts_SetUp(firstAttempt);
     }
 
     @Test
