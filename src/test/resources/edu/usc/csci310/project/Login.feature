@@ -1,4 +1,4 @@
-Feature: test the login functionality of the national park app
+Feature: test the login functionality
 
   Scenario: need to create new account
     Given I am on the login page
@@ -18,28 +18,28 @@ Feature: test the login functionality of the national park app
     When I enter the username "Wrong"
     And I enter the password "Wrong"
     And I click the login button
-    Then I should get a "Login Unsuccessful, Invalid username or password" message
+    Then "Login Unsuccessful, Invalid username or password" message
 
   Scenario: missing username and password
     Given I am on the login page
     When I enter the username ""
     And I enter the password ""
     And I click the login button
-    Then I should get a "Login Unsuccessful, Username and password are required" message
+    Then "Login Unsuccessful, Username and password are required" message
 
   Scenario: missing username
     Given I am on the login page
     When I enter the username ""
     And I enter the password "Wrong"
     And I click the login button
-    Then I should get a "Login Unsuccessful, Username required" message
+    Then "Login Unsuccessful, Username required" message
 
   Scenario: missing password
     Given I am on the login page
     When I enter the username "Wrong"
     And I enter the password ""
     And I click the login button
-    Then I should get a "Login Unsuccessful, Password required" message
+    Then "Login Unsuccessful, Password required" message
 
   Scenario: 3 consecutive incorrect attempts not within one minute
     Given I am on the login page
@@ -50,9 +50,9 @@ Feature: test the login functionality of the national park app
     And I click the login button
     Then I should still be allowed to login
 
-  Scenario: account locked after 3 consecutive incorrect attempts within one minute
+  Scenario: account locked in 3 consecutive wrong tries in one minute
     Given I am on the login page
-    And I have tried unsuccessfully to login in the two previous attempts within a minute
+    And I have tried two unsuccessful login attempts in one min
     When I enter the username "Wrong"
     And I enter the password "Wrong"
     And I click the login button
@@ -66,3 +66,4 @@ Feature: test the login functionality of the national park app
     And I enter the password "Wrong"
     And I click the login button
     Then I should still be allowed to login
+
