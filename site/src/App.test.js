@@ -246,10 +246,7 @@ describe('App component', () => {
                 <App />
             </BrowserRouter>
         );
-
-        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
-        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+        fillWithTestValueAndSubmit("Login")
 
         expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
 
@@ -304,10 +301,7 @@ describe('App component', () => {
                 <Login />
             </BrowserRouter>
         );
-
-        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
-        fireEvent.click(screen.getByText(/Login/i, { selector: 'button' }));
+        fillWithTestValueAndSubmit("Login")
 
         await waitFor(() => {
             expect(screen.getByText(mockedError)).toBeInTheDocument();
@@ -369,12 +363,7 @@ describe('App component', () => {
                 <Create />
             </BrowserRouter>
         );
-
-        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
-        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
-
-        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
+        fillWithTestValueAndSubmit("Create Account")
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith('/api/users/create', { username: "testuser", password: "testpassword" });
@@ -472,10 +461,7 @@ describe('App component', () => {
                 <Create />
             </BrowserRouter>
         );
-
-        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
-        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
+        fillWithTestValueAndSubmit("Create Account")
 
         fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
@@ -484,6 +470,18 @@ describe('App component', () => {
         });
     });
 
+    const fillWithTestValueAndSubmit = (action) => {
+        if (action === "Login") {
+            fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+            fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+            fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+        } else if (action === "Create Account") {
+            fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+            fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+            fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
+            fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
+        }
+    }
 
 });
 
