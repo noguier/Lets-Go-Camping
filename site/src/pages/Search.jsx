@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import {useNavigate} from "react-router-dom";
-function Search() {
+import axios from 'axios';
+
+const Search = ({ updateAuthenticationStatus }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('name');
     const [searchResults, setSearchResults] = useState([]);
     const [searchResultsAmenity, setSearchResultsAmenity] = useState([]);
+    const navigate = useNavigate();
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -44,11 +47,31 @@ function Search() {
             });
     };
 
+// Function to handle logout
+    const handleLogout = async () => {
+        try {
+            await axios.post('/api/users/logout');
+            updateAuthenticationStatus(false);
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
+
+
+
     return (
+
+
         <div className="container">
             <div className="row">
                 <h1 className="col-12 mt-4">Search Parks</h1>
             </div>
+
+            <button type="button" onClick={handleLogout}>Logout</button>
+            <button onClick={() => navigate("/favorites")}>Go to Favorites</button>
+
 
             <div className="row">
                 <form className="col-12" onSubmit={handleSearch}>
@@ -158,7 +181,7 @@ function Search() {
                                         <div key={parkIndex}>
                                             <h3>{park.fullName}</h3>
                                             <p><strong>Activity:</strong> {activity.name}</p>
-                                            <hr />
+                                            <hr/>
                                         </div>
                                     ))}
                                 </div>
@@ -198,6 +221,7 @@ function Search() {
                     ))}
                 </div>
             )}
+
         </div>
     );
 }

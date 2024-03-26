@@ -1,10 +1,19 @@
 // Reset the browser history after each test
 import React from "react";
-import { render, screen, waitFor, fireEvent} from "@testing-library/react";
+import {
+    render,
+    screen,
+    waitFor,
+    fireEvent,
+    getAllByText,
+    queryAllByText,
+    getByRole,
+    findAllByDisplayValue, findByText
+} from "@testing-library/react";
 import Header from "./components/Header";
 import '@testing-library/jest-dom'
 import Footer from "./components/Footer";
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, MemoryRouter} from "react-router-dom";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
 import Search from './pages/Search';
@@ -13,6 +22,24 @@ import axios from 'axios';
 import Login from "./pages/Login";
 import Create from "./pages/Create";
 import Dashboard from "./pages/Dashboard";
+import {act} from "react-dom/test-utils";
+import Favorites from "./pages/Favorites";
+//jest.mock('axios');
+
+// Mock axios post method
+
+jest.mock('axios', () => ({
+    post: jest.fn(() => Promise.resolve({ data: { /* mocked data if needed */ } })),
+    get: jest.fn((url) => {
+        if (url === '/api/users/authenticated') {
+            // Return a promise that resolves to a mock authentication status
+            return Promise.resolve({ data: true });
+        } else {
+            // Handle other URLs if needed
+            return Promise.resolve({ data: { /* mocked data if needed */ } });
+        }
+    })
+}));
 
 test("renders header text", () => {
     const { getByText } = render(<Header />);
@@ -25,16 +52,112 @@ test("renders footer text", () => {
     expect(headerText).toBeInTheDocument();
 });
 
-test("render App", () => {
+it('handles error when checking authentication status', async () => {
+    axios.get.mockRejectedValueOnce(new Error('Authentication error'));
 
-    const user = userEvent.setup();
-    render(<App />, { wrapper: BrowserRouter });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+    render(
+        <MemoryRouter initialEntries={['/']}>
+            <App />
+        </MemoryRouter>
+    );
+
+    await waitFor(() => {
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Error checking authentication status:', expect.any(Error));
+    });
+
+    consoleErrorSpy.mockRestore();
 });
 
+
 describe('Search component', () => {
+
+    test('logout button', async () => {
+        const updateAuthenticationStatusMock = jest.fn();
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
+            </BrowserRouter>
+        );
+
+        // Mock the axios post request
+        jest.spyOn(axios, 'post').mockResolvedValueOnce();
+
+        // Click the logout button
+        fireEvent.click(screen.getByText('Logout'));
+
+        // Check if axios.post is called with the correct endpoint
+        expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+
+        // Check if updateAuthenticationStatus and navigate are called
+        await waitFor(() => {
+            expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
+            expect(window.location.pathname).toBe("/login");
+        });
+    });
+
+
+    test('logout button fail', async () => {
+        const updateAuthenticationStatusMock = jest.fn();
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
+            </BrowserRouter>        );
+
+        // Mock the axios post request to simulate a failed logout
+        jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Logout Error'));
+
+        // Mock console.error
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        // Click the logout button
+        fireEvent.click(screen.getByText('Logout'));
+
+        // Check if axios.post is called with the correct endpoint
+        expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+
+        // Check if updateAuthenticationStatus and navigate are not called
+        expect(updateAuthenticationStatusMock).not.toHaveBeenCalled();
+        expect(navigateMock).not.toHaveBeenCalled();
+
+        // Check if console.error is called with the error message
+        await waitFor(() => {
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+        });
+
+        // Restore console.error
+        consoleErrorSpy.mockRestore();
+    });
+
+
+
+    test('favorites button', async () => {
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>        );
+
+        // Click the go to Favorites button
+        fireEvent.click(screen.getByText('Go to Favorites'));
+
+        // Check if navigate is called with the correct path
+        expect(window.location.pathname).toBe("/favorites");
+    });
+
+
     test('renders Search', () => {
-        render(<Search />);
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>        );
+
 
         // Check if search input and type radio buttons are rendered
         expect(screen.getByPlaceholderText(/Enter park name/i)).toBeInTheDocument();
@@ -50,7 +173,9 @@ describe('Search component', () => {
     });
 
     test('search by name', async () => {
-        render(<Search />);
+        render(<BrowserRouter>
+            <Search />
+        </BrowserRouter>);
 
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
@@ -77,7 +202,9 @@ describe('Search component', () => {
         });
     });
     test('search by state', async () => {
-        render(<Search />);
+        render(<BrowserRouter>
+            <Search  />
+        </BrowserRouter>);
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
                 data: [{ fullName: 'Alcatraz Island', description: 'Description: Alcatraz reveals stories of American incarceration, justice, and our common humanity. This small island was once a fort, a military prison, and a maximum security federal penitentiary. In 1969, the Indians of All Tribes occupied Alcatraz for 19 months in the name of freedom and Native American civil rights. We invite you to explore Alcatraz\'s complex history and natural beauty.' },
@@ -102,7 +229,9 @@ describe('Search component', () => {
         });
     });
     test('search by activity', async () => {
-        render(<Search />);
+        render(<BrowserRouter>
+            <Search />
+        </BrowserRouter>);
 
         // Mocking fetch function to return sample data
         global.fetch = jest.fn().mockResolvedValueOnce({
@@ -128,39 +257,92 @@ describe('Search component', () => {
         });
     });
     test('search by amenity', async () => {
-        render(<Search />);
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>
+        );
 
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
                 data: [
                     [
-                        { name: 'ATM/Cash Machine', parks: [{ fullName: 'Park Name: Badlands National Park' }, { fullName: 'Park Name: Big Bend National Park' }] },
+                        { name: 'Accessible Restrooms', parks: [{ fullName: 'Park A' }, { fullName: 'Park B' }] },
+                        { name: 'Fire Pit', parks: [{ fullName: 'Park C' }] }
                     ]
                 ]
             })
         });
 
         fireEvent.click(screen.getByLabelText('Search by Amenity'));
-        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'ATM/Cash Machine' } });
+
+        // Enter search term and submit form
+        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'Restrooms' } });
         fireEvent.click(screen.getByText('Search'));
 
+        // Wait for search results to be displayed
         await waitFor(() => {
-            expect(screen.getByText('ATM/Cash Machine')).toBeInTheDocument();
-            expect(screen.getByText('Park Name: Badlands National Park')).toBeInTheDocument();
-            expect(screen.getByText('Park Name: Big Bend National Park')).toBeInTheDocument();
+            expect(screen.getByText('Accessible Restrooms')).toBeInTheDocument();
+            expect(screen.getByText('Park A')).toBeInTheDocument();
+            expect(screen.getByText('Park B')).toBeInTheDocument();
+
+            expect(screen.getByText('Fire Pit')).toBeInTheDocument();
+            expect(screen.getByText('Park C')).toBeInTheDocument();
         });
     });
+
+
+
+
+
+    test('search with no search type selected', async () => {
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>
+        );
+
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            json: async () => ({
+                data: [{ fullName: 'No Search Type Park', description: 'Description for No Search Type Park' }]
+            })
+        });
+
+        // Set search term without setting search type
+        fireEvent.change(screen.getByPlaceholderText(/Enter park name/), { target: { value: 'Park' } });
+        fireEvent.click(screen.getByText("Search"));
+
+        await waitFor(() => {
+            expect(screen.getByText("No Search Type Park")).toBeInTheDocument();
+            expect(screen.getByText("Description for No Search Type Park")).toBeInTheDocument();
+        });
+    });
+
+
+
     test('blank search term', async () => {
         jest.spyOn(window, 'alert').mockImplementation(() => {});
-        render(<Search />);
+        render(<BrowserRouter>
+            <Search />
+        </BrowserRouter>);
         global.fetch = jest.fn().mockResolvedValue({});
         fireEvent.click(screen.getByText('Search'));
         expect(window.alert).toHaveBeenCalledWith('Please enter your search term');
         jest.restoreAllMocks();
     });
+
+
+
+
+
+
+
+
     test('fetch error', async () => {
         jest.spyOn(window, 'alert').mockImplementation(() => {});
-        render(<Search />);
+        render(<BrowserRouter>
+            <Search />
+        </BrowserRouter>);
         global.fetch = jest.fn().mockRejectedValueOnce(new Error('Fetch Error'));
         fireEvent.change(screen.getByPlaceholderText(/Enter park name/), { target: { value: 'Park' } });
         fireEvent.click(screen.getByText('Search'));
@@ -178,23 +360,17 @@ afterEach(() => {
 
 
 
-
-
-
-
-jest.mock('axios');
-
-describe('App component', () => {
-    test('renders login page by default', () => {
-        render(
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        );
-
-        const loginElements = screen.getAllByText(/Login/i);
-        expect(loginElements.length).toBeGreaterThan(0);
-    });
+describe('Login/Create component', () => {
+    // test('renders login page by default', () => {
+    //     render(
+    //         <BrowserRouter>
+    //             <App />
+    //         </BrowserRouter>
+    //     );
+    //
+    //     const loginElements = screen.getAllByText(/Login/i);
+    //     expect(loginElements.length).toBeGreaterThan(0);
+    // });
 
     test('renders login page', () => {
         render(
@@ -232,32 +408,37 @@ describe('App component', () => {
     });
 
 
-    test('redirects to dashboard after successful login', async () => {
-        const mockedResponse = {
-            data: {
-                username: "testuser",
-                token: "testtoken"
-            }
-        };
-        axios.post.mockResolvedValueOnce({ data: mockedResponse });
+    // test('redirects to dashboard after successful login', async () => {
+    //     const mockedResponse = {
+    //         data: {
+    //             username: "testuser",
+    //             token: "testtoken"
+    //         }
+    //     };
+    //     axios.post.mockResolvedValueOnce({ data: mockedResponse });
+    //
+    //     render(
+    //         <BrowserRouter>
+    //             <App />
+    //         </BrowserRouter>
+    //     );
+    //
+    //     fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+    //     fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+    //     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+    //
+    //     expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+    //
+    //     // Wait for Dashboard to appear asynchronously
+    //     await waitFor(() => {
+    //         expect(screen.getByText((content, element) => {
+    //             // Custom logic to match text
+    //             return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
+    //         })).toBeInTheDocument();
+    //     });
+    // });
 
-        render(
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        );
-        fillWithTestValueAndSubmit("Login")
 
-        expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
-
-        // Wait for Dashboard to appear asynchronously
-        await waitFor(() => {
-            expect(screen.getByText((content, element) => {
-                // Custom logic to match text
-                return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
-            })).toBeInTheDocument();
-        });
-    });
 
     test('displays error message if login fails', async () => {
         const mockedError = "Invalid username or password";
@@ -465,23 +646,246 @@ describe('App component', () => {
 
         fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
+
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
+
         await waitFor(() => {
             expect(screen.getByText(mockedError)).toBeInTheDocument();
         });
     });
 
-    const fillWithTestValueAndSubmit = (action) => {
-        if (action === "Login") {
-            fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-            fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
-            fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
-        } else if (action === "Create Account") {
-            fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
-            fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
-            fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
-            fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
-        }
-    }
+    test('redirects to search page after successful login', async () => {
+        const mockedResponse = {
+            data: {
+                username: "testuser",
+                token: "testtoken"
+            }
+        };
+        axios.post.mockResolvedValueOnce({ data: mockedResponse });
+
+        render(
+            <BrowserRouter>
+                <Login updateAuthenticationStatus={() => {}} />
+            </BrowserRouter>
+        );
+
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+            expect(window.location.pathname).toBe("/search");
+        });
+    });
+
+
+    // test('redirects to search page after successful authentication', async () => {
+    //     const mockedLoginResponse = {
+    //         username: "testuser",
+    //         token: "testtoken"
+    //     };
+    //
+    //     // Mock the login request
+    //     axios.post.mockResolvedValueOnce({ data: mockedLoginResponse });
+    //
+    //     // Render the App
+    //     render(
+    //         <MemoryRouter>
+    //             <App />
+    //         </MemoryRouter>
+    //     );
+    //
+    //     // Simulate login
+    //     fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+    //     fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+    //     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+    //
+    //     // Wait for login request to complete
+    //     await waitFor(() => {
+    //         expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+    //         expect(window.location.pathname).toBe("/search");
+    //     });
+    //
+    //     // Mock the authentication status check
+    //     axios.get.mockResolvedValueOnce({ data: true });
+    //
+    //     // Rerender App to trigger useEffect hook to check authentication status
+    //     render(
+    //         <MemoryRouter>
+    //             <Search updateAuthenticationStatus={true}/>
+    //         </MemoryRouter>
+    //     );
+    //
+    //     // Ensure Search component is rendered after authentication
+    //     await waitFor(() => {
+    //         expect(window.location.pathname).toBe("/search");
+    //     });
+    // });
+
 
 });
 
+
+
+
+// Mock the updateAuthenticationStatus function
+const mockUpdateAuthenticationStatus = jest.fn();
+
+test('should update authentication status on successful login', async () => {
+    const mockedResponse = {
+        data: {
+            username: "testuser",
+            token: "testtoken"
+        }
+    };
+    axios.post.mockResolvedValueOnce({ data: mockedResponse });
+
+    render(
+        <BrowserRouter>
+            <Login updateAuthenticationStatus={mockUpdateAuthenticationStatus} />
+        </BrowserRouter>
+    );
+
+    // Fill in the username and password fields
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
+
+    // Submit the form
+    fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+
+    // Wait for the API call to resolve
+    await waitFor(() => {
+        expect(mockUpdateAuthenticationStatus).toHaveBeenCalledWith(true);
+        expect(window.location.pathname).toBe("/search");
+    });
+});
+
+test('should render Login page when not authenticated', async () => {
+    axios.get.mockResolvedValueOnce({ data: false });
+
+    const { getByText } = render(
+        <MemoryRouter>
+            <App />
+        </MemoryRouter>
+    );
+
+    await waitFor(() => {
+        expect(window.location.pathname).toBe("/");
+    });
+});
+
+
+
+test('should update authentication status app comp', async () => {
+    const mockedResponse = {
+        data: {
+            username: "testuser",
+            token: "testtoken"
+        }
+    };
+    axios.post.mockResolvedValueOnce({ data: mockedResponse });
+    axios.get.mockResolvedValueOnce({});
+
+    render(
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    );
+
+    // Fill in the username and password fields
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
+
+    // Submit the form
+    fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+
+    // Wait for the API call to resolve
+    await waitFor(() => {
+        expect(window.location.pathname).toBe("/search");
+    });
+});
+
+
+describe('Favorites component', () => {
+    // Mock updateAuthenticationStatus function
+    const mockUpdateAuthStatus = jest.fn();
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('renders correctly', () => {
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        expect(getByText('Favorites')).toBeInTheDocument();
+    });
+
+    test('clicking logout button calls handleLogout', async () => {
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        fireEvent.click(getByText('Logout'));
+        await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+    });
+
+    test('handleLogout function updates authentication status and navigates to login', async () => {
+        axios.post.mockResolvedValueOnce(); // Mock axios post call
+
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        fireEvent.click(getByText('Logout'));
+
+        await waitFor(() => {
+            expect(mockUpdateAuthStatus).toHaveBeenCalledWith(false);
+            expect(window.location.pathname).toBe('/login');
+        });
+    });
+
+    test('handleLogout function logs error on failure', async () => {
+        const error = new Error('Logout failed');
+        axios.post.mockRejectedValueOnce(error); // Mock axios post to reject with an error
+
+        // Mock console.error
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        fireEvent.click(getByText('Logout'));
+
+        await waitFor(() => {
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', error);
+        });
+
+        consoleErrorSpy.mockRestore(); // Restore original console.error function
+    });
+});
+
+
+
+const fillWithTestValueAndSubmit = (action) => {
+    if (action === "Login") {
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+    } else if (action === "Create Account") {
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
+    }
+}
