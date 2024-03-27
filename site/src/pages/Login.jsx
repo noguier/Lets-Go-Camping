@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+
+
+const Login = ({ updateAuthenticationStatus }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -31,11 +33,8 @@ const Login = () => {
 
             // Handle successful login
             setError('');
-            setUsername('');
-            setPassword('');
-
-            // Redirect to dashboard or home page
-            navigate('/search'); // Change '/dashboard' to the appropriate path
+            updateAuthenticationStatus(true); // Update authentication status
+            navigate('/search');
         } catch (err) {
             setError(err.response.data);
         }

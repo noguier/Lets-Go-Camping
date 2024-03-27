@@ -67,7 +67,7 @@ public class CreateLoginStepDefs {
     }
 
 
-    @Then("I should get a {string} message")
+    @Then("{string} message")
     public void iShouldGetAMessage(String arg0) throws InterruptedException {
         Thread.sleep(1000);
         assertTrue(driver.getPageSource().contains(arg0));
@@ -121,7 +121,7 @@ public class CreateLoginStepDefs {
     }
 
 
-    @And("I have tried unsuccessfully to login in the two previous attempts within a minute")
+    @And("I have tried two unsuccessful login attempts in one min")
     public void iHaveTriedUnsuccessfullyToLoginInTheTwoPreviousAttemptsWithinAMinute() throws InterruptedException {
         //given on login page
         driver.get(ROOT_URL + "login");
