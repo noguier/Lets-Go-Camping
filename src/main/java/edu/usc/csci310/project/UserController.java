@@ -21,17 +21,20 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody CreateUserRequest request) throws NoSuchAlgorithmException {
         // Validate request
         if (request.getUsername() == null || request.getPassword() == null) {
-            return ResponseEntity.badRequest().body("Account Creation Unsuccessful, username and password required");
+            //return ResponseEntity.badRequest().body("Account Creation Unsuccessful, username and password required");
+            return ResponseEntity.badRequest().body("Username and password required");
         }
 
         // Check if username already exists
         if (userService.usernameExists(request.getUsername())) {
-            return ResponseEntity.badRequest().body("Account Creation Unsuccessful, this username is taken");
+            return ResponseEntity.badRequest().body("Username is taken");
+            //return ResponseEntity.badRequest().body("Account Creation Unsuccessful, this username is taken");
         }
 
         // Validate password
         if (!userService.isValidPassword(request.getPassword())) {
-            return ResponseEntity.badRequest().body("Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number");
+            //return ResponseEntity.badRequest().body("Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number");
+            return ResponseEntity.badRequest().body("Password does not fit all requirements");
         }
 
         // Create user

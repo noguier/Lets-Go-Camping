@@ -16,24 +16,29 @@ const Create = () => {
 
         // Validate inputs
         if (!username && !password) {
-            setError('Account Creation Unsuccessful, username and password required');
+            //setError('Account Creation Unsuccessful, username and password required');
+            setError('Username and password required');
             return;
         }
         else if (!username) {
-            setError('Account Creation Unsuccessful, username required');
+            //setError('Account Creation Unsuccessful, username required');
+            setError('Username required');
             return;
         }
         else if (!password) {
-            setError('Account Creation Unsuccessful, password required');
+            //setError('Account Creation Unsuccessful, password required');
+            setError('Password required');
             return;
         }
         else if (!confirmPassword) {
-            setError('Account Creation Unsuccessful, confirm password required');
+            //setError('Account Creation Unsuccessful, confirm password required');
+            setError('Confirm password required');
             return;
         }
 
         if (password !== confirmPassword) {
-            setError('Account Creation Unsuccessful, passwords must match');
+            //setError('Account Creation Unsuccessful, passwords must match');
+            setError('Passwords must match');
             return;
         }
 
