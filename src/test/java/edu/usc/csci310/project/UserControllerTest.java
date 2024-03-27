@@ -39,7 +39,7 @@ class UserControllerTest {
 
         ResponseEntity<String> nullUsernameResponse = userController.createUser(nullUsernameRequest);
         assertEquals(HttpStatus.BAD_REQUEST, nullUsernameResponse.getStatusCode());
-        assertEquals("Account Creation Unsuccessful, username and password required", nullUsernameResponse.getBody());
+        assertEquals("Username and password required", nullUsernameResponse.getBody());
     }
 
     @Test
@@ -51,7 +51,7 @@ class UserControllerTest {
 
         ResponseEntity<String> nullPasswordResponse = userController.createUser(nullPasswordRequest);
         assertEquals(HttpStatus.BAD_REQUEST, nullPasswordResponse.getStatusCode());
-        assertEquals("Account Creation Unsuccessful, username and password required", nullPasswordResponse.getBody());
+        assertEquals("Username and password required", nullPasswordResponse.getBody());
     }
 
     @Test
@@ -85,7 +85,7 @@ class UserControllerTest {
         CreateUserRequest nullRequest = new CreateUserRequest();
         ResponseEntity<String> nullResponse = userController.createUser(nullRequest);
         assertEquals(HttpStatus.BAD_REQUEST, nullResponse.getStatusCode());
-        assertEquals("Account Creation Unsuccessful, username and password required", nullResponse.getBody());
+        assertEquals("Username and password required", nullResponse.getBody());
     }
 
     @Test
@@ -100,7 +100,7 @@ class UserControllerTest {
 
         ResponseEntity<String> existingUsernameResponse = userController.createUser(existingUsernameRequest);
         assertEquals(HttpStatus.BAD_REQUEST, existingUsernameResponse.getStatusCode());
-        assertEquals("Account Creation Unsuccessful, this username is taken", existingUsernameResponse.getBody());
+        assertEquals("Username is taken", existingUsernameResponse.getBody());
     }
 
     @Test
@@ -115,7 +115,7 @@ class UserControllerTest {
 
         ResponseEntity<String> invalidPasswordResponse = userController.createUser(invalidPasswordRequest);
         assertEquals(HttpStatus.BAD_REQUEST, invalidPasswordResponse.getStatusCode());
-        assertEquals("Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number", invalidPasswordResponse.getBody());
+        assertEquals("Password does not fit all requirements", invalidPasswordResponse.getBody());
     }
 
     @Test
