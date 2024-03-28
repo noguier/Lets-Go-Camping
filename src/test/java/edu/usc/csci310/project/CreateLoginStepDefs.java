@@ -67,7 +67,7 @@ public class CreateLoginStepDefs {
     }
 
 
-    @Then("{string} message")
+    @Then("I should get a {string} message")
     public void iShouldGetAMessage(String arg0) throws InterruptedException {
         Thread.sleep(1000);
         assertTrue(driver.getPageSource().contains(arg0));
@@ -195,6 +195,7 @@ public class CreateLoginStepDefs {
     public void iClickTheLoginButton() {
         driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
     }
+
 }
 
 

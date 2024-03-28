@@ -18,28 +18,28 @@ Feature: test the login functionality
     When I enter the username "Wrong"
     And I enter the password "Wrong"
     And I click the login button
-    Then "Login Unsuccessful, Invalid username or password" message
+    Then I should get a "Login Unsuccessful, Invalid username or password" message
 
   Scenario: missing username and password
     Given I am on the login page
     When I enter the username ""
     And I enter the password ""
     And I click the login button
-    Then "Login Unsuccessful, Username and password are required" message
+    Then I should get a "Login Unsuccessful, Username and password are required" message
 
   Scenario: missing username
     Given I am on the login page
     When I enter the username ""
     And I enter the password "Wrong"
     And I click the login button
-    Then "Login Unsuccessful, Username required" message
+    Then I should get a "Login Unsuccessful, Username required" message
 
   Scenario: missing password
     Given I am on the login page
     When I enter the username "Wrong"
     And I enter the password ""
     And I click the login button
-    Then "Login Unsuccessful, Password required" message
+    Then I should get a "Login Unsuccessful, Password required" message
 
   Scenario: 3 consecutive incorrect attempts not within one minute
     Given I am on the login page
