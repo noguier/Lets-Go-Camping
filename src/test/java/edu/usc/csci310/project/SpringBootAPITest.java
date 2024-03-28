@@ -14,16 +14,6 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class SpringBootAPITest {
-    ConfigurableApplicationContext ctx;
-//    @BeforeEach
-//    public void setup() {
-//        ctx = new SpringApplicationBuilder(SpringBootAPI.class).run();
-//    }
-//    @AfterEach
-//    public void teardown() {
-//        ctx.close();
-//        System.out.println("is Active: "+ctx.isActive());
-//    }
     @Test
     public void testRedirect() {
         SpringBootAPI springBootAPI = new SpringBootAPI();
@@ -37,25 +27,3 @@ public class SpringBootAPITest {
         }
     }
 }
-
-//package edu.usc.csci310.project;
-//
-//import org.junit.jupiter.api.Test;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//
-//public class SpringBootAPITest {
-//    private SpringBootAPI springBootAPI = new SpringBootAPI();
-//
-//    @Test
-//    public void testMainMethod() {
-//        String[] args = {"arg1", "arg2"};
-//        springBootAPI.main(args);
-//    }
-//
-//    @Test
-//    public void testRedirect(){
-//        String forward = springBootAPI.redirect();
-//        assertEquals("forward:/", forward);
-//    }
-//}

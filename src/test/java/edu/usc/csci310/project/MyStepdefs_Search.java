@@ -17,12 +17,41 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MyStepdefs_Search {
 
-    private static final String ROOT_URL = "http://localhost:8080/Search";
+    private static final String ROOT_URL = "http://localhost:8080/";
     private final WebDriver driver = new ChromeDriver();
+    private static boolean accountCreated = false;
+
+    private void createAccount() throws InterruptedException{
+        accountCreated = true;
+        driver.get(ROOT_URL + "create");
+        //username
+        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("testuser");
+        //password
+        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
+        //confirm password
+        driver.findElement(By.xpath("/html/body/div/div/div/form/div[3]/input")).sendKeys("testPassword1");
+        //click create account
+        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        //wait for redirect to login
+        Thread.sleep(1000);
+    }
 
     @Given("I am on the search page")
-    public void iAmOnTheSearchPage() {
-        driver.get(ROOT_URL);
+    public void iAmOnTheSearchPage() throws InterruptedException {
+        System.out.println("Account created:"+accountCreated);
+        if (!accountCreated) {
+            createAccount();
+        } else {
+            driver.get(ROOT_URL + "login");
+        }
+        //login username
+        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("testuser");
+        //login password
+        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
+        //click login
+        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        Thread.sleep(1000);
+
     }
     @After
     public void after(){
@@ -61,6 +90,7 @@ public class MyStepdefs_Search {
 
 
     @And("I click the dropdown amenities")
+    ///html/body/div/div/div/div[2]/form/div[2]/div[1]/div/label
     public void iClickTheDropdownAmenities() {
         driver.findElement(By.xpath("//*[@id=\"searchByAmenity\"]")).click();
     }
