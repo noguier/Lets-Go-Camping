@@ -1,23 +1,61 @@
 package edu.usc.csci310.project;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ConfigurableApplicationContext;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
+@SpringBootTest
 public class SpringBootAPITest {
-    private SpringBootAPI springBootAPI = new SpringBootAPI();
-
+    ConfigurableApplicationContext ctx;
+//    @BeforeEach
+//    public void setup() {
+//        ctx = new SpringApplicationBuilder(SpringBootAPI.class).run();
+//    }
+//    @AfterEach
+//    public void teardown() {
+//        ctx.close();
+//        System.out.println("is Active: "+ctx.isActive());
+//    }
     @Test
-    public void testMainMethod() {
-        String[] args = {"arg1", "arg2"};
-        springBootAPI.main(args);
+    public void testRedirect() {
+        SpringBootAPI springBootAPI = new SpringBootAPI();
+        assertEquals(springBootAPI.redirect(), "forward:/");
     }
-
     @Test
-    public void testRedirect(){
-        String forward = springBootAPI.redirect();
-        assertEquals("forward:/", forward);
+    public void testMain() {
+        String[] args = {"arg1", "arg2"};
+        try (MockedStatic<SpringApplication> staticSpringBootAPI = Mockito.mockStatic(SpringApplication.class)) {
+            SpringBootAPI.main(args);
+        }
     }
 }
 
-
+//package edu.usc.csci310.project;
+//
+//import org.junit.jupiter.api.Test;
+//
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//
+//public class SpringBootAPITest {
+//    private SpringBootAPI springBootAPI = new SpringBootAPI();
+//
+//    @Test
+//    public void testMainMethod() {
+//        String[] args = {"arg1", "arg2"};
+//        springBootAPI.main(args);
+//    }
+//
+//    @Test
+//    public void testRedirect(){
+//        String forward = springBootAPI.redirect();
+//        assertEquals("forward:/", forward);
+//    }
+//}
