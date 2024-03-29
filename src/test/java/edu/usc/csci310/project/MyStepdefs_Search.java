@@ -142,6 +142,46 @@ public class MyStepdefs_Search {
 
     }
 
+    @And("I click on {string} and see details")
+    public void iClickOnAndSeeDetails(String arg0) {
+        WebElement parkElement = driver.findElement(By.xpath("//element_tag[contains(text(),'Yellowstone')]"));
+//
+//        WebElement parkElement = driver.findElement(By.linkText("Park Name: "+arg0));
+        parkElement.click();
+    }
+
+
+    @Then("I see Location state {string}")
+    public void iSeeLocationState(String arg0) {
+
+
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+
+    @Then("I see Entrance Fee {string}")
+    public void iSeeEntranceFee(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+
+    @Then("I see Description {string}")
+    public void iSeeDescription(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+
+    @Then("I see Amenities {string}")
+    public void iSeeAmenities(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+
+    @Then("I see Image alt-ID {string}")
+    public void iSeeImageAltID(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
 
 //    @And("I click the Load More button")
 //    public void iClickTheLoadMoreButton() {
