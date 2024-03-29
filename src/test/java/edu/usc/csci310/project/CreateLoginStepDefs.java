@@ -109,6 +109,9 @@ public class CreateLoginStepDefs {
 
     @Then("I should not be allowed to login anymore")
     public void iShouldNotBeAllowedToLoginAnymore() throws InterruptedException {
+        iClickTheLoginButton();
+        iClickTheLoginButton();
+        iClickTheLoginButton();
         Thread.sleep(1000);
         assertTrue(driver.getPageSource().contains("Login Unsuccessful, You are locked out. Please try again after 30 seconds."));
     }
