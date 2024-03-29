@@ -53,6 +53,19 @@ Feature: Test search functionality
     And I click the Search button
     Then I should get a list of parks such as "Castle Mountains National Monument"
 
+#  Scenario: Perform Search and see details
+#    Given I am on the search page
+#    And I click the dropdown Name
+#    When I enter "Yellowstone" in the search bar
+#    And I click the Search button
+#    Then I should get a list of parks such as "Yellowstone National Park"
+#    And I click on "Yellowstone National Park" and see details
+#    Then I see Location state "Yellowstone National Park, WY"
+#    Then I see Entrance Fee "$35.00"
+#    Then I see Description "On March 1, 1872,"
+#    Then I see Amenities "Arts and Culture"
+#    Then I see Image alt-ID "Brilliant blues and greens"
+
 
 #  Scenario: Perform Search and show at least 10 items
 #    Given I am on the search page
