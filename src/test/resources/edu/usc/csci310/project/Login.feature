@@ -18,14 +18,14 @@ Feature: test the login functionality
     When I enter the username "Wrong"
     And I enter the password "Wrong"
     And I click the login button
-    Then I should get a "Login Unsuccessful, Invalid username or password" message
+    Then I should get a "Invalid username or password" message
 
   Scenario: missing username and password
     Given I am on the login page
     When I enter the username ""
     And I enter the password ""
     And I click the login button
-    Then I should get a "Login Unsuccessful, Username and password are required" message
+    Then I should get a "Username and password are required" message
 
   Scenario: missing username
     Given I am on the login page
@@ -66,4 +66,3 @@ Feature: test the login functionality
     And I enter the password "Wrong"
     And I click the login button
     Then I should still be allowed to login
-

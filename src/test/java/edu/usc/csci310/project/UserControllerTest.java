@@ -185,7 +185,7 @@ class UserControllerTest {
 
         ResponseEntity<String> invalidCredentialsResponse = userController.loginUser(invalidCredentialsRequest, mockRequest);
         assertEquals(HttpStatus.UNAUTHORIZED, invalidCredentialsResponse.getStatusCode());
-        assertEquals("Login Unsuccessful, Invalid username or password", invalidCredentialsResponse.getBody());
+        assertEquals("Invalid username or password", invalidCredentialsResponse.getBody());
     }
 
     @Test
@@ -256,7 +256,7 @@ class UserControllerTest {
 
         ResponseEntity<String> invalidCredentialsResponse = userController.loginUser(invalidCredentialsRequest, mockRequest);
         assertEquals(HttpStatus.UNAUTHORIZED, invalidCredentialsResponse.getStatusCode());
-        assertEquals("Login Unsuccessful, Invalid username or password", invalidCredentialsResponse.getBody());
+        assertEquals("Invalid username or password", invalidCredentialsResponse.getBody());
     }
 
     @Test

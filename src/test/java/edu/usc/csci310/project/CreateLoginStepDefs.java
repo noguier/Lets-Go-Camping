@@ -120,7 +120,7 @@ public class CreateLoginStepDefs {
     @Then("I should still be allowed to login")
     public void iShouldStillBeAllowedToLogin() throws InterruptedException {
         Thread.sleep(1000);
-        assertTrue(driver.getPageSource().contains("Login Unsuccessful, Invalid username or password"));
+        assertTrue(driver.getPageSource().contains("Invalid username or password"));
     }
 
 

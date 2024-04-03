@@ -15,7 +15,7 @@ const Login = ({ updateAuthenticationStatus }) => {
 
         // Validate inputs
         if (!username && !password) {
-            setError('Login Unsuccessful, Username and password are required');
+            setError('Username and password are required');
             return;
         }
         else if (!username) {
