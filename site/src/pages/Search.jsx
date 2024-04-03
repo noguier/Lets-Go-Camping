@@ -10,7 +10,7 @@ const Search = ({ updateAuthenticationStatus }) => {
     const [parkDetails, setParkDetails] = useState(null);
     const navigate = useNavigate();
 
-    const handleSearch = async (e) => {
+    const handleSearch = (e) => {
         e.preventDefault();
 
         if (searchTerm.trim() === '') {
@@ -18,7 +18,19 @@ const Search = ({ updateAuthenticationStatus }) => {
             return;
         }
 
-        fetch(`/api/parks?searchTerm=${searchTerm}&searchType=${searchType}`)
+        let apiUrl = '';
+
+        if (searchType === 'name') {
+            apiUrl = `https://developer.nps.gov/api/v1/parks?q=${searchTerm}&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd`;
+        } else if (searchType === 'state') {
+            apiUrl = `https://developer.nps.gov/api/v1/parks?stateCode=${searchTerm}&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd`;
+        } else if (searchType === 'activity') {
+            apiUrl = `https://developer.nps.gov/api/v1/activities/parks?q=${searchTerm}&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd`;
+        } else if (searchType === 'amenity') {
+            apiUrl = `https://developer.nps.gov/api/v1/amenities/parksplaces?q=${searchTerm}&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd`;
+        }
+
+        fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
                 if (searchType === 'amenity') {
@@ -27,6 +39,7 @@ const Search = ({ updateAuthenticationStatus }) => {
                 else {
                     setSearchResults(data.data);
                     console.log(data.data);
+                    // console.log("printing out search results array", searchResults);
                 }
             })
             .catch(error => {
