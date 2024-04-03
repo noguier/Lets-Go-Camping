@@ -5,10 +5,6 @@ import {
     screen,
     waitFor,
     fireEvent,
-    getAllByText,
-    //queryAllByText,
-    getByRole,
-    findAllByDisplayValue, findByText
 } from "@testing-library/react";
 import Header from "./components/Header";
 import '@testing-library/jest-dom'
