@@ -11,8 +11,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import javax.lang.model.element.Element;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MyStepdefs_Search {
@@ -108,7 +106,7 @@ public class MyStepdefs_Search {
 
     }
 
-    @Then("I should get a list of parks such as {string}")
+    @Then("List of parks such as {string}")
     public void iShouldGetAListOfParksSuchAs(String arg0) {
         try {
             Thread.sleep(2000);
