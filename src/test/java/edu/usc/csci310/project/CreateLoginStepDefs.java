@@ -42,12 +42,10 @@ public class CreateLoginStepDefs {
         driver.get(ROOT_URL + "login");
     }
 
-
     @When("I enter the username {string}")
     public void iEnterTheUsername(String arg0) {
         driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys(arg0);
     }
-
 
     @And("I enter the password {string}")
     public void iEnterThePassword(String arg0) {
@@ -120,7 +118,7 @@ public class CreateLoginStepDefs {
     @Then("I should still be allowed to login")
     public void iShouldStillBeAllowedToLogin() throws InterruptedException {
         Thread.sleep(1000);
-        assertTrue(driver.getPageSource().contains("Login Unsuccessful, Invalid username or password"));
+        assertTrue(driver.getPageSource().contains("Invalid username or password"));
     }
 
 

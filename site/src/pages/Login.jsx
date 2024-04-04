@@ -2,8 +2,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const Login = ({ updateAuthenticationStatus }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -15,7 +13,7 @@ const Login = ({ updateAuthenticationStatus }) => {
 
         // Validate inputs
         if (!username && !password) {
-            setError('Login Unsuccessful, Username and password are required');
+            setError('Username and password are required');
             return;
         }
         else if (!username) {
@@ -60,6 +58,4 @@ const Login = ({ updateAuthenticationStatus }) => {
         </div>
     );
 };
-
 export default Login;
-

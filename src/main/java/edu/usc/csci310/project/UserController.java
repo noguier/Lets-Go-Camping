@@ -74,7 +74,7 @@ public class UserController {
 
             return ResponseEntity.ok("Login successful");
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login Unsuccessful, Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
 
@@ -99,7 +99,6 @@ public class UserController {
 
         return ResponseEntity.ok(authenticated);
     }
-
 
 }
 
