@@ -46,6 +46,14 @@ public class SearchController {
             case "amenity":
                 endpoint = "/amenities/parksplaces?q=" + searchTerm;
                 break;
+            //"https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=olsp&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd"
+            case "amenity_parkcode":
+                endpoint = "/amenities/parksplaces?parkCode=" + searchTerm;
+                break;
+            //`https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&limit=1&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd`;
+            case "parkClick":
+                endpoint = "/parks?parkCode=" + searchTerm + "&limit=1";
+                break;
             default:
                 break;
         }
