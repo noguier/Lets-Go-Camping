@@ -1,6 +1,6 @@
 // Reset the browser history after each test
 import React from "react";
-import { renderParkInfo } from './components/result'; // Assuming renderParkDetails function is exported
+import { renderParkInfo } from './components/Result'; // Assuming renderParkDetails function is exported
 import {
     render,
     screen,
