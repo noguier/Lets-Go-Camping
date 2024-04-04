@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -57,36 +58,53 @@ const Create = () => {
     };
 
     return (
-        <div>
+        <div className="bg-image">
+            <div className="bg-text">
             <h2>Create Account</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="create-username">Username:</label>
-                    <input type="text" id="create-username" value={username}
-                           onChange={(e) => setUsername(e.target.value)}/>
-                </div>
-                <div>
-                    <label htmlFor="create-password">Password:</label>
-                    <input type="password" id="create-password" value={password}
-                           onChange={(e) => setPassword(e.target.value)}/>
-                </div>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="create-username">
+                    <Form.Label>Username:</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter username"
+                    />
+                </Form.Group>
 
-                <div>
-                    <label htmlFor="confirm-password">Confirm Password:</label>
-                    <input type="password" id="confirm-password" value={confirmPassword}
-                           onChange={(e) => setConfirmPassword(e.target.value)}/>
-                </div>
+                <Form.Group controlId="create-password">
+                    <Form.Label>Password:</Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter password"
+                    />
+                </Form.Group>
 
+                <Form.Group controlId="confirm-password">
+                    <Form.Label>Confirm Password:</Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm password"
+                    />
+                </Form.Group>
 
-                <button type="submit">Create Account</button>
-                <button onClick={() => navigate("/login")}>Already have an account? Login</button>
-            </form>
-            {error && <div>{error}</div>}
+                <Button variant="primary" type="submit">
+                    Create Account
+                </Button>
+                <Button variant="secondary" onClick={() => navigate("/login")}>
+                    Already have an account? Login
+                </Button>
+            </Form>
+            {error && <Alert variant="danger">{error}</Alert>}
+        </div>
         </div>
     );
 };
 
 export default Create;
-
 
 

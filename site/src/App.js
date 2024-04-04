@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Favorites from "./pages/Favorites";
 import Compare from "./pages/Compare";
 import Create from "./pages/Create";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 
 function App() {

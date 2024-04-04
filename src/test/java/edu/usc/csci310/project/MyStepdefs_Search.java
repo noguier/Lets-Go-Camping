@@ -23,13 +23,13 @@ public class MyStepdefs_Search {
         accountCreated = true;
         driver.get(ROOT_URL + "create");
         //username
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("testuser");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
         //password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
         //confirm password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[3]/input")).sendKeys("testPassword1");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("testPassword1");
         //click create account
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         //wait for redirect to login
         Thread.sleep(1000);
     }
@@ -43,11 +43,11 @@ public class MyStepdefs_Search {
             driver.get(ROOT_URL + "login");
         }
         //login username
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("testuser");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
         //login password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         Thread.sleep(1000);
 
     }
