@@ -33,7 +33,7 @@ public class CreateLoginStepDefs {
 
     @When("I click on the already have account button")
     public void iClickOnTheLoginButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[2]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[2]")).click();
     }
 
     @Then("I should be redirected to the login page")
@@ -44,24 +44,24 @@ public class CreateLoginStepDefs {
 
     @When("I enter the username {string}")
     public void iEnterTheUsername(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys(arg0);
     }
 
     @And("I enter the password {string}")
     public void iEnterThePassword(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys(arg0);
     }
 
 
     @And("I enter the confirm password {string}")
     public void iEnterTheConfirmPassword(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[3]/input")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys(arg0);
     }
 
 
     @And("I press the Create Account button")
     public void iPressTheCreateAccountButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
     }
 
 
@@ -76,16 +76,16 @@ public class CreateLoginStepDefs {
     public void theAccountTommyTrojanHasAlreadyBeenCreated() throws InterruptedException {
         Thread.sleep(500);
         //username TommyTrojan
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("BillyBruin");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("BillyBruin");
         Thread.sleep(500);
         //password TestPassword123
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("BillyBruin123");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("BillyBruin123");
         Thread.sleep(500);
         //confirm password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[3]/input")).sendKeys("BillyBruin123");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("BillyBruin123");
         Thread.sleep(500);
         //click submit
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         Thread.sleep(500);
         //go back to create account page
         driver.get(ROOT_URL + "create");
@@ -95,7 +95,7 @@ public class CreateLoginStepDefs {
 
     @When("I click on the Don't have account button")
     public void iClickOnTheDonTHaveAccountButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[2]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[2]")).click();
     }
 
 
@@ -127,18 +127,18 @@ public class CreateLoginStepDefs {
         //given on login page
         driver.get(ROOT_URL + "login");
         //enter username wrong
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("wrong");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("wrong");
         //enter password wrong
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("wrong");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("wrong");
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
 
         Thread.sleep(300);
         //clear username and password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).clear();
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).clear();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).clear();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).clear();
 
 
     }
@@ -148,20 +148,20 @@ public class CreateLoginStepDefs {
         //given on login page
         driver.get(ROOT_URL + "login");
         //enter username wrong
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("wrong");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("wrong");
         //enter password wrong
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("wrong");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("wrong");
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
 
         Thread.sleep(500);
         //clear username and password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).clear();
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).clear();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).clear();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).clear();
     }
 
     @And("I wait thirty seconds")
@@ -175,13 +175,13 @@ public class CreateLoginStepDefs {
         //go to create account page
         driver.get(ROOT_URL + "create");
         //enter Tommy as username
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[1]/input")).sendKeys("Tommy");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("Tommy");
         //enter Trojan123 as password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[2]/input")).sendKeys("Trojan123");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("Trojan123");
         //enter Trojan123 as confirm password
-        driver.findElement(By.xpath("/html/body/div/div/div/form/div[3]/input")).sendKeys("Trojan123");
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("Trojan123");
         //click create account (where I should be automatically redirected to login)
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         //wait a little
         Thread.sleep(500);
     }
@@ -194,7 +194,7 @@ public class CreateLoginStepDefs {
 
     @And("I click the login button")
     public void iClickTheLoginButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
     }
 
 }

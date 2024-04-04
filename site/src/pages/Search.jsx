@@ -20,7 +20,8 @@ const Search = ({ updateAuthenticationStatus }) => {
         }
 
         try {
-            const response = await fetch(`/api/parks?searchTerm=${searchTerm}&searchType=${searchType}`);
+            const encodedSearchTerm = encodeURIComponent(searchTerm);
+            const response = await fetch(`/api/parks?searchTerm=${encodedSearchTerm}&searchType=${searchType}`);
             const data = await response.json();
 
             if (searchType === 'amenity') {
