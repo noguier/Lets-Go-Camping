@@ -2,8 +2,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const Login = ({ updateAuthenticationStatus }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -60,6 +58,4 @@ const Login = ({ updateAuthenticationStatus }) => {
         </div>
     );
 };
-
 export default Login;
-

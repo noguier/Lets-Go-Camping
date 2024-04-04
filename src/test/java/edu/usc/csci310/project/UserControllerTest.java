@@ -217,7 +217,6 @@ class UserControllerTest {
         }
     }
 
-
     @Test
     void loginUser_Successful() throws NoSuchAlgorithmException {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
