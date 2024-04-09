@@ -166,7 +166,6 @@ class FavoritesControllerTest {
         HttpSession session = mock(HttpSession.class);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("username")).thenReturn(null);
-
         ResponseEntity<String> response = favoritesController.removeFavoritePark("ABC123=", request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
