@@ -1,5 +1,5 @@
 package edu.usc.csci310.project;
-public class Park {
+public class Park{
     private String name;
     private String city;
     private String county;
