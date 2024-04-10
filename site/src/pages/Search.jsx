@@ -62,6 +62,8 @@ const Search = ({ updateAuthenticationStatus }) => {
 // };
 
 
+
+
 return (
   <div className="container">
     <div className="row">

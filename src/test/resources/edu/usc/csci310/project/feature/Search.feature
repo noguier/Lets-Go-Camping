@@ -112,7 +112,6 @@ Feature: Test search functionality
 #    Then I should get a list of parks such as "Josh"
 #    Then I should see 10 park items displayed
 
-
 #  Scenario: Perform Search and see Inline description
 #    Given I am on the search page
 #    And I click the dropdown Name

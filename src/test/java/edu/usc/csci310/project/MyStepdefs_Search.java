@@ -233,13 +233,6 @@ public class MyStepdefs_Search {
     }
 
 
-//    @And("I click the Load More button")
-//    public void iClickTheLoadMoreButton() {
-//    }
-//
-//    @And("I click the Load More button two more times")
-//    public void iClickTheLoadMoreButtonTwoMoreTimes() {
-//    }
 //
 //    @Then("I hover over the {string} and see search description")
 //    public void iHoverOverTheAndSeeSearchDescription(String arg0) {
