@@ -37,11 +37,144 @@ jest.mock('axios', () => ({
     })
 }));
 
-
 test("renders header text", () => {
-    const { getByText } = render(<Header />);
-    const headerText = getByText(/Let's Go Camping!/i);
+    const { getByText } = render(
+        <BrowserRouter>
+            <Header />
+        </BrowserRouter>
+    );
+    const headerText = getByText("Let's Go Camping!");
     expect(headerText).toBeInTheDocument();
+});
+
+
+describe("Header Component", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test("renders header with login and register links when not authenticated", () => {
+        render( <BrowserRouter>
+            <Header authenticated={false} />
+        </BrowserRouter>);
+        expect(screen.getByText("Let's Go Camping!")).toBeInTheDocument();
+    });
+
+    test("renders header with navigation links and logout button when authenticated", () => {
+        render(<BrowserRouter>
+            <Header authenticated={true} />
+        </BrowserRouter>);
+        expect(screen.getByText("Let's Go Camping!")).toBeInTheDocument();
+        expect(screen.getByText("Search")).toBeInTheDocument();
+        expect(screen.getByText("Favorites")).toBeInTheDocument();
+        expect(screen.getByText("Compare and Suggest")).toBeInTheDocument();
+        expect(screen.getByText("Logout")).toBeInTheDocument();
+    });
+
+    test('favorites link', async () => {
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Header authenticated={true}/>
+            </BrowserRouter>        );
+
+        // Click the  Favorites link
+        fireEvent.click(screen.getByText('Favorites'));
+
+        // Check if navigate is called with the correct path
+        expect(window.location.pathname).toBe("/favorites");
+    });
+    test('search link', async () => {
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Header authenticated={true}/>
+            </BrowserRouter>        );
+
+        // Click the  search link
+        fireEvent.click(screen.getByText('Search'));
+
+        // Check if navigate is called with the correct path
+        expect(window.location.pathname).toBe("/search");
+    });
+
+    test('compare and suggest link', async () => {
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Header authenticated={true}/>
+            </BrowserRouter>        );
+
+        // Click the link
+        fireEvent.click(screen.getByText('Compare and Suggest'));
+
+        // Check if navigate is called with the correct path
+        expect(window.location.pathname).toBe("/compare");
+    });
+
+
+    test('logout button', async () => {
+        const updateAuthenticationStatusMock = jest.fn();
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
+            </BrowserRouter>
+        );
+
+        // Mock the axios post request
+        jest.spyOn(axios, 'post').mockResolvedValueOnce();
+
+        // Click the logout button
+        fireEvent.click(screen.getByText('Logout'));
+
+        // Check if axios.post is called with the correct endpoint
+        expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+
+        // Check if updateAuthenticationStatus and navigate are called
+        await waitFor(() => {
+            expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
+            expect(window.location.pathname).toBe("/login");
+        });
+    });
+    test('logout button fail', async () => {
+        const updateAuthenticationStatusMock = jest.fn();
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
+                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
+            </BrowserRouter>        );
+
+        // Mock the axios post request to simulate a failed logout
+        jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Logout Error'));
+
+        // Mock console.error
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        // Click the logout button
+        fireEvent.click(screen.getByText('Logout'));
+
+        // Check if axios.post is called with the correct endpoint
+        expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+
+        // Check if updateAuthenticationStatus and navigate are not called
+        expect(updateAuthenticationStatusMock).not.toHaveBeenCalled();
+        expect(navigateMock).not.toHaveBeenCalled();
+
+        // Check if console.error is called with the error message
+        await waitFor(() => {
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
+        });
+
+        // Restore console.error
+        consoleErrorSpy.mockRestore();
+    });
 });
 test("renders footer text", () => {
     const { getByText } = render(<Footer />);
@@ -76,7 +209,9 @@ describe('Search component', () => {
         const navigateMock = jest.fn();
 
         render(
+
             <BrowserRouter>
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
                 <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
             </BrowserRouter>
         );
@@ -104,6 +239,7 @@ describe('Search component', () => {
 
         render(
             <BrowserRouter>
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
                 <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
             </BrowserRouter>        );
 
@@ -134,20 +270,20 @@ describe('Search component', () => {
 
 
 
-    test('favorites button', async () => {
-        const navigateMock = jest.fn();
-
-        render(
-            <BrowserRouter>
-                <Search />
-            </BrowserRouter>        );
-
-        // Click the go to Favorites button
-        fireEvent.click(screen.getByText('Go to Favorites'));
-
-        // Check if navigate is called with the correct path
-        expect(window.location.pathname).toBe("/favorites");
-    });
+    // test('favorites button', async () => {
+    //     const navigateMock = jest.fn();
+    //
+    //     render(
+    //         <BrowserRouter>
+    //             <Search />
+    //         </BrowserRouter>        );
+    //
+    //     // Click the go to Favorites button
+    //     fireEvent.click(screen.getByText('Go to Favorites'));
+    //
+    //     // Check if navigate is called with the correct path
+    //     expect(window.location.pathname).toBe("/favorites");
+    // });
 
 
     test('renders Search', () => {
