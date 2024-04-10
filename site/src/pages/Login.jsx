@@ -41,41 +41,46 @@ const Login = ({ updateAuthenticationStatus }) => {
     };
 
     return (
+        <>
+        <title>Login - Let's Go Camping! (Team 17)</title>
         <div className="bg-image">
-            <div className="bg-text">
+        <div className="bg-text">
                 <h2>Login</h2>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="username" className="my-2">
-                        <Form.Label>Username:</Form.Label>
+                        <Form.Label htmlFor="username">Username:</Form.Label>
                         <Form.Control
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Enter username"
+                            aria-label="Username"
                             variant = "my-2"
                         />
                     </Form.Group>
 
                     <Form.Group controlId="password" className="my-2">
-                        <Form.Label>Password:</Form.Label>
+                        <Form.Label htmlFor="password">Password:</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Enter password"
+                            aria-label="Password"
                         />
                     </Form.Group>
 
-                    <Button variant="primary mx-2 my-2" type="submit">
+                    <Button variant="primary mx-2 my-2" type="submit" aria-label="Login">
                         Login
                     </Button>
                     <Button variant="success mx-2 my-2" onClick={() => navigate("/create")}>
                         Don't have an account? Sign Up
                     </Button>
                 </Form>
-                {error && <Alert variant="danger">{error}</Alert>}
+                {error && <Alert variant="danger" role="alert">{error}</Alert>}
             </div>
         </div>
+        </>
     );
 };
 export default Login;

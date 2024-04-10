@@ -6,7 +6,7 @@ import axios from "axios";
 
 function Header({ updateAuthenticationStatus, authenticated }) {
     const navigate = useNavigate();
-    console.log(authenticated)
+
     const handleLogout = async () => {
         try {
             await axios.post('/api/users/logout');
@@ -18,9 +18,9 @@ function Header({ updateAuthenticationStatus, authenticated }) {
     };
 
     return (
-        <div className="header-container">
+        <header className="header-container">
             <Navbar variant="dark" expand="md">
-                <Navbar.Brand >Let's Go Camping!</Navbar.Brand>
+                <Navbar.Brand href="/">Let's Go Camping!</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {authenticated !== false ? (
@@ -36,7 +36,7 @@ function Header({ updateAuthenticationStatus, authenticated }) {
                     )}
                 </Navbar.Collapse>
             </Navbar>
-        </div>
+        </header>
     );
 }
 
