@@ -6,7 +6,6 @@ import axios from "axios";
 
 function Header({ updateAuthenticationStatus, authenticated }) {
     const navigate = useNavigate();
-    console.log(authenticated)
     const handleLogout = async () => {
         try {
             await axios.post('/api/users/logout');
