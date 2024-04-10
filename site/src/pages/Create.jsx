@@ -62,17 +62,18 @@ const Create = () => {
             <div className="bg-text">
             <h2>Create Account</h2>
             <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="create-username">
+                <Form.Group controlId="create-username" className="my-2">
                     <Form.Label>Username:</Form.Label>
                     <Form.Control
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Enter username"
+                        variant = "my-2"
                     />
                 </Form.Group>
 
-                <Form.Group controlId="create-password">
+                <Form.Group controlId="create-password" className="my-2">
                     <Form.Label>Password:</Form.Label>
                     <Form.Control
                         type="password"
@@ -82,7 +83,7 @@ const Create = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="confirm-password">
+                <Form.Group controlId="confirm-password" className="my-2">
                     <Form.Label>Confirm Password:</Form.Label>
                     <Form.Control
                         type="password"
@@ -92,10 +93,10 @@ const Create = () => {
                     />
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
+                <Button variant="primary mx-2 my-2" type="submit">
                     Create Account
                 </Button>
-                <Button variant="secondary" onClick={() => navigate("/login")}>
+                <Button variant="success mx-2 my-2" onClick={() => navigate("/login")}>
                     Already have an account? Login
                 </Button>
             </Form>

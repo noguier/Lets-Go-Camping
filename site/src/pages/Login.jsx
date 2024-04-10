@@ -45,17 +45,18 @@ const Login = ({ updateAuthenticationStatus }) => {
             <div className="bg-text">
                 <h2>Login</h2>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="username">
+                    <Form.Group controlId="username" className="my-2">
                         <Form.Label>Username:</Form.Label>
                         <Form.Control
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Enter username"
+                            variant = "my-2"
                         />
                     </Form.Group>
 
-                    <Form.Group controlId="password">
+                    <Form.Group controlId="password" className="my-2">
                         <Form.Label>Password:</Form.Label>
                         <Form.Control
                             type="password"
@@ -65,10 +66,10 @@ const Login = ({ updateAuthenticationStatus }) => {
                         />
                     </Form.Group>
 
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary mx-2 my-2" type="submit">
                         Login
                     </Button>
-                    <Button variant="secondary" onClick={() => navigate("/create")}>
+                    <Button variant="success mx-2 my-2" onClick={() => navigate("/create")}>
                         Don't have an account? Sign Up
                     </Button>
                 </Form>

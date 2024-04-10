@@ -1,4 +1,4 @@
-#Feature: test suggest a park functionality
+Feature: test suggest a park functionality
 #  Scenario: suggest a park for two users
 #    Given I am on the suggest a park page
 #    When I enter a username "TommyTrojan"

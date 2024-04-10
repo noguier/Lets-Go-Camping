@@ -1,4 +1,4 @@
-#Feature: Secure Transmission of User Data - login page inaccessible without SSL for every page
+Feature: Secure Transmission of User Data - login page inaccessible without SSL for every page
 #Scenario: User login with encrypted data transmission
 #Given a user wants to log in to their account with Http vs https
 #When the user enters their credentials and submits the form

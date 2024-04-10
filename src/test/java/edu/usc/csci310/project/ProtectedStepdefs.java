@@ -57,7 +57,7 @@ public class ProtectedStepdefs {
 
     @When("I click the Go to Favorites button")
     public void iClickTheGoToFavoritesButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/button[2]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/header/div/nav/div/div/a[2]")).click();
     }
 
     @Then("I should be redirected to the Favorites page")
@@ -67,7 +67,7 @@ public class ProtectedStepdefs {
 
     @When("I click the Logout button")
     public void iClickTheLogoutButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/header/div/nav/div/div/a[4]")).click();
     }
 
 }

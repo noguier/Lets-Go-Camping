@@ -40,15 +40,15 @@ const Search = ({ updateAuthenticationStatus }) => {
 
 
 // Function to handle logout
-const handleLogout = async () => {
-    try {
-        await axios.post('/api/users/logout');
-        updateAuthenticationStatus(false);
-        navigate('/login');
-    } catch (error) {
-    console.error('Logout error:', error);
-    }
-};
+// const handleLogout = async () => {
+//     try {
+//         await axios.post('/api/users/logout');
+//         updateAuthenticationStatus(false);
+//         navigate('/login');
+//     } catch (error) {
+//     console.error('Logout error:', error);
+//     }
+// };
 
 
 return (
@@ -59,8 +59,8 @@ return (
         <h1 className="col-12 mt-4">Search Parks</h1>
     </div>
 
-    <button type="button" onClick={handleLogout}>Logout</button>
-    <button onClick={() => navigate("/favorites")}>Go to Favorites</button>
+    {/*<button type="button" onClick={handleLogout}>Logout</button>*/}
+    {/*<button onClick={() => navigate("/favorites")}>Go to Favorites</button>*/}
 
 
     <div className="row">

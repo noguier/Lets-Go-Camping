@@ -7,7 +7,8 @@
 
 .header-container {
     font-family: "Verdana", sans-serif;
-    color: cadetblue;
+    color:white;
+    background-image: linear-gradient(to right, #000e17 , #3d00a6, #abffee);
     padding:10px;
 }
 .bg-image {
@@ -19,7 +20,7 @@
 }
 
 .bg-text {
-    background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
+    background-color: rgba(0, 0, 0, 0.6); /* Black with transparency */
     color: white;
     font-weight: bold;
     border: 3px solid #f1f1f1;
