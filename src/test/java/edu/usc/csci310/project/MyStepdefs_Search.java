@@ -1,16 +1,15 @@
 package edu.usc.csci310.project;
 
+import java.time.Duration;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MyStepdefs_Search {
@@ -151,8 +150,6 @@ public class MyStepdefs_Search {
 
     @Then("I see Location state {string}")
     public void iSeeLocationState(String arg0) {
-
-
         assertTrue(driver.getPageSource().contains(arg0));
     }
 
@@ -180,14 +177,62 @@ public class MyStepdefs_Search {
         assertTrue(driver.getPageSource().contains(arg0));
     }
 
+    @And("I click the Load More button")
+    public void iClickTheLoadMoreButton() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(" //*[@id=\"root\"]/div/div/div[14]/div/button")));
+        try {
+            loadElement.click();
+        } catch (ElementClickInterceptedException e) {
+            // If the element is still not clickable after scrolling, there might be an overlay
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loadElement);
+            loadElement.click();
+        }
+    }
 
-//    @And("I click the Load More button")
-//    public void iClickTheLoadMoreButton() {
-//    }
-//
-//    @And("I click the Load More button two more times")
-//    public void iClickTheLoadMoreButtonTwoMoreTimes() {
-//    }
+    @And("I click the Load More button for Activity")
+    public void iClickTheLoadMoreButtonForActivity() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(" //*[@id=\"root\"]/div/div/div[5]/div/div/div[11]/div/button")));
+        try {
+            loadElement.click();
+        } catch (ElementClickInterceptedException e) {
+            // If the element is still not clickable after scrolling, there might be an overlay
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loadElement);
+            loadElement.click();
+        }
+    }
+
+    @And("I click the Load More button for Amenity")
+    public void iClickTheLoadMoreButtonForAmenity() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("  //*[@id=\"root\"]/div/div/div[4]/div/div/div[11]/div/button")));
+        try {
+            loadElement.click();
+        } catch (ElementClickInterceptedException e) {
+            // If the element is still not clickable after scrolling, there might be an overlay
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loadElement);
+            loadElement.click();
+        }
+    }
+
+    @And("I click the Load More button two more times")
+    public void iClickTheLoadMoreButtonTwoMoreTimes() {
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(" //*[@id=\"root\"]/div/div/div[5]/div/div/div[11]/div/button")));
+        try {
+            loadElement.click();
+            loadElement.click();
+        } catch (ElementClickInterceptedException e) {
+            // If the element is still not clickable after scrolling, there might be an overlay
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loadElement);
+            loadElement.click();
+        }
+
+    }
+
+
 //
 //    @Then("I hover over the {string} and see search description")
 //    public void iHoverOverTheAndSeeSearchDescription(String arg0) {

@@ -116,6 +116,51 @@ describe("Header Component", () => {
         expect(window.location.pathname).toBe("/compare");
     });
 
+        test('Load More button functionality', async () => {
+            // Mock more than 10 search results
+            const mockSearchResults = [];
+            for (let i = 1; i <= 15; i++) {
+                mockSearchResults.push({
+                    fullName: `Park ${i}`,
+                    description: `Description for Park ${i}`
+                });
+            }
+
+            render(
+                <BrowserRouter>
+                    <Search />
+                </BrowserRouter>
+            );
+
+            global.fetch = jest.fn().mockResolvedValueOnce({
+                json: async () => ({ data: mockSearchResults })
+            });
+
+            fireEvent.click(screen.getByLabelText('Search by State'));
+            fireEvent.change(screen.getByPlaceholderText('Enter 2-letter state code'), { target: { value: 'CA' } });
+            fireEvent.click(screen.getByText('Search'));
+
+            // Wait for the initial search results to be displayed
+            await waitFor(() => {
+                for (let i = 1; i <= 10; i++) {
+                    const parkNameHeading = screen.getByRole('heading', { name: `Park ${i}` });
+                    expect(parkNameHeading).toBeInTheDocument();
+                }
+            });
+
+            // Click the Load More button
+            fireEvent.click(screen.getByText('Load More'));
+
+            // Wait for additional results to be displayed
+            await waitFor(() => {
+                for (let i = 11; i <= 15; i++) {
+                    const parkNameHeading = screen.getByRole('heading', { name: `Park ${i}` });
+                    expect(parkNameHeading).toBeInTheDocument();
+                }
+            });
+        });
+
+
 
     test('logout button', async () => {
         const updateAuthenticationStatusMock = jest.fn();
@@ -1269,6 +1314,3 @@ describe('Results Component', () => {
     //     });
     // });
 });
-
-
-
