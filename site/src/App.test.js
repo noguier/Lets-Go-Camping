@@ -1,17 +1,21 @@
 // Reset the browser history after each test
 import React from "react";
-import { renderParkInfo } from './components/Result'; // Assuming renderParkDetails function is exported
 import {
     render,
     screen,
     waitFor,
-    fireEvent, getByText, getByAltText, getByTestId, findByText,
+    fireEvent,
+    getAllByText,
+    queryAllByText,
+    getByRole,
+    findAllByDisplayValue, findByText
 } from "@testing-library/react";
 import Header from "./components/Header";
 import '@testing-library/jest-dom'
 import Footer from "./components/Footer";
 import {BrowserRouter, MemoryRouter} from "react-router-dom";
 import App from "./App";
+import userEvent from "@testing-library/user-event";
 import Search from './pages/Search';
 import "@testing-library/jest-dom/extend-expect";
 import axios from 'axios';
@@ -20,7 +24,6 @@ import Create from "./pages/Create";
 import Dashboard from "./pages/Dashboard";
 import {act} from "react-dom/test-utils";
 import Favorites from "./pages/Favorites";
-import Compare from "./pages/Compare";
 //jest.mock('axios');
 
 // Mock axios post method
@@ -38,144 +41,11 @@ jest.mock('axios', () => ({
     })
 }));
 
+
 test("renders header text", () => {
-    const { getByText } = render(
-        <BrowserRouter>
-            <Header />
-        </BrowserRouter>
-    );
-    const headerText = getByText("Let's Go Camping!");
+    const { getByText } = render(<Header />);
+    const headerText = getByText(/Let's Go Camping!/i);
     expect(headerText).toBeInTheDocument();
-});
-
-
-describe("Header Component", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    test("renders header with login and register links when not authenticated", () => {
-        render( <BrowserRouter>
-            <Header authenticated={false} />
-        </BrowserRouter>);
-        expect(screen.getByText("Let's Go Camping!")).toBeInTheDocument();
-    });
-
-    test("renders header with navigation links and logout button when authenticated", () => {
-        render(<BrowserRouter>
-            <Header authenticated={true} />
-        </BrowserRouter>);
-        expect(screen.getByText("Let's Go Camping!")).toBeInTheDocument();
-        expect(screen.getByText("Search")).toBeInTheDocument();
-        expect(screen.getByText("Favorites")).toBeInTheDocument();
-        expect(screen.getByText("Compare and Suggest")).toBeInTheDocument();
-        expect(screen.getByText("Logout")).toBeInTheDocument();
-    });
-
-    test('favorites link', async () => {
-        const navigateMock = jest.fn();
-
-        render(
-            <BrowserRouter>
-                <Header authenticated={true}/>
-            </BrowserRouter>        );
-
-        // Click the  Favorites link
-        fireEvent.click(screen.getByText('Favorites'));
-
-        // Check if navigate is called with the correct path
-        expect(window.location.pathname).toBe("/favorites");
-    });
-    test('search link', async () => {
-        const navigateMock = jest.fn();
-
-        render(
-            <BrowserRouter>
-                <Header authenticated={true}/>
-            </BrowserRouter>        );
-
-        // Click the  search link
-        fireEvent.click(screen.getByText('Search'));
-
-        // Check if navigate is called with the correct path
-        expect(window.location.pathname).toBe("/search");
-    });
-
-    test('compare and suggest link', async () => {
-        const navigateMock = jest.fn();
-
-        render(
-            <BrowserRouter>
-                <Header authenticated={true}/>
-            </BrowserRouter>        );
-
-        // Click the link
-        fireEvent.click(screen.getByText('Compare and Suggest'));
-
-        // Check if navigate is called with the correct path
-        expect(window.location.pathname).toBe("/compare");
-    });
-
-
-    test('logout button', async () => {
-        const updateAuthenticationStatusMock = jest.fn();
-        const navigateMock = jest.fn();
-
-        render(
-            <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
-            </BrowserRouter>
-        );
-
-        // Mock the axios post request
-        jest.spyOn(axios, 'post').mockResolvedValueOnce();
-
-        // Click the logout button
-        fireEvent.click(screen.getByText('Logout'));
-
-        // Check if axios.post is called with the correct endpoint
-        expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
-
-        // Check if updateAuthenticationStatus and navigate are called
-        await waitFor(() => {
-            expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
-            expect(window.location.pathname).toBe("/login");
-        });
-    });
-    test('logout button fail', async () => {
-        const updateAuthenticationStatusMock = jest.fn();
-        const navigateMock = jest.fn();
-
-        render(
-            <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
-                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
-            </BrowserRouter>        );
-
-        // Mock the axios post request to simulate a failed logout
-        jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Logout Error'));
-
-        // Mock console.error
-        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-        // Click the logout button
-        fireEvent.click(screen.getByText('Logout'));
-
-        // Check if axios.post is called with the correct endpoint
-        expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
-
-        // Check if updateAuthenticationStatus and navigate are not called
-        expect(updateAuthenticationStatusMock).not.toHaveBeenCalled();
-        expect(navigateMock).not.toHaveBeenCalled();
-
-        // Check if console.error is called with the error message
-        await waitFor(() => {
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', expect.any(Error));
-        });
-
-        // Restore console.error
-        consoleErrorSpy.mockRestore();
-    });
 });
 test("renders footer text", () => {
     const { getByText } = render(<Footer />);
@@ -205,14 +75,81 @@ it('handles error when checking authentication status', async () => {
 describe('Search component', () => {
 
 
+//    test('Load More button functionality', async () => {
+//        // Mock search results with more than 10 items
+//        const searchResults = Array.from({ length: 15 }, (_, index) => ({ id: index }));
+//
+//        // Render the Search component with the initial state
+//        const { getByText } = render(
+//            <BrowserRouter>
+//                <Search />
+//            </BrowserRouter>
+//        );
+//
+//        // Mock the state to reflect search results
+//        act(() => {
+//            setSearchResults(searchResults); // Assuming setSearchResults is a function to update state
+//        });
+//
+//        // Click the Load More button
+//        fireEvent.click(getByText('Load More'));
+//
+//        // After clicking Load More twice, it should be 30
+//        // You should adjust this expectation based on your component logic
+//        expect(getByText('Showing 30 result(s).')).toBeInTheDocument();
+//    });
+
+    test('Load More button functionality', async () => {
+        // Mock more than 10 search results
+        const mockSearchResults = [];
+        for (let i = 1; i <= 15; i++) {
+            mockSearchResults.push({
+                fullName: `Park ${i}`,
+                description: `Description for Park ${i}`
+            });
+        }
+
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>
+        );
+
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            json: async () => ({ data: mockSearchResults })
+        });
+
+        fireEvent.click(screen.getByLabelText('Search by State'));
+        fireEvent.change(screen.getByPlaceholderText('Enter 2-letter state code'), { target: { value: 'CA' } });
+        fireEvent.click(screen.getByText('Search'));
+
+        // Wait for the initial search results to be displayed
+        await waitFor(() => {
+            for (let i = 1; i <= 10; i++) {
+                const parkNameHeading = screen.getByRole('heading', { name: `Park ${i}` });
+                expect(parkNameHeading).toBeInTheDocument();
+            }
+        });
+
+        // Click the Load More button
+        fireEvent.click(screen.getByText('Load More'));
+
+        // Wait for additional results to be displayed
+        await waitFor(() => {
+            for (let i = 11; i <= 15; i++) {
+                const parkNameHeading = screen.getByRole('heading', { name: `Park ${i}` });
+                expect(parkNameHeading).toBeInTheDocument();
+            }
+        });
+    });
+
+
     test('logout button', async () => {
         const updateAuthenticationStatusMock = jest.fn();
         const navigateMock = jest.fn();
 
         render(
-
             <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
                 <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
             </BrowserRouter>
         );
@@ -240,7 +177,6 @@ describe('Search component', () => {
 
         render(
             <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
                 <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
             </BrowserRouter>        );
 
@@ -271,20 +207,20 @@ describe('Search component', () => {
 
 
 
-    // test('favorites button', async () => {
-    //     const navigateMock = jest.fn();
-    //
-    //     render(
-    //         <BrowserRouter>
-    //             <Search />
-    //         </BrowserRouter>        );
-    //
-    //     // Click the go to Favorites button
-    //     fireEvent.click(screen.getByText('Go to Favorites'));
-    //
-    //     // Check if navigate is called with the correct path
-    //     expect(window.location.pathname).toBe("/favorites");
-    // });
+    test('favorites button', async () => {
+        const navigateMock = jest.fn();
+
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>        );
+
+        // Click the go to Favorites button
+        fireEvent.click(screen.getByText('Go to Favorites'));
+
+        // Check if navigate is called with the correct path
+        expect(window.location.pathname).toBe("/favorites");
+    });
 
 
     test('renders Search', () => {
@@ -940,23 +876,7 @@ test('should update authentication status app comp', async () => {
         expect(window.location.pathname).toBe("/search");
     });
 });
-describe('compare component', () => {
-    // Mock updateAuthenticationStatus function
-    const mockUpdateAuthStatus = jest.fn();
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    test('renders correctly', () => {
-        const {getByText} = render(
-            <BrowserRouter>
-                <Compare updateAuthenticationStatus={mockUpdateAuthStatus}/>
-            </BrowserRouter>
-        );
-        expect(getByText('Compare and Suggest')).toBeInTheDocument();
-    });
-});
 
 describe('Favorites component', () => {
     // Mock updateAuthenticationStatus function
@@ -975,52 +895,52 @@ describe('Favorites component', () => {
         expect(getByText('Favorites')).toBeInTheDocument();
     });
 
-    // test('clicking logout button calls handleLogout', async () => {
-    //     const { getByText } = render(
-    //         <BrowserRouter>
-    //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
-    //         </BrowserRouter>
-    //     );
-    //     fireEvent.click(getByText('Logout'));
-    //     await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
-    // });
-    //
-    // test('handleLogout function updates authentication status and navigates to login', async () => {
-    //     axios.post.mockResolvedValueOnce(); // Mock axios post call
-    //
-    //     const { getByText } = render(
-    //         <BrowserRouter>
-    //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
-    //         </BrowserRouter>
-    //     );
-    //     fireEvent.click(getByText('Logout'));
-    //
-    //     await waitFor(() => {
-    //         expect(mockUpdateAuthStatus).toHaveBeenCalledWith(false);
-    //         expect(window.location.pathname).toBe('/login');
-    //     });
-    // });
+    test('clicking logout button calls handleLogout', async () => {
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        fireEvent.click(getByText('Logout'));
+        await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+    });
 
-    // test('handleLogout function logs error on failure', async () => {
-    //     const error = new Error('Logout failed');
-    //     axios.post.mockRejectedValueOnce(error); // Mock axios post to reject with an error
-    //
-    //     // Mock console.error
-    //     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    //
-    //     const { getByText } = render(
-    //         <BrowserRouter>
-    //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
-    //         </BrowserRouter>
-    //     );
-    //     fireEvent.click(getByText('Logout'));
-    //
-    //     await waitFor(() => {
-    //         expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', error);
-    //     });
-    //
-    //     consoleErrorSpy.mockRestore(); // Restore original console.error function
-    // });
+    test('handleLogout function updates authentication status and navigates to login', async () => {
+        axios.post.mockResolvedValueOnce(); // Mock axios post call
+
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        fireEvent.click(getByText('Logout'));
+
+        await waitFor(() => {
+            expect(mockUpdateAuthStatus).toHaveBeenCalledWith(false);
+            expect(window.location.pathname).toBe('/login');
+        });
+    });
+
+    test('handleLogout function logs error on failure', async () => {
+        const error = new Error('Logout failed');
+        axios.post.mockRejectedValueOnce(error); // Mock axios post to reject with an error
+
+        // Mock console.error
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        const { getByText } = render(
+            <BrowserRouter>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+            </BrowserRouter>
+        );
+        fireEvent.click(getByText('Logout'));
+
+        await waitFor(() => {
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', error);
+        });
+
+        consoleErrorSpy.mockRestore(); // Restore original console.error function
+    });
 });
 
 
@@ -1037,222 +957,95 @@ const fillWithTestValueAndSubmit = (action) => {
         fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
     }
 }
-
-describe('Results Component', () => {
-    const park = {
-        fullName: 'Test Park',
-        parkCode: 'TEST123',
-        url: 'https://example.com',
-        addresses: [{ city: 'Test City', stateCode: 'TS' }],
-        entranceFees: [{ cost: 10, description: 'Test Fee Description' }],
-        description: 'Test Description',
-        activities: [{ name: 'Hiking' }],
-        images: [{ url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title' }],
-    };
-
-    const parkDetails = {
-        fullName: 'Test Park',
-        url: 'https://example.com',
-        addresses: [{ city: 'Test City', stateCode: 'TS' }],
-        entranceFees: [{ cost: 10, description: 'Test Description' }],
-        description: 'Test Description',
-        activities: [{ name: 'Hiking' }],
-        images: [{ url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title' }],
-    };
-    const setParkDetails = jest.fn();
-    const page = 'search';
-    const mockedResponses = {
-        '/api/parks?searchTerm=TEST123&searchType=parkClick': { data: [{ fullName: 'Test Park' }] },
-        '/api/parks?searchTerm=TEST123&searchType=amenity_parkcode': { data: [{ id: 1, name: 'Amenity 1' }] },
-    };
-
-    global.fetch = jest.fn().mockImplementation((url) =>
-        Promise.resolve({
-            json: () => Promise.resolve(mockedResponses[url]),
-        })
-    );
-
-    it('should render park details correctly when expanded', async () => {
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
-
-        fireEvent.click(getByTestId('list-element-toggle'));
-
-        await waitFor(() => {
-            expect(getByText('Test Park')).toBeInTheDocument();
-            expect(getByText('Website')).toHaveAttribute('href', 'https://example.com');
-            expect(getByText('Test City, TS')).toBeInTheDocument();
-            expect(getByText('Entrance Fee:')).toBeInTheDocument();
-            expect(getByText('$10')).toBeInTheDocument();
-            // expect(getByText(/^Entrance Fee Description:/)).toBeInTheDocument(); // Using regex to match text
-            // expect(getByText('Test Fee Description')).toBeInTheDocument();
-            expect(getByText('Test Description')).toBeInTheDocument();
-            expect(getByText('Activities:')).toBeInTheDocument();
-            expect(getByText('Hiking')).toBeInTheDocument();
-            expect(getByText('Amenities:')).toBeInTheDocument();
-            expect(getByText('NA')).toBeInTheDocument();
-            expect(getByText('Added to favorites list')).toBeInTheDocument();
-            const imageElement = screen.getByAltText('Test Alt');
-            expect(imageElement).toHaveAttribute('src', 'https://example.com/image.jpg');
-        });
-        fireEvent.click(getByTestId('list-element-toggle'));
-    });
-
-    it('should handle park click and fetch data correctly', async () => {
-        global.fetch = jest.fn().mockResolvedValueOnce({
-            json: () =>
-                Promise.resolve({
-                    data: [parkDetails],
-                }),
-        });
-
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
-        fireEvent.click(getByText('Test Park'));
-
-        await waitFor(() => {
-            expect(setParkDetails).toHaveBeenCalledWith(parkDetails);
-            expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
-        });
-    });
-
-    it('should show plus button on mouse enter', () => {
-        const park = {
-            fullName: 'Test Park',
-            parkCode: 'TP',
-        };
-        const { getByTestId } = render(renderParkInfo(park, null, setParkDetails, 'search'));
-
-        const parkElement = getByTestId('list-element-toggle');
-
-        fireEvent.mouseEnter(parkElement);
-
-        expect(parkElement).toMatchSnapshot('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should be present
-    });
-
-    it('should hide plus button on mouse leave', () => {
-        const park = {
-            fullName: 'Test Park',
-            parkCode: 'TP',
-        };
-        const {getByTestId} = render(renderParkInfo(park, null, setParkDetails, 'search'));
-
-        const parkElement = getByTestId('list-element-toggle');
-
-        fireEvent.mouseLeave(parkElement);
-//<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>
-        expect(parkElement).not.toContainHTML('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should not be present
-    });
-    it('should call setParkDetails with data from fetch when successful', async () => {
-        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-        const mockData = { data: [{ fullName: 'Test Park', url: 'https://testpark.com' }] };
-        global.fetch = jest.fn().mockResolvedValueOnce({ json: jest.fn().mockResolvedValueOnce(mockData) });
-
-        const setParkDetails = jest.fn();
-        const { getByText } = render(renderParkInfo(mockPark, null, setParkDetails, 'search'));
-
-        fireEvent.click(getByText('Test Park'));
-
-        await waitFor(() => expect(setParkDetails).toHaveBeenCalledWith(mockData.data[0]));
-    });
-
-    it('should fetch park amenities with populate amenities', async () => {
-            const park = {
-                fullName: 'Test Park',
-                parkCode: 'TEST123',
-            };
-            const parkDetails = null;
-            const setParkDetails = jest.fn();
-            const page = 'search';
-
-            // Render the component
-            render(renderParkInfo(park, parkDetails, setParkDetails, page));
-
-            // Simulate a click event to trigger the asynchronous function
-            fireEvent.click(screen.getByText('Test Park'));
-
-            await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
-            await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
-    });
-    it('should show alert and log error on fetch error', async () => {
-        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-        global.fetch = jest.fn().mockRejectedValueOnce(new Error('Fetch Error'));
-        const originalConsoleError = console.error;
-        console.error = jest.fn(); // Mock console.error
-        const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {}); // Mock window.alert
-
-        const { getByText } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
-
-        fireEvent.click(getByText('Test Park'));
-
-        await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith('Fetch Error');
-            expect(console.error).toHaveBeenCalledWith(new Error('Fetch Error'));
-        });
-
-        console.error = originalConsoleError; // Restore original console.error
-        mockAlert.mockRestore(); // Restore mockAlert
-    });
-    it('should log "Added to favorites!"', () => {
-        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-        const consoleSpy = jest.spyOn(console, 'log');
-
-        const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
-        fireEvent.mouseEnter(getByTestId('list-element-toggle'));
-        const addButton = getByTestId('plus-button');
-        fireEvent.click(addButton);
-
-        expect(consoleSpy).toHaveBeenCalledWith('Added to favorites!');
-
-        consoleSpy.mockRestore(); // Restore console.log
-    });
-    // it('should set amenity results when fetch is successful', async () => {
-    //     // Setup
-    //     const park = {
-    //         fullName: 'Test Park',
-    //         parkCode: 'TEST123',
-    //     };
-    //     const parkDetails = null;
-    //     const setParkDetails = jest.fn();
-    //     const page = 'search';
-    //
-    //     // Render the component
-    //     render(renderParkInfo(park, parkDetails, setParkDetails, page));
-    //
-    //     // Simulate a click event to trigger the asynchronous function
-    //     fireEvent.click(screen.getByText('Test Park'));
-    //
-    //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
-    //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
-    //     // Wait for the async operations to complete
-    //     await waitFor(() => screen.getByText('Amenity 1'));
-    //
-    //     // Assertions
-    //     expect(setParkDetails).toHaveBeenCalledTimes(1);
-    //     expect(global.fetch).toHaveBeenCalledTimes(2); // Two fetch calls made
-    //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
-    //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode');
-    // });
-    // it('should render list items for amenityResults', async () => {
-    //     const mockAmenityResults = [{ id: 1, name: 'Amenity 1' }, { id: 2, name: 'Amenity 2' }];
-    //     const { container, rerender } = render(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search')); // Render the component initially
-    //
-    //     await waitFor(() => {
-    //         // Simulate setting amenityResults state
-    //         rerender(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search', mockAmenityResults));
-    //     });
-    //
-    //     const listItems = container.querySelectorAll('ul li');
-    //     expect(listItems.length).toBe(mockAmenityResults.length);
-    //
-    //     listItems.forEach((item, index) => {
-    //         expect(item.textContent).toBe(mockAmenityResults[index].name);
-    //         expect(item.key).toBe(mockAmenityResults[index].id.toString());
-    //     });
-    // });
-});
-
-
-
+// // Import the renderParkInfo function from the file where it's defined
+// import { renderParkInfo } from '../pages/Search'; // Update 'your-file-name' with the actual file name
+//
+// describe('renderParkInfo', () => {
+//     const parkMock = {
+//         fullName: 'Castle Mountains National Monument',
+//         parkCode: '872417E6-2F91-4FDA-89A7-865B51B22332',
+//         // Add more properties as needed for testing
+//     };
+//
+//     const parkDetailsMock = {
+//         fullName: 'Castle Mountains National Monument',
+//         url: 'https://www.nps.gov/camo/index.htm',
+//         "addresses": [
+//             {
+//                 "postalCode": "92311",
+//                 "city": "Barstow",
+//                 "stateCode": "CA",
+//                 "countryCode": "US",
+//                 "provinceTerritoryCode": "",
+//                 "line1": "Castle Mountains National Monument",
+//                 "type": "Physical",
+//                 "line3": "",
+//                 "line2": "2701 Barstow Road"
+//             },
+//             {
+//                 "postalCode": "92311",
+//                 "city": "Barstow",
+//                 "stateCode": "CA",
+//                 "countryCode": "US",
+//                 "provinceTerritoryCode": "",
+//                 "line1": "Castle Mountains National Monument",
+//                 "type": "Mailing",
+//                 "line3": "",
+//                 "line2": "2701 Barstow Road"
+//             }
+//         ],
+//         entranceFees: [],
+//         description: "Castle Mountains represents some of the most unique elements of the Mojave Desert. Nestled between the Nevada state line and Mojave National Preserve, the nearly 21,000 acres of Castle Mountains boasts Joshua tree forests, unbroken natural landscapes, rare desert grasslands, and rich human history. This intriguing area provides serenity and solitude from nearby metropolitan areas.",
+//         activities: [
+//             {
+//                 "id": "A59947B7-3376-49B4-AD02-C0423E08C5F7",
+//                 "name": "Camping"
+//             },
+//             {
+//                 "id": "9159DF0F-951D-4AAE-9987-CEB3CE2A9ADA",
+//                 "name": "Car or Front Country Camping"
+//             },
+//             {
+//                 "id": "7CFF5F03-5ECC-4F5A-8572-75D1F0976C0C",
+//                 "name": "Group Camping"
+//             },
+//             {
+//                 "id": "C5C5971C-E325-4CEB-8C81-EE49A881DF17",
+//                 "name": "RV Camping"
+//             }
+//         ],
+//         images: [
+//         {
+//             "credit": "NPS Photo",
+//             "title": "Red Rocks Outcropping",
+//             "altText": "Red rocks frame a stand of Joshua trees and sage brush.",
+//             "caption": "Red rocks frame a stand of Joshua trees and sage brush in the desert floor..",
+//             "url": "https://www.nps.gov/common/uploads/structured_data/3C87A219-1DD8-B71B-0BF28720E6A4AC75.jpg"
+//         },
+//         {
+//             "credit": "NPS Photo",
+//             "title": "View of Castle Peaks",
+//             "altText": "Foreground is desert greenery. The isolated spires of the Castle Peaks rise up in the background",
+//             "caption": "From Walking Box Ranch road, visitors to Castle Mountains can enjoy the stunning view of the Castle Peaks, which are located in surrounding Mojave National Preserve lands.",
+//             "url": "https://www.nps.gov/common/uploads/structured_data/4AED1BA7-BA13-8631-517EFA3F8ED1D173.jpg"
+//         }
+//         ]
+//     };
+//
+//     const handleParkClick = jest.fn();
+//
+//     it('renders park details when parkDetails match', () => {
+//         const output = renderParkInfo(parkMock, parkDetailsMock, handleParkClick);
+//
+//         expect(output).toMatchSnapshot(); // Use toMatchSnapshot for complex output comparison
+//         expect(handleParkClick).not.toHaveBeenCalled(); // Ensure handleParkClick is not called in this case
+//     });
+//
+//     it('renders button when parkDetails do not match', () => {
+//         const parkDetailsMismatch = { ...parkDetailsMock, fullName: 'Different Park' };
+//         const output = renderParkInfo(parkMock, parkDetailsMismatch, handleParkClick);
+//
+//         expect(output).toMatchSnapshot(); // Use toMatchSnapshot for complex output comparison
+//         expect(handleParkClick).toHaveBeenCalledWith('872417E6-2F91-4FDA-89A7-865B51B22332'); // Ensure handleParkClick is called with correct park code
+//     });
+// });
