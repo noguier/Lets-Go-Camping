@@ -32,11 +32,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(user.hashPassword(username)) != null;
     }
 
+
     @Override
-    public boolean isValidPassword(String password) {
-        return password.matches(".*[a-z].*") && // At least one lowercase letter
-                password.matches(".*[A-Z].*") && // At least one uppercase letter
-                password.matches(".*\\d.*");     // At least one digit
+    public boolean isValidPasswordLC(String password) {
+        return password.matches(".*[a-z].*"); // At least one lowercase letter
+    }
+
+    @Override
+    public boolean isValidPasswordUC(String password) {
+        return password.matches(".*[A-Z].*"); // At least one uppercase letter
+    }
+
+    @Override
+    public boolean isValidPasswordDG(String password) {
+        return password.matches(".*\\d.*");     // At least one digit
     }
 
 

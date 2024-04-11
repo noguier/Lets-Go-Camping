@@ -66,4 +66,26 @@ public class SearchControllerTest {
         String constructedUrl = searchController.constructApiUrl(searchTerm, searchType);
         assertEquals(expectedUrl, constructedUrl);
     }
+
+    @Test
+    void testConstructApiUrlWithAmenityParkCode() {
+        SearchController searchController = new SearchController();
+        String searchTerm = "olsp";
+        String searchType = "amenity_parkcode";
+        String expectedUrl = "https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=olsp&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd";
+        String constructedUrl = searchController.constructApiUrl(searchTerm, searchType);
+        assertEquals(expectedUrl, constructedUrl);
+    }
+
+    @Test
+    void testConstructApiUrlWithParkClick() {
+        SearchController searchController = new SearchController();
+        String searchTerm = "someParkCode";
+        String searchType = "parkClick";
+        String expectedUrl = "https://developer.nps.gov/api/v1/parks?parkCode=someParkCode&limit=1&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd";
+        String constructedUrl = searchController.constructApiUrl(searchTerm, searchType);
+        assertEquals(expectedUrl, constructedUrl);
+    }
 }
+
+
