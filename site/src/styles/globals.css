@@ -7,5 +7,28 @@
 
 .header-container {
     font-family: "Verdana", sans-serif;
-    color: cadetblue;
+    color:white;
+    background-image: linear-gradient(to right, #000e17 , #3d00a6, #abffee);
+    padding:10px;
+}
+.bg-image {
+    background-image: url('https://www.fodors.com/wp-content/uploads/2023/04/HERO_WindRiverVsYellowstone_WindRiverRange_hike-in-wind-river-range-in-wyoming-usa-summer-season-2300757321.jpg');
+    height: 100vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bg-text {
+    background-color: rgba(0, 0, 0, 0.6); /* Black with transparency */
+    color: white;
+    font-weight: bold;
+    border: 3px solid #f1f1f1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    padding: 20px;
+    text-align: center;
 }

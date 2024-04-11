@@ -1,4 +1,4 @@
-Feature: test the login functionality of the user session management
+Feature: test the login functionality of the user
 
   Scenario: unauthenticated user wants to navigate to create account page
     Given I am on the login page
