@@ -4,9 +4,9 @@ import '../styles/globals.css';
 
 function Footer() {
     return (
-        <div className='footer-container'>
+        <footer className='footer-container'>
             <p> Let's Go Camping! Team 17</p>
-        </div>
+        </footer>
     )
 
 }

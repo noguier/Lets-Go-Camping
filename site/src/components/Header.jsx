@@ -17,9 +17,9 @@ function Header({ updateAuthenticationStatus, authenticated }) {
     };
 
     return (
-        <div className="header-container">
+        <header className="header-container">
             <Navbar variant="dark" expand="md">
-                <Navbar.Brand >Let's Go Camping!</Navbar.Brand>
+                <Navbar.Brand href="/">Let's Go Camping!</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {authenticated !== false ? (
@@ -35,7 +35,7 @@ function Header({ updateAuthenticationStatus, authenticated }) {
                     )}
                 </Navbar.Collapse>
             </Navbar>
-        </div>
+        </header>
     );
 }
 
