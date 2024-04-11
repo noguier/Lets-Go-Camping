@@ -4,7 +4,7 @@ Feature: test compare a park functionality
 #    When I enter a username "TommyTrojan"
 #    And I click add a user button
 #    And "TommyTrojan" has a public list of favorites
-#    And I see "User sucessfully added" displayed on the page
+#    And I see "User successfully added" displayed on the page
 #    And I click suggest button
 #    Then I should see the all the parks that are on Favorite list of at least one user
 #
@@ -23,12 +23,12 @@ Feature: test compare a park functionality
 #    And "Tommy Trojan" has "Joshua Tree" park on his Favorites list
 #    And I click add a user button
 #    And "TommyTrojan" has a public list of favorites
-#    And I see "User sucessfully added" displayed on the page
+#    And I see "User successfully added" displayed on the page
 #    And I enter a username "Tally Trojan
 #    And "Tally Trojan" has "Joshua Tree" park on her Favorites list
 #    And I click add a user button
 #    And "Tally Trojan" has a public list of favorites
-#    And I see "User sucessfully added" displayed on the page
+#    And I see "User successfully added" displayed on the page
 #    And I click compare a park button
 #    Then I should see the all the parks that are on Favorite list of at least one user such as "Joshua Tree"
 #    And I should see the 2/3 ratio on the "Joshua Tree" park
@@ -40,11 +40,11 @@ Feature: test compare a park functionality
 #    And "Tommy Trojan" has "Joshua Tree" park on his Favorites list
 #    And I click add a user button
 #    And "TommyTrojan" has a public list of favorites
-#    And I see "User sucessfully added" displayed on the page
+#    And I see "User successfully added" displayed on the page
 #    And "Tally Trojan" has "Joshua Tree" park on her Favorites list
 #    And I click add a user button
 #    And "Tally Trojan" has a public list of favorites
-#    And I see "User sucessfully added" displayed on the page
+#    And I see "User successfully added" displayed on the page
 #    And I click compare a park button
 #    Then I should see the all the parks that are on Favorite list of at least one user such as "Joshua Tree"
 #    And I should see the 2/3 ratio on the "Joshua Tree" park
@@ -63,8 +63,8 @@ Feature: test compare a park functionality
 #    And "Tommy Trojan" has "Yellowstone National Park" park on his Favorites list
 #    And I click add a user button
 #    And "TommyTrojan" has a public list of favorites
-#    And I see "User sucessfully added" displayed on the page
-#    And I click suggest button
+#    And I see "User successfully added" displayed on the page
+#    And I click compare button
 #    Then I should see the all the parks that are on Favorite list of at least one user such as "Yellowstone National Park"
 #    And I click on "Yellowstone National Park" and see details
 #    Then I see Location state "Yellowstone National Park, WY"
