@@ -144,7 +144,7 @@ public class MyStepdefs_Search {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div[2]/div/div[2]/form/div[1]/div[2]/button")).click();
 
 
     }
@@ -202,7 +202,7 @@ public class MyStepdefs_Search {
     @And("I press enter")
     public void iPressEnter() {
 
-        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).sendKeys(Keys.ENTER);
+        driver.findElement(By.xpath("/html/body/div/div/div[2]/div/div[2]/form/div[1]/div[2]/button")).sendKeys(Keys.ENTER);
     }
 
     @Then("I see {string}")
