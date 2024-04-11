@@ -155,11 +155,11 @@ return (
         </form>
     </div>
 
-    <div className="row">
-        <div id="park-results" className="col-12 mt-4">
-            Showing <span className="font-weight-bold">{searchResults.length}</span> result(s).
-        </div>
-    </div>
+    {/*<div className="row">*/}
+    {/*    <div id="park-results" className="col-12 mt-4">*/}
+    {/*        Showing <span className="font-weight-bold">{searchResults.length}</span> result(s).*/}
+    {/*    </div>*/}
+    {/*</div>*/}
 
     {searchType === 'activity' && (
         <div className="row mt-4">

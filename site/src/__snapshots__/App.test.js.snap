@@ -11,6 +11,7 @@ exports[`Results Component should show plus button on mouse enter: <div data-tes
   <a
     data-testid="plus-button"
     href="#"
+    id="plus"
     style="position: relative; top: 0px; right: 0px;"
   >
     <svg

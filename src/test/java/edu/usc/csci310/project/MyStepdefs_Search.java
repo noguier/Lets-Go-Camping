@@ -10,8 +10,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.openqa.selenium.Keys;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MyStepdefs_Search {
 
@@ -135,6 +140,11 @@ public class MyStepdefs_Search {
 
     @And("I click the Search button")
     public void iClickTheSearchButton() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).click();
 
 
@@ -142,10 +152,13 @@ public class MyStepdefs_Search {
 
     @And("I click on {string} and see details")
     public void iClickOnAndSeeDetails(String arg0) {
-        WebElement parkElement = driver.findElement(By.xpath("//element_tag[contains(text(),'Yellowstone')]"));
-//
-//        WebElement parkElement = driver.findElement(By.linkText("Park Name: "+arg0));
+        WebElement parkElement = driver.findElement(By.xpath("//h3[text()='" + arg0 + "']"));
         parkElement.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -162,9 +175,18 @@ public class MyStepdefs_Search {
         assertTrue(driver.getPageSource().contains(arg0));
     }
 
+    @Then("I see Entrance Fee Description {string}")
+    public void iSeeEntranceFeeDescription(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
 
     @Then("I see Description {string}")
     public void iSeeDescription(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+    @Then("I see Activities {string}")
+    public void iSeeActivities(String arg0) {
         assertTrue(driver.getPageSource().contains(arg0));
     }
 
@@ -178,6 +200,90 @@ public class MyStepdefs_Search {
     @Then("I see Image alt-ID {string}")
     public void iSeeImageAltID(String arg0) {
         assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+    @And("I press enter")
+    public void iPressEnter() {
+
+        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).sendKeys(Keys.ENTER);
+    }
+
+    @Then("I see {string}")
+    public void iSee(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+    @Then("I should not see {string}")
+    public void iShouldNotSee(String arg0) {
+        assertFalse(driver.getPageSource().contains(arg0));
+    }
+
+    @And("I hover over {string} container")
+    public void iHoverOverContainer(String arg0) {
+        WebElement parkNameDiv = driver.findElement(By.id("expand"));
+        Actions actions = new Actions(driver);
+        actions.moveToElement(parkNameDiv).perform();
+    }
+
+    @Then("I click the plus button")
+    public void iClickThePlusButton() {
+        WebElement plusButton = driver.findElement(By.id("plus"));
+        plusButton.click();
+    }
+
+    @Then("I should get an alert saying {string}")
+    public void iShouldGetAnAlertSaying(String arg0) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        driver.findElement(By.xpath("/html/body/div/div/div[1]")).isDisplayed();
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
+
+    @And("{string} is already in my favorites")
+    public void isAlreadyInMyFavorites(String arg0) {
+        iHoverOverContainer(arg0);
+        iClickThePlusButton();
+    }
+
+    @Then("I click URL")
+    public void iClickURL() {
+        driver.findElement(By.id("url")).click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Then("tab opened should be {string}")
+    public void tapOpenedShouldBe(String arg0) {
+        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+        String currentUrl = driver.getCurrentUrl();
+
+        assertEquals(arg0, currentUrl);
+
+    }
+
+    @And("I click on {string} on navbar")
+    public void iClickOnOnNavbar(String arg0) {
+        WebElement searchElement = driver.findElement(By.linkText(arg0));
+        searchElement.click();
+    }
+
+    @Then("I should be on the {string} page")
+    public void iShouldBeOnThePage(String arg0) {
+        String currentUrl = driver.getCurrentUrl();
+        String expectedUrl = ROOT_URL+arg0;
+
+    }
+
+    @Then("I wait a little")
+    public void iWaitALittle() {
+        iClickThePlusButton();
     }
 
 

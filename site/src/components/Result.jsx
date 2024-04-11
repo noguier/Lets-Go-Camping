@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -58,11 +59,12 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
             // console.log("ParkCode:", parkCode);//debugging, doesn't work with not expanded view
             await axios.post('/api/favorites/add', parkCode);
             // console.log("Added to favorites.");
-            alert('Added to favorites!');
+            toast.success('Added to favorites!');
             setInFavorites(true);
+            console.log(inFavorites);
         } catch (error) {
             // console.log("ERROR.:" + error.response.data);
-            alert("This Park was already added to favorites");
+            toast.error("This Park was already added to favorites");
             // if (error.response && error.response.status === 400) {
             //     console.log("ERROR.:" + error.response.data);
             //     alert("This Park was already added to favorites");
@@ -100,6 +102,7 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                     {showPlusButton && !isExpanded && (
                         <a
                             href="#"
+                            id="plus"
                             data-testid={"plus-button"}
                             style={{
                                 position: "relative",
@@ -116,6 +119,7 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                     <div>
                         <a
                             href="#"
+                            id="plus"
                             data-testid={"plus-button"}
                             style={{
                                 position: "relative",
@@ -128,7 +132,7 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                         >
                             <FontAwesomeIcon icon={faPlus}/>
                         </a>
-                        <h3><a href={parkDetails.url} target="_blank">Website</a></h3>
+                        <h3><a id="url" href={parkDetails.url} target="_blank">Website</a></h3>
                         <p>
                             <strong>Location:</strong> {parkDetails.addresses[0].city}, {parkDetails.addresses[0].stateCode}
                         </p>
@@ -186,6 +190,7 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                 {showPlusButton && (
                     <a
                         href="#"
+                        id="plus"
                         data-testid={"plus-button"}
                         style={{
                             position: "relative",
