@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import React, {useEffect, useState} from "react";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faPlus} from '@fortawesome/free-solid-svg-icons';
+import axios from "axios";
 
-const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
+const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [amenityResults, setAmenityResults] = useState([]);
     const [showPlusButton, setShowPlusButton] = useState(false);
+    const [inFavorites, setInFavorites] = useState(false);
+
     const handleToggleDetails = () => {
         if (!isExpanded) {
             setIsExpanded(true);
@@ -47,18 +50,51 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
         }
         await populateAmenities(parkCode)
     };
-    const addToFavorites = () => {
+    const addToFavorites = async (parkCode) => {
         // Add logic to add to favorites list
-        console.log("Added to favorites!");
+        try {
+            // console.log("Starting to a try to add to fav");
+            // console.log("parkCode", parkCode);
+            // console.log("ParkCode:", parkCode);//debugging, doesn't work with not expanded view
+            await axios.post('/api/favorites/add', parkCode);
+            // console.log("Added to favorites.");
+            alert('Added to favorites!');
+            setInFavorites(true);
+        } catch (error) {
+            // console.log("ERROR.:" + error.response.data);
+            alert("This Park was already added to favorites");
+            // if (error.response && error.response.status === 400) {
+            //     console.log("ERROR.:" + error.response.data);
+            //     alert("This Park was already added to favorites");
+            // } else {
+            //     console.log("ERROR FAILED.:" + error.response.data.message);
+            //     console.error('Error adding to favorites:', error);
+            // }
+        }
     };
-    const inFavoritesList = () => {
-        return <p>Added to favorites list</p>;
-    }
+//use this as the fetch request for remove
+    // const removeFromFavorites = async (parkCode) => {
+    //     // Add logic to add to favorites list
+    //     try {
+    //         console.log("Starting to a try to remove to fav");
+    //         // console.log("ParkCode:", parkCode);//debugging, doesn't work with not expanded view
+    //         await axios.post('/api/favorites/remove', parkCode);
+    //         console.log("removed from favorites.");
+    //         alert('Removed to favorites!');
+    //
+    //     } catch (error) {
+    //         console.log("ERROR FAILED.:" + error.response.data.message);
+    //         console.error('Error removing from favorites:', error);
+    //
+    //     }
+    // };
+
 
     if (parkDetails && parkDetails.fullName === park.fullName) {
         return (
             <div>
-                <div data-testid={"list-element-toggle"} id="expand1" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
+                <div data-testid={"list-element-toggle"} id="expand1" onMouseEnter={handleMouseEnter}
+                     onMouseLeave={handleMouseLeave}
                      onClick={handleToggleDetails}>
                     <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
                     {showPlusButton && !isExpanded && (
@@ -70,7 +106,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
                                 top: "0px",
                                 right: "0px",
                             }}
-                            onClick={addToFavorites}
+                            onClick={() => addToFavorites(park.parkCode)} // this does not work when adding to favorites
                         >
                             <FontAwesomeIcon icon={faPlus}/>
                         </a>
@@ -86,7 +122,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
                                 top: "0px",
                                 right: "0px",
                             }}
-                            onClick={addToFavorites}
+
+                            onClick={() => addToFavorites(parkDetails.parkCode)}
+
                         >
                             <FontAwesomeIcon icon={faPlus}/>
                         </a>
@@ -128,11 +166,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
                             </ul>
 
                         </div>
-                        {/*<div className="favorite-button">*/}
-                        {/*    <button type="submit" className="btn btn-favorite">Favorites+</button>*/}
-                        {/*</div>*/}
                         <div>
-                            {page === 'search' && inFavoritesList()}
+                            {(page === "search" && inFavorites && isExpanded) ?
+                                <p>In Favorites List</p> : null} {/* Conditionally render based on inFavorites state */}
                         </div>
                         <img src={parkDetails.images[0].url} alt={parkDetails.images[0].altText}
                              style={{maxWidth: "40%", height: "auto"}}
@@ -143,7 +179,8 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
         );
     } else {
         return (
-            <div data-testid={"list-element-toggle"} id="expand" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
+            <div data-testid={"list-element-toggle"} id="expand" onMouseEnter={handleMouseEnter}
+                 onMouseLeave={handleMouseLeave}
                  onClick={handleToggleDetails}>
                 <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
                 {showPlusButton && (
@@ -155,11 +192,11 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page }) => {
                             top: "0px",
                             right: "0px",
                         }}
-                        onClick={addToFavorites}
+                        onClick={() => addToFavorites(park.parkCode)}
                     >
                         <FontAwesomeIcon icon={faPlus}/>
                     </a>
-                    )}
+                )}
             </div>
         );
     }

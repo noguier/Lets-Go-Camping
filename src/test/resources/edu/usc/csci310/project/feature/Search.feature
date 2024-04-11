@@ -47,6 +47,50 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Castle Mountains National Monument"
 
+  Scenario: Perform Search by Name and choose Load More
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Park" in the search bar
+    And I click the Search button
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button
+    Then I should see 50 park items displayed
+
+  Scenario: Perform Search by State and choose Load More
+    Given I am on the search page
+    And I click the dropdown State
+    When I enter "CA" in the search bar
+    And I click the Search button
+    Then List of parks such as "Butterfield Overland National Historic Trail"
+    And I click the Load More button
+    Then I should see 34 park items displayed
+
+  Scenario: Perform Search by Activity and choose Load More
+    Given I am on the search page
+    And I click the dropdown Activity
+    When I enter "Swimming" in the search bar
+    And I click the Search button
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button for Activity
+    Then I should see 20 park items displayed
+
+  Scenario: Perform Search by Amenity and choose Load More
+    Given I am on the search page
+    And I click the dropdown amenities
+    When I enter "Braille" in the search bar
+    And I click the Search button
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button for Amenity
+    Then I should see 20 park items displayed
+
+  Scenario: Perform Search and choose Load More 2 more times
+    Given I am on the search page
+    And I click the dropdown Activity
+    When I enter "Swimming" in the search bar
+    And I click the Search button
+    And I click the Load More button two more times
+    Then I should see 30 park items displayed
+
 #  Scenario: Perform Search and see details
 #    Given I am on the search page
 #    And I click the dropdown Name
@@ -67,24 +111,6 @@ Feature: Test search functionality
 #    And I click the Search button
 #    Then I should get a list of parks such as "Josh"
 #    Then I should see 10 park items displayed
-
-#  Scenario: Perform Search and choose Load More
-#    Given I am on the search page
-#    And I click the dropdown Name
-#    When I enter "Yellowstone" in the search bar
-#    And I click the Search button
-#    Then I should get a list of parks such as "Josh" //need to fix
-#    And I should see 10 park items displayed
-#    And I click the Load More button
-#    Then I should see 20 park items displayed
-
-#  Scenario: Perform Search and choose Load More 2 more times
-#    Given I am on the search page
-#    And I click the dropdown Name
-#    When I enter "Yellowstone" in the search bar
-#    And I click the Search button
-#    And I click the Load More button two more times
-#    Then I should see 30 park items displayed
 
 #  Scenario: Perform Search and see Inline description
 #    Given I am on the search page
