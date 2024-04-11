@@ -91,10 +91,6 @@ Feature: Test search functionality
     When I enter "Joshua" in the search bar
     And I click the Search button
     Then List of parks such as "Joshua Tree National Park"
-#    And I click on "Joshua Tree National Park" and see details
-#    Then I should not see "In Favorites List"
-#    And I click on "Joshua Tree National Park" and see details
-#    #toggle close
     And I hover over "Joshua Tree National Park" container
     Then I click the plus button
     Then I should get an alert saying "Added to favorites!"
@@ -124,25 +120,49 @@ Feature: Test search functionality
     Then I click the plus button
     Then I should get an alert saying "This Park was already added to favorites"
 
-  Scenario: navigate to compare/suggest from search
+  Scenario: Perform Search by Name and choose Load More
     Given I am on the search page
-    And I click on "Compare and Suggest" on navbar
-    Then I should be on the "compare" page
+    And I click the dropdown Name
+    When I enter "Park" in the search bar
+    And I click the Search button
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button
+    Then I should see 50 park items displayed
 
-  Scenario: navigate to compare/suggest from search
+  Scenario: Perform Search by State and choose Load More
     Given I am on the search page
-    And I click on "Favorites" on navbar
-    Then I should be on the "favorites" page
+    And I click the dropdown State
+    When I enter "CA" in the search bar
+    And I click the Search button
+    Then List of parks such as "Butterfield Overland National Historic Trail"
+    And I click the Load More button
+    Then I should see 34 park items displayed
 
-  Scenario: navigate to search from search
+  Scenario: Perform Search by Activity and choose Load More
     Given I am on the search page
-    And I click on "Search" on navbar
-    Then I should be on the "search" page
+    And I click the dropdown Activity
+    When I enter "Swimming" in the search bar
+    And I click the Search button
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button for Activity
+    Then I should see 20 park items displayed
 
-  Scenario: navigate to logout from search
+  Scenario: Perform Search by Amenity and choose Load More
     Given I am on the search page
-    And I click on "Logout" on navbar
-    Then I should be on the "login" page
+    And I click the dropdown amenities
+    When I enter "Braille" in the search bar
+    And I click the Search button
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button for Amenity
+    Then I should see 20 park items displayed
+
+  Scenario: Perform Search and choose Load More 2 more times
+    Given I am on the search page
+    And I click the dropdown Activity
+    When I enter "Swimming" in the search bar
+    And I click the Search button
+    And I click the Load More button two more times
+    Then I should see 30 park items displayed
 
 #  Scenario: Perform Search and show at least 10 items
 #    Given I am on the search page
@@ -151,24 +171,6 @@ Feature: Test search functionality
 #    And I click the Search button
 #    Then I should get a list of parks such as "Josh"
 #    Then I should see 10 park items displayed
-
-#  Scenario: Perform Search and choose Load More
-#    Given I am on the search page
-#    And I click the dropdown Name
-#    When I enter "Yellowstone" in the search bar
-#    And I click the Search button
-#    Then I should get a list of parks such as "Josh" //need to fix
-#    And I should see 10 park items displayed
-#    And I click the Load More button
-#    Then I should see 20 park items displayed
-
-#  Scenario: Perform Search and choose Load More 2 more times
-#    Given I am on the search page
-#    And I click the dropdown Name
-#    When I enter "Yellowstone" in the search bar
-#    And I click the Search button
-#    And I click the Load More button two more times
-#    Then I should see 30 park items displayed
 
 #  Scenario: Perform Search and see Inline description
 #    Given I am on the search page
