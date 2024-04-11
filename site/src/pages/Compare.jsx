@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {InputGroup, FormControl, Button, Form, Container} from 'react-bootstrap';
+import Header from "../components/Header";
+
 
 const Compare = ({ updateAuthenticationStatus }) => {
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ const Compare = ({ updateAuthenticationStatus }) => {
     // };
 
     return (
+
         <div>
             <h2>Compare and Suggest</h2>
             <Container>

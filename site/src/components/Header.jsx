@@ -17,17 +17,17 @@ function Header({ updateAuthenticationStatus, authenticated }) {
     };
 
     return (
-        <header className="header-container">
+        <div className="header-container">
             <Navbar variant="dark" expand="md">
                 <Navbar.Brand href="/">Let's Go Camping!</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     {authenticated !== false ? (
                         <Nav className="mr-auto">
-                            <Nav.Link onClick={() => navigate("/search")}>Search</Nav.Link>
-                            <Nav.Link onClick={() => navigate("/favorites")}>Favorites</Nav.Link>
-                            <Nav.Link onClick={() => navigate("/compare")}>Compare and Suggest</Nav.Link>
-                            <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                            <Nav.Link className = "nav1" tabIndex="0" onClick={() => navigate("/search")}>Search</Nav.Link>
+                            <Nav.Link className = "nav2" onClick={() => navigate("/favorites")}>Favorites</Nav.Link>
+                            <Nav.Link className = "nav3" onClick={() => navigate("/compare")}>Compare and Suggest</Nav.Link>
+                            <Nav.Link className = "nav4" onClick={handleLogout}>Logout</Nav.Link>
                         </Nav>
                     ) : (
                         <Nav className="ml-auto">
@@ -35,7 +35,7 @@ function Header({ updateAuthenticationStatus, authenticated }) {
                     )}
                 </Navbar.Collapse>
             </Navbar>
-        </header>
+        </div>
     );
 }
 

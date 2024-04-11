@@ -232,6 +232,11 @@ public class MyStepdefs_Search {
 
     }
 
+    @And("I press enter key")
+    public void iPressEnterKey() {
+        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).sendKeys(Keys.ENTER);
+    }
+
 
 //
 //    @Then("I hover over the {string} and see search description")

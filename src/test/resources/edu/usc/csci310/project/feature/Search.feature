@@ -44,7 +44,7 @@ Feature: Test search functionality
   Scenario: Perform Search based on default Park Name
     Given I am on the search page
     When I enter "Joshua" in the search bar
-    And I click the Search button
+    And I press enter key
     Then List of parks such as "Castle Mountains National Monument"
 
   Scenario: Perform Search by Name and choose Load More

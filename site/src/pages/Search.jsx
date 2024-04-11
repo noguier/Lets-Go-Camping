@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {useNavigate} from "react-router-dom";
 import {renderParkInfo} from "../components/Result";
 import axios from 'axios';
+import Header from "../components/Header";
 
 const Search = ({ updateAuthenticationStatus }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -174,7 +175,7 @@ return (
       <>
         {/* Display first 'resultsToShow' results */}
         {searchResults.slice(0, resultsToShow).map((park, index) => (
-          <div key={index} className="col-12">
+          <div tabIndex={0} key={index} className="col-12">
             {renderParkInfo(park, parkDetails, setParkDetails, 'search')}
             <hr />
           </div>
@@ -201,7 +202,7 @@ return (
                             {activity.parks && (
                                 <div>
                                     {activity.parks.slice(0, resultsToShow).map((park, parkIndex) => (
-                                        <div key={parkIndex}>
+                                        <div tabIndex={0} key={parkIndex}>
                                             <h3>{park.fullName}</h3>
                                             <p><strong>Activity:</strong> {activity.name}</p>
                                             <hr />
@@ -227,12 +228,12 @@ return (
 {searchType === 'amenity' && (
     <div className="row mt-4">
         {searchResultsAmenity.map((amenityArray, index) => (
-            <div key={index} className="col-12">
+            <div   key={index} className="col-12">
                 {amenityArray.map((amenity, innerIndex) => (
                     <div key={innerIndex}>
                         <h3>{amenity.name}</h3>
                         {amenity.parks.slice(0, resultsToShow).map((park, parkIndex) => (
-                            <div key={parkIndex}>
+                            <div  tabIndex={0} key={parkIndex}>
                                 <p><strong>Park Name:</strong> {park.fullName}</p>
                                 <hr />
                             </div>
