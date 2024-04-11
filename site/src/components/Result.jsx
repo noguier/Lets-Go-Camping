@@ -4,11 +4,47 @@ import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
+const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResults}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [amenityResults, setAmenityResults] = useState([]);
     const [showPlusButton, setShowPlusButton] = useState(false);
     const [inFavorites, setInFavorites] = useState(false);
+
+
+    const handleStateCodeClick = async (stateCode) => {
+        try {
+            const response = await fetch(`/api/parks?searchTerm=${stateCode}&searchType=state`);
+            const data = await response.json();
+            updateSearchResults(data.data, 'state'); // Call the callback function to update search results
+        } catch (error) {
+            alert('Fetch Error');
+            console.error(error);
+        }
+    };
+
+    const handleActivityClick = async (activityName) => {
+        try {
+            const response = await fetch(`/api/parks?searchTerm=${activityName}&searchType=activity`);
+            const data = await response.json();
+            updateSearchResults(data.data, 'activity');
+        } catch (error) {
+            alert('Fetch Error');
+            console.error(error);
+        }
+    };
+
+
+    const handleAmenityClick = async (amenityName) => {
+        try {
+            const response = await fetch(`/api/parks?searchTerm=${amenityName}&searchType=amenity`);
+            const data = await response.json();
+            updateSearchResults(data.data, 'amenity');
+        } catch (error) {
+            alert('Fetch Error');
+            console.error(error);
+        }
+    };
+
 
     const handleToggleDetails = () => {
         if (!isExpanded) {
@@ -134,7 +170,21 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                         </a>
                         <h3><a id="url" href={parkDetails.url} target="_blank">Website</a></h3>
                         <p>
-                            <strong>Location:</strong> {parkDetails.addresses[0].city}, {parkDetails.addresses[0].stateCode}
+                            {/*<strong>Location:</strong> {parkDetails.addresses[0].city}, {parkDetails.addresses[0].stateCode}*/}
+                            <strong>Location:</strong> {parkDetails.addresses[0].city},
+                            <a
+                                style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
+                                onClick={() => handleStateCodeClick(parkDetails.addresses[0].stateCode)}
+                                onMouseEnter={(e) => {
+                                    e.target.style.textDecoration = 'underline';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.textDecoration = 'none';
+                                }}
+                            >
+                                {parkDetails.addresses[0].stateCode}
+                            </a>
+
                         </p>
                         <div>
                             {parkDetails && parkDetails.entranceFees && parkDetails.entranceFees.length > 0 ? (
@@ -155,7 +205,24 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                             <strong>Activities:</strong>
                             <ul>
                                 {parkDetails.activities.map((activity, index) => (
-                                    <li key={index}>{activity.name}</li>
+                                    <li key={index}>{
+
+
+                                        <a
+                                            style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
+                                            onClick={() => handleActivityClick(activity.name)}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.textDecoration = 'underline';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.textDecoration = 'none';
+                                            }}
+                                        >
+                                            {activity.name}
+                                        </a>
+
+
+                                    }</li>
                                 ))}
                             </ul>
                         </div>
@@ -163,7 +230,23 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                             <strong>Amenities:</strong>
                             <ul>
                                 {amenityResults.length > 0 ?
-                                    amenityResults.map(entry => <li key={entry[0].id}>{entry[0].name}</li>)
+                                    amenityResults.map(entry => <li key={entry[0].id}>
+
+
+                                        <a
+                                            style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
+                                            onClick={() => handleAmenityClick(entry[0].name)}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.textDecoration = 'underline';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.textDecoration = 'none';
+                                            }}
+                                        >
+                                            {entry[0].name}
+                                        </a>
+
+                                    </li>)
                                     :
                                     <li>NA</li>
                                 }
@@ -179,7 +262,11 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
                              title={parkDetails.images[0].title}/>
                     </div>
                 )}
+
             </div>
+
+
+
         );
     } else {
         return (
@@ -207,8 +294,8 @@ const ParkDetails =  ({park, parkDetails, setParkDetails, page}) => {
     }
 };
 
-const renderParkInfo = (park, parkDetails, setParkDetails, page) => {
-    return <ParkDetails park={park} parkDetails={parkDetails} setParkDetails={setParkDetails} page={page}/>;
+const renderParkInfo = (park, parkDetails, setParkDetails, page, updateSearchResults) => {
+    return <ParkDetails park={park} parkDetails={parkDetails} setParkDetails={setParkDetails} page={page} updateSearchResults={updateSearchResults}/>;
 };
 
-export {renderParkInfo};
+export { renderParkInfo };

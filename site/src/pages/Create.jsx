@@ -1,7 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
 import axios from 'axios';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+
+
+const customModalStyles = {
+    overlay:{
+        backdropFilter: 'blur(5px)',
+        background: 'rgba(4,5,7,0.25)',
+    },
+    content: {
+        top: '30%',
+        bottom: '30%',
+        left: '30%',
+        right: '30%',
+        overflowY: 'auto',
+        background: 'rgb(211,211,211)',
+        boxShadow: '3px 5px 10px rgba(46,56,73,0.5)',
+        borderRadius: '8px',
+        outline: 'none',
+        border: 'none',
+        color: 'white' // Changed text color to white
+    }
+};
 
 
 const Create = () => {
@@ -57,10 +79,49 @@ const Create = () => {
         }
     };
 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    useEffect(() => {
+        // Prevent scrolling on the original page when the modal is open
+        if (modalIsOpen) {
+            document.body.style.overflow = 'hidden';
+            return ()=> document.body.style.overflow = 'unset';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [modalIsOpen]);
+
+    const openModal = () => {
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
     return (
         <div className="bg-image">
             <div className="bg-text">
             <h2>Create Account</h2>
+            <form onSubmit={handleSubmit}>
+
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="View Startup Modal"
+                    style={customModalStyles}
+                    blockScroll={true}
+                >
+                    {/* Modal content */}
+                    <h2 className="text-lg font-semibold">Are you sure you want to cancel creating this account?</h2>
+                    <p>None of this data will be saved.</p>
+                    <button data-testid="cancel-create-account-btn" onClick={() => navigate("/login")}>Cancel Create Account
+                    </button>
+                    <button onClick={closeModal}>Go Back to Create</button>
+                </Modal>
+
+            </form>
+            {error && <div>{error}</div>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="create-username" className="my-2">
                     <Form.Label>Username:</Form.Label>
@@ -96,7 +157,7 @@ const Create = () => {
                 <Button variant="primary mx-2 my-2" type="submit">
                     Create Account
                 </Button>
-                <Button variant="success mx-2 my-2" onClick={() => navigate("/login")}>
+                <Button variant="success mx-2 my-2" onClick={openModal}>
                     Already have an account? Login
                 </Button>
             </Form>
@@ -107,5 +168,6 @@ const Create = () => {
 };
 
 export default Create;
+
 
 

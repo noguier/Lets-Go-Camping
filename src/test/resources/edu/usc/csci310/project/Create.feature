@@ -40,7 +40,7 @@ Feature: test create account functionality
     And I enter the password "trojan123"
     And I enter the confirm password "trojan123"
     And I press the Create Account button
-    Then I should get a "Password does not fit all requirements" message
+    Then I should get a "Password requires uppercase" message
 
   Scenario: no number in password
     Given I am on the create account page
@@ -48,7 +48,7 @@ Feature: test create account functionality
     And I enter the password "Trojan"
     And I enter the confirm password "Trojan"
     And I press the Create Account button
-    Then I should get a "Password does not fit all requirements" message
+    Then I should get a "Password requires digit" message
 
   Scenario: no lowercase in password
     Given I am on the create account page
@@ -56,7 +56,7 @@ Feature: test create account functionality
     And I enter the password "TROJAN"
     And I enter the confirm password "TROJAN"
     And I press the Create Account button
-    Then I should get a "Password does not fit all requirements" message
+    Then I should get a "Password requires lowercase" message
 
   Scenario: successful account creation
     Given I am on the create account page
@@ -74,3 +74,12 @@ Feature: test create account functionality
     And I enter the confirm password "BillyBruin123"
     And I press the Create Account button
     Then I should get a "Username is taken" message
+
+
+  Scenario: no confirm password
+    Given I am on the create account page
+    And the account TommyTrojan has already been created
+    When I enter the username "BillyBruin"
+    And I enter the password "BillyBruin123"
+    And I press the Create Account button
+    Then I should get a "Confirm password required" message

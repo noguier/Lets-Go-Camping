@@ -32,10 +32,19 @@ public class UserController {
             //return ResponseEntity.badRequest().body("Account Creation Unsuccessful, this username is taken");
         }
 
-        // Validate password
-        if (!userService.isValidPassword(request.getPassword())) {
-            //return ResponseEntity.badRequest().body("Account Creation Unsuccessful, password must contain at least one capital letter, one lowercase letter, and one number");
-            return ResponseEntity.badRequest().body("Password does not fit all requirements");
+        // Validate password lowercase
+        if (!userService.isValidPasswordLC(request.getPassword())) {
+            return ResponseEntity.badRequest().body("Password requires lowercase");
+        }
+
+        //validate password uppercase
+        if (!userService.isValidPasswordUC(request.getPassword())) {
+            return ResponseEntity.badRequest().body("Password requires uppercase");
+        }
+
+        //validate password digit
+        if (!userService.isValidPasswordDG(request.getPassword())) {
+            return ResponseEntity.badRequest().body("Password requires digit");
         }
 
         // Create user
@@ -93,7 +102,6 @@ public class UserController {
     public ResponseEntity<Boolean> isAuthenticated(HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
         boolean authenticated = ((session != null) && (session.getAttribute("username") != null));
-
         //debugging yayyyyy it finally works omg
         //System.out.println("Authenticated: " + authenticated);
 
