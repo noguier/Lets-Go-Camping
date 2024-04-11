@@ -21,8 +21,8 @@ Feature: test favorites functionality
 #    Then I see Location "Twentynine Palms, CA"
 #    Then I see Entrance Fee "$30.00"
 #    Then I see Description "Two distinct desert ecosystems, "
-#    Then I see Amenities "Auto and ATV"
-#    Then I see Activities "Yo mama"
+  #Then I see Amenities "Automated External Defibrillator (AED)"
+  #Then I see Activities "Auto and ATV"
 #    Then I see Image alt-ID "The sky turns hues"
 #
 #  Scenario: remove from favorites list

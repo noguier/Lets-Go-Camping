@@ -44,8 +44,81 @@ Feature: Test search functionality
   Scenario: Perform Search based on default Park Name
     Given I am on the search page
     When I enter "Joshua" in the search bar
-    And I press enter key
+    And I click the Search button
     Then List of parks such as "Castle Mountains National Monument"
+
+  Scenario: Search with enter key
+    Given I am on the search page
+    When I enter "Joshua" in the search bar
+    And I press enter
+    Then List of parks such as "Castle Mountains National Monument"
+
+  Scenario: Perform Search and see details
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Joshua" in the search bar
+    And I click the Search button
+    Then List of parks such as "Joshua Tree National Park"
+    And I click on "Joshua Tree National Park" and see details
+    Then I see Location state "Twentynine Palms, CA"
+    Then I see Entrance Fee "$30.00"
+    Then I see Entrance Fee Description "7-day vehicle permit"
+    Then I see Description "Two distinct desert ecosystems,"
+    Then I see Activities "Automated External Defibrillator (AED)"
+    Then I see Amenities "Auto and ATV"
+    Then I see Image alt-ID "The sky turns hues"
+
+  Scenario: Perform Search and see details
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Joshua" in the search bar
+    And I click the Search button
+    Then List of parks such as "Joshua Tree National Park"
+    And I click on "Joshua Tree National Park" and see details
+    Then I see Location state "Twentynine Palms, CA"
+    Then I see Entrance Fee "$30.00"
+    Then I see Entrance Fee Description "7-day vehicle permit"
+    Then I see Description "Two distinct desert ecosystems,"
+    Then I see Amenities "Automated External Defibrillator (AED)"
+    Then I see Activities "Auto and ATV"
+    Then I see Image alt-ID "The sky turns hues"
+    Then I click URL
+    Then tab opened should be "https://www.nps.gov/jotr/index.htm"
+
+  Scenario: non-expanded plus button, park not already in favorites
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Joshua" in the search bar
+    And I click the Search button
+    Then List of parks such as "Joshua Tree National Park"
+    And I hover over "Joshua Tree National Park" container
+    Then I click the plus button
+    Then I should get an alert saying "Added to favorites!"
+
+  Scenario: expanded plus button, park not already in favorites
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Joshua" in the search bar
+    And I click the Search button
+    Then List of parks such as "Joshua Tree National Park"
+    And I click on "Joshua Tree National Park" and see details
+    Then I should not see "In Favorites List"
+    Then I click the plus button
+    Then I should get an alert saying "Added to favorites!"
+
+  Scenario: park already in favorites
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Joshua" in the search bar
+    And I click the Search button
+    Then List of parks such as "Joshua Tree National Park"
+    And "Joshua Tree National Park" is already in my favorites
+    When I click on "Joshua Tree National Park" and see details
+    Then I wait a little
+    #timing issue
+    Then I see "In Favorites List"
+    Then I click the plus button
+    Then I should get an alert saying "This Park was already added to favorites"
 
   Scenario: Perform Search by Name and choose Load More
     Given I am on the search page
@@ -90,19 +163,6 @@ Feature: Test search functionality
     And I click the Search button
     And I click the Load More button two more times
     Then I should see 30 park items displayed
-
-#  Scenario: Perform Search and see details
-#    Given I am on the search page
-#    And I click the dropdown Name
-#    When I enter "Yellowstone" in the search bar
-#    And I click the Search button
-#    Then I should get a list of parks such as "Yellowstone National Park"
-#    And I click on "Yellowstone National Park" and see details
-#    Then I see Location state "Yellowstone National Park, WY"
-#    Then I see Entrance Fee "$35.00"
-#    Then I see Description "On March 1, 1872,"
-#    Then I see Amenities "Arts and Culture"
-#    Then I see Image alt-ID "Brilliant blues and greens"
 
 #  Scenario: Perform Search and show at least 10 items
 #    Given I am on the search page

@@ -8,6 +8,7 @@ import Favorites from "./pages/Favorites";
 import Compare from "./pages/Compare";
 import Create from "./pages/Create";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {Toaster} from "react-hot-toast";
 import axios from "axios";
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
 
     return (
         <div>
+            <Toaster/>
             <header>
                 <Header authenticated={authenticated} updateAuthenticationStatus={updateAuthenticationStatus}/>
             </header>
