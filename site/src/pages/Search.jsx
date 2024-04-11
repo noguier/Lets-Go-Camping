@@ -47,17 +47,6 @@ const Search = ({ updateAuthenticationStatus }) => {
     };
 
 
-// Function to handle logout
-// const handleLogout = async () => {
-//     try {
-//         await axios.post('/api/users/logout');
-//         updateAuthenticationStatus(false);
-//         navigate('/login');
-//     } catch (error) {
-//     console.error('Logout error:', error);
-//     }
-// };
-
 
     const updateSearchResults = (newResults, type) => {
         setSearchType(type);
@@ -171,7 +160,7 @@ const Search = ({ updateAuthenticationStatus }) => {
                         {/* Display first 'resultsToShow' results */}
                         {searchResults.slice(0, resultsToShow).map((park, index) => (
                             <div tabIndex={0} key={index} className="col-12">
-                                {renderParkInfo(park, parkDetails, setParkDetails, 'search')}
+                                {renderParkInfo(park, parkDetails, setParkDetails, 'search', updateSearchResults)}
                                 <hr />
                             </div>
                         ))}

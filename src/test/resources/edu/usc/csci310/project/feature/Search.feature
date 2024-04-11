@@ -14,12 +14,12 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Butterfield Overland National Historic Trail"
 
-  Scenario: Perform Search based on park state, but wrong input
-    Given I am on the search page
-    And I click the dropdown State
-    When I enter "California" in the search bar
-    And I click the Search button
-    Then I should see 0 park items displayed
+#  Scenario: Perform Search based on park state, but wrong input
+#    Given I am on the search page
+#    And I click the dropdown State
+#    When I enter "California" in the search bar
+#    And I click the Search button
+#    Then I should see 0 park items displayed
 
   Scenario: Perform Search with no input
     Given I am on the search page

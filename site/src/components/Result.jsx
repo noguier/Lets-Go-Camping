@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import Search from "../pages/Search";
 const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResults}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [amenityResults, setAmenityResults] = useState([]);
@@ -13,9 +13,13 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleStateCodeClick = async (stateCode) => {
         try {
+            console.log(stateCode)
             const response = await fetch(`/api/parks?searchTerm=${stateCode}&searchType=state`);
+            console.log(response)
             const data = await response.json();
+            console.log(typeof updateSearchResults);
             updateSearchResults(data.data, 'state'); // Call the callback function to update search results
+
         } catch (error) {
             alert('Fetch Error');
             console.error(error);
@@ -24,7 +28,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleActivityClick = async (activityName) => {
         try {
+            console.log(activityName)
             const response = await fetch(`/api/parks?searchTerm=${activityName}&searchType=activity`);
+            console.log(response)
             const data = await response.json();
             updateSearchResults(data.data, 'activity');
         } catch (error) {
@@ -36,7 +42,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleAmenityClick = async (amenityName) => {
         try {
+            console.log(amenityName)
             const response = await fetch(`/api/parks?searchTerm=${amenityName}&searchType=amenity`);
+            console.log(response)
             const data = await response.json();
             updateSearchResults(data.data, 'amenity');
         } catch (error) {
