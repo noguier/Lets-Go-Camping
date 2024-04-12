@@ -70,4 +70,33 @@ public class ProtectedStepdefs {
         driver.findElement(By.xpath("/html/body/div/div/header/div/nav/div/div/a[4]")).click();
     }
 
+    @When("I change the url to {string}")
+    public void iChangeTheUrlTo(String arg0) {
+        driver.get(ROOT_URL + "arg0");
+    }
+
+    @Then("I should be redirected to the create page")
+    public void iShouldBeRedirectedToTheCreatePage() {
+        driver.get(ROOT_URL + "create");
+    }
+
+    @And("I am on the favorites page")
+    public void iAmOnTheFavoritesPage() {
+        driver.get(ROOT_URL + "favorites");
+    }
+
+    @And("I am on the compare page")
+    public void iAmOnTheComparePage() {
+        driver.get(ROOT_URL + "compare");
+    }
+
+    @When("I click the Compare button")
+    public void iClickTheCompareButton() {
+        driver.findElement(By.xpath("/html/body/div/div/header/div/nav/div/div/a[3]")).click();
+    }
+
+    @Then("I should be redirected to the Compare page")
+    public void iShouldBeRedirectedToTheComparePage() {
+        driver.get(ROOT_URL + "compare");
+    }
 }

@@ -407,67 +407,67 @@ describe('Search component', () => {
 
         });
     });
-    // test('search by activity', async () => {
-    //     render(<BrowserRouter>
-    //         <Search />
-    //     </BrowserRouter>);
-    //
-    //     // Mocking fetch function to return sample data
-    //     global.fetch = jest.fn().mockResolvedValueOnce({
-    //         json: async () => ({
-    //             data: [
-    //                 {
-    //                     name: 'Hiking',
-    //                     parks: [{ fullName: 'Acadia National Park'} ]
-    //                 },
-    //             ]
-    //         })
-    //     });
-    //
-    //     fireEvent.click(screen.getByLabelText('Search by Activity'));
-    //
-    //     // Enter search term and submit form
-    //     fireEvent.change(screen.getByPlaceholderText('Enter activity'), { target: { value: 'Hiking' } });
-    //     fireEvent.click(screen.getByText('Search'));
-    //
-    //     // Wait for search results to be displayed
-    //     await waitFor(() => {
-    //         expect(screen.getByText('Acadia National Park')).toBeInTheDocument();
-    //     });
-    // });
-    // test('search by amenity', async () => {
-    //     render(
-    //         <BrowserRouter>
-    //             <Search />
-    //         </BrowserRouter>
-    //     );
-    //
-    //     global.fetch = jest.fn().mockResolvedValueOnce({
-    //         json: async () => ({
-    //             data: [
-    //                 [
-    //                     { name: 'Accessible Restrooms', parks: [{ fullName: 'Park A' }] },
-    //                     { name: 'Fire Pit', parks: [{ fullName: 'Park C' }] }
-    //                 ]
-    //             ]
-    //         })
-    //     });
-    //
-    //     fireEvent.click(screen.getByLabelText('Search by Amenity'));
-    //
-    //     // Enter search term and submit form
-    //     fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'Restrooms' } });
-    //     fireEvent.click(screen.getByText('Search'));
-    //
-    //     // Wait for search results to be displayed
-    //     await waitFor(() => {
-    //         expect(screen.getByText('Accessible Restrooms')).toBeInTheDocument();
-    //         expect(screen.getByText('Park A')).toBeInTheDocument();
-    //
-    //         expect(screen.getByText('Fire Pit')).toBeInTheDocument();
-    //         expect(screen.getByText('Park C')).toBeInTheDocument();
-    //     });
-    // });
+    test('search by activity', async () => {
+        render(<BrowserRouter>
+            <Search />
+        </BrowserRouter>);
+
+        // Mocking fetch function to return sample data
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            json: async () => ({
+                data: [
+                    {
+                        name: 'Hiking',
+                        parks: [{ fullName: 'Acadia National Park'} ]
+                    },
+                ]
+            })
+        });
+
+        fireEvent.click(screen.getByLabelText('Search by Activity'));
+
+        // Enter search term and submit form
+        fireEvent.change(screen.getByPlaceholderText('Enter activity'), { target: { value: 'Hiking' } });
+        fireEvent.click(screen.getByText('Search'));
+
+        // Wait for search results to be displayed
+        await waitFor(() => {
+            expect(screen.getByText('Acadia National Park')).toBeInTheDocument();
+        });
+    });
+    test('search by amenity', async () => {
+        render(
+            <BrowserRouter>
+                <Search />
+            </BrowserRouter>
+        );
+
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            json: async () => ({
+                data: [
+                    [
+                        { name: 'Accessible Restrooms', parks: [{ fullName: 'Park A' }] },
+                        { name: 'Fire Pit', parks: [{ fullName: 'Park C' }] }
+                    ]
+                ]
+            })
+        });
+
+        fireEvent.click(screen.getByLabelText('Search by Amenity'));
+
+        // Enter search term and submit form
+        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'Restrooms' } });
+        fireEvent.click(screen.getByText('Search'));
+
+        // Wait for search results to be displayed
+        await waitFor(() => {
+            expect(screen.getByText('Accessible Restrooms')).toBeInTheDocument();
+            expect(screen.getByText('Park A')).toBeInTheDocument();
+
+            expect(screen.getByText('Fire Pit')).toBeInTheDocument();
+            expect(screen.getByText('Park C')).toBeInTheDocument();
+        });
+    });
 
 
 
