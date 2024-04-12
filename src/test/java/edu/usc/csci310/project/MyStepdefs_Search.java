@@ -280,6 +280,7 @@ public class MyStepdefs_Search {
     @Then("I wait a little")
     public void iWaitALittle() {
         iClickThePlusButton();
+        iClickThePlusButton();
     }
 
     @And("I click the Load More button")
