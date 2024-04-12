@@ -72,7 +72,7 @@ public class SearchControllerTest {
     }
 
     @Test
-    void testConstructApiUrlWithAmenityParkCode() {
+    void testConstructApiUrlWithAmenityParkCode() throws IOException {
         SearchController searchController = new SearchController();
         String searchTerm = "olsp";
         String searchType = "amenity_parkcode";
@@ -82,7 +82,7 @@ public class SearchControllerTest {
     }
 
     @Test
-    void testConstructApiUrlWithParkClick() {
+    void testConstructApiUrlWithParkClick()throws IOException  {
         SearchController searchController = new SearchController();
         String searchTerm = "someParkCode";
         String searchType = "parkClick";
