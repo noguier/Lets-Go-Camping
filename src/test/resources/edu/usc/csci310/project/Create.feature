@@ -1,9 +1,16 @@
 Feature: test create account functionality
 
-  Scenario: need to login
+  Scenario: cancel create and confirm
     Given I am on the create account page
-    When I click on the already have account button
+    And I click on the already have account button
+    When I click on Cancel Create Account button
     Then I should be redirected to the login page
+
+  Scenario: cancel create and not confirm
+    Given I am on the create account page
+    And I click on the already have account button
+    When I click on Go Back to Create button
+    Then I should stay on create page
 
   Scenario: blank login attempt
     Given I am on the create account page
