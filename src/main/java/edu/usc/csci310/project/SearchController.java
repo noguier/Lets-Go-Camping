@@ -9,15 +9,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @RestController
 public class SearchController {
 
-    private final String apiKey = "0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd";
-    private final String baseUrl = "https://developer.nps.gov/api/v1";
+    private final String apiKey;
 
+    public SearchController() throws IOException {
+        this.apiKey = readApiKeyFromFile();
+    }
     @GetMapping("/api/parks")
     public Object searchParks(@RequestParam String searchTerm, @RequestParam String searchType) throws IOException {
         String apiUrl = constructApiUrl(searchTerm, searchType);
@@ -60,6 +65,13 @@ public class SearchController {
             default:
                 break;
         }
+        String baseUrl = "https://developer.nps.gov/api/v1";
         return baseUrl + endpoint + "&api_key=" + apiKey;
+    }
+
+    private String readApiKeyFromFile() throws IOException {
+        String filePath = "src/main/resources/api.properties.txt";
+        byte[] encodedBytes = Files.readAllBytes(Paths.get(filePath));
+        return new String(encodedBytes, StandardCharsets.UTF_8).trim();
     }
 }

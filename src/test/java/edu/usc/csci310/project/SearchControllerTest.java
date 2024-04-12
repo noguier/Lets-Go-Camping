@@ -8,6 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -22,12 +25,13 @@ public class SearchControllerTest {
         String searchTerm = "yose";
         String searchType = "name";
         String constructedUrl = "/api/parks?searchTerm=" + searchTerm + "&searchType=" + searchType;
+        System.out.println("DEBUG:"+ constructedUrl);
         mockMvc.perform(MockMvcRequestBuilders.get(constructedUrl)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
     @Test
-    void testConstructApiUrlWithName() {
+    void testConstructApiUrlWithName() throws IOException {
         SearchController searchController = new SearchController();
         String searchTerm = "yose";
         String searchType = "name";
@@ -36,7 +40,7 @@ public class SearchControllerTest {
         assertEquals(expectedUrl, constructedUrl);
     }
     @Test
-    void testConstructApiUrlWithState() {
+    void testConstructApiUrlWithState() throws IOException {
         SearchController searchController = new SearchController();
         String searchTerm = "ca";
         String searchType = "state";
@@ -47,7 +51,7 @@ public class SearchControllerTest {
         assertEquals(expectedUrl, constructedUrl);
     }
     @Test
-    void testConstructApiUrlWithActivity() {
+    void testConstructApiUrlWithActivity() throws IOException {
         SearchController searchController = new SearchController();
         String searchTerm = "swimming";
         String searchType = "activity";
@@ -58,7 +62,7 @@ public class SearchControllerTest {
         assertEquals(expectedUrl, constructedUrl);
     }
     @Test
-    void testConstructApiUrlWithAmenity() {
+    void testConstructApiUrlWithAmenity() throws IOException {
         SearchController searchController = new SearchController();
         String searchTerm = "atm";
         String searchType = "amenity";
@@ -68,7 +72,7 @@ public class SearchControllerTest {
     }
 
     @Test
-    void testConstructApiUrlWithAmenityParkCode() {
+    void testConstructApiUrlWithAmenityParkCode() throws IOException {
         SearchController searchController = new SearchController();
         String searchTerm = "olsp";
         String searchType = "amenity_parkcode";
@@ -78,7 +82,7 @@ public class SearchControllerTest {
     }
 
     @Test
-    void testConstructApiUrlWithParkClick() {
+    void testConstructApiUrlWithParkClick()throws IOException  {
         SearchController searchController = new SearchController();
         String searchTerm = "someParkCode";
         String searchType = "parkClick";
