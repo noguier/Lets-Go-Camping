@@ -1,6 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
 import axios from 'axios';
+import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+
+
+const customModalStyles = {
+    overlay:{
+        backdropFilter: 'blur(5px)',
+        background: 'rgba(4,5,7,0.25)',
+    },
+    content: {
+        top: '30%',
+        bottom: '30%',
+        left: '30%',
+        right: '30%',
+        overflowY: 'auto',
+        background: 'rgb(211,211,211)',
+        boxShadow: '3px 5px 10px rgba(46,56,73,0.5)',
+        borderRadius: '8px',
+        outline: 'none',
+        border: 'none',
+        color: 'white' // Changed text color to white
+    }
+};
 
 
 const Create = () => {
@@ -56,32 +79,90 @@ const Create = () => {
         }
     };
 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    useEffect(() => {
+        // Prevent scrolling on the original page when the modal is open
+        if (modalIsOpen) {
+            document.body.style.overflow = 'hidden';
+            return ()=> document.body.style.overflow = 'unset';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [modalIsOpen]);
+
+    const openModal = () => {
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
     return (
-        <div>
+        <div className="bg-image">
+            <div className="bg-text">
             <h2>Create Account</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="create-username">Username:</label>
-                    <input type="text" id="create-username" value={username}
-                           onChange={(e) => setUsername(e.target.value)}/>
-                </div>
-                <div>
-                    <label htmlFor="create-password">Password:</label>
-                    <input type="password" id="create-password" value={password}
-                           onChange={(e) => setPassword(e.target.value)}/>
-                </div>
 
-                <div>
-                    <label htmlFor="confirm-password">Confirm Password:</label>
-                    <input type="password" id="confirm-password" value={confirmPassword}
-                           onChange={(e) => setConfirmPassword(e.target.value)}/>
-                </div>
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="View Startup Modal"
+                    style={customModalStyles}
+                    blockScroll={true}
+                >
+                    {/* Modal content */}
+                    <h2 className="text-lg font-semibold">Are you sure you want to cancel creating this account?</h2>
+                    <p>None of this data will be saved.</p>
+                    <button data-testid="cancel-create-account-btn" onClick={() => navigate("/login")}>Cancel Create Account
+                    </button>
+                    <button onClick={closeModal}>Go Back to Create</button>
+                </Modal>
 
-
-                <button type="submit">Create Account</button>
-                <button onClick={() => navigate("/login")}>Already have an account? Login</button>
             </form>
             {error && <div>{error}</div>}
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="create-username" className="my-2">
+                    <Form.Label>Username:</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter username"
+                        variant = "my-2"
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="create-password" className="my-2">
+                    <Form.Label>Password:</Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter password"
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="confirm-password" className="my-2">
+                    <Form.Label>Confirm Password:</Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm password"
+                    />
+                </Form.Group>
+
+                <Button variant="primary mx-2 my-2" type="submit">
+                    Create Account
+                </Button>
+                <Button variant="success mx-2 my-2" onClick={openModal}>
+                    Already have an account? Login
+                </Button>
+            </Form>
+            {error && <Alert variant="danger">{error}</Alert>}
+        </div>
         </div>
     );
 };
