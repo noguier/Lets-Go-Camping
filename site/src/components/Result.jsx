@@ -3,12 +3,13 @@ import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import toast from "react-hot-toast";
 import Search from "../pages/Search";
+import {useState} from "react";
 const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResults}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [amenityResults, setAmenityResults] = useState([]);
     const [showPlusButton, setShowPlusButton] = useState(false);
     const [inFavorites, setInFavorites] = useState(false);
-
+    const isFavoritesPage = page === "favorites";
 
     const handleStateCodeClick = async (stateCode) => {
         try {
@@ -89,7 +90,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
             console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
             setParkDetails(data.data[0]); // Update parkDetails state
         } catch (error) {
-            console.error('RESULTError fetching park details:', error);
+            console.error('Error fetching park details:', error);
             alert('Fetch Error');
         }
         await populateAmenities(parkCode);
@@ -125,6 +126,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     if (parkDetails && parkDetails.fullName === park.fullName) {
     // if (parkDetails ) {///use this if statement to debug
+
         return (
             <div>
                 <div data-testid={"list-element-toggle"} id="expand1" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
