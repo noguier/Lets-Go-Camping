@@ -70,10 +70,21 @@ public class FavoritesServiceImpl implements FavoritesService {
             return favorite.getFavoriteParks();
         } else {
             // User's favorite list doesn't exist
+            System.out.println("DEBUG: EMPTY LIST");
             return Collections.emptyList();
         }
     }
 
+    @Override
+    public void togglePrivacy(String username, boolean isPublic) {
+        Optional<Favorite> optionalFavorite = favoritesRepository.findById(username);
+
+        if (optionalFavorite.isPresent()) {
+            Favorite favorite = optionalFavorite.get();
+            favorite.setPublic(isPublic);
+            favoritesRepository.save(favorite);
+        }
+    }
 
 
 }

@@ -22,6 +22,7 @@ public class SearchController {
     public Object searchParks(@RequestParam String searchTerm, @RequestParam String searchType) throws IOException {
         String apiUrl = constructApiUrl(searchTerm, searchType);
         URL url = new URL(apiUrl);
+        System.out.println("DEBUG:"+ url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 

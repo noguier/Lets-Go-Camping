@@ -10,4 +10,8 @@ public interface FavoritesService {
     //this method will help with compare and suggest
     //this method will find the favorite list from username
     List<String> getFavoriteParksByUsername(String username);
+
+
+    //this method changes from public to private on favorites page
+    void togglePrivacy(String username, boolean isPublic);
 }

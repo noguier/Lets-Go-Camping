@@ -137,4 +137,32 @@ class FavoritesServiceImplTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void togglePrivacy_UserFavoritesListExists_Success() {
+        String username = "testUser";
+        boolean isPublic = true;
+        Favorite existingFavorite = new Favorite(username);
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(existingFavorite));
+
+        favoritesService.togglePrivacy(username, isPublic);
+
+        assertEquals(isPublic, existingFavorite.isPublic());
+        verify(favoritesRepository, times(1)).save(existingFavorite);
+    }
+
+    @Test
+    void togglePrivacy_UserFavoritesListDoesNotExist_NoActionTaken() {
+        String username = "testUser";
+        boolean isPublic = true;
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        favoritesService.togglePrivacy(username, isPublic);
+
+        verify(favoritesRepository, never()).save(any());
+    }
+
+
 }
