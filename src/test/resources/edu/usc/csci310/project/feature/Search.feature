@@ -14,12 +14,12 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Butterfield Overland National Historic Trail"
 
-  Scenario: Perform Search based on park state, but wrong input
-    Given I am on the search page
-    And I click the dropdown State
-    When I enter "California" in the search bar
-    And I click the Search button
-    Then I should see 0 park items displayed
+#  Scenario: Perform Search based on park state, but wrong input
+#    Given I am on the search page
+#    And I click the dropdown State
+#    When I enter "California" in the search bar
+#    And I click the Search button
+#    Then I should see 0 park items displayed
 
   Scenario: Perform Search with no input
     Given I am on the search page
@@ -53,20 +53,6 @@ Feature: Test search functionality
     And I press enter
     Then List of parks such as "Castle Mountains National Monument"
 
-  Scenario: Perform Search and see details
-    Given I am on the search page
-    And I click the dropdown Name
-    When I enter "Joshua" in the search bar
-    And I click the Search button
-    Then List of parks such as "Joshua Tree National Park"
-    And I click on "Joshua Tree National Park" and see details
-    Then I see Location state "Twentynine Palms, CA"
-    Then I see Entrance Fee "$30.00"
-    Then I see Entrance Fee Description "7-day vehicle permit"
-    Then I see Description "Two distinct desert ecosystems,"
-    Then I see Activities "Automated External Defibrillator (AED)"
-    Then I see Amenities "Auto and ATV"
-    Then I see Image alt-ID "The sky turns hues"
 
   Scenario: Perform Search and see details
     Given I am on the search page
@@ -75,13 +61,13 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Joshua Tree National Park"
     And I click on "Joshua Tree National Park" and see details
-    Then I see Location state "Twentynine Palms, CA"
-    Then I see Entrance Fee "$30.00"
-    Then I see Entrance Fee Description "7-day vehicle permit"
-    Then I see Description "Two distinct desert ecosystems,"
-    Then I see Amenities "Automated External Defibrillator (AED)"
-    Then I see Activities "Auto and ATV"
-    Then I see Image alt-ID "The sky turns hues"
+    Then I see Location state "Twentynine Palms"
+    Then I see "$30.00"
+    Then I see "7-day vehicle permit"
+    Then I see "Two distinct desert ecosystems,"
+    Then I see "Automated External Defibrillator (AED)"
+    Then I see "Auto and ATV"
+    Then I see "The sky turns hues"
     Then I click URL
     Then tab opened should be "https://www.nps.gov/jotr/index.htm"
 

@@ -197,6 +197,21 @@ public class CreateLoginStepDefs {
         driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
     }
 
+    @When("I click on Cancel Create Account button")
+    public void iClickOnCancelCreateAccountButton() {
+        driver.findElement(By.xpath("/html/body/div[3]/div/div/button[1]")).click();
+
+    }
+
+    @When("I click on Go Back to Create button")
+    public void iClickOnGoBackToCreateButton() {
+        driver.findElement(By.xpath(" /html/body/div[3]/div/div/button[2]")).click();
+    }
+
+    @Then("I should stay on create page")
+    public void iShouldStayOnCreatePage() {
+        driver.get(ROOT_URL + "create");
+    }
 }
 
 

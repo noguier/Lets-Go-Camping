@@ -1,6 +1,5 @@
 package edu.usc.csci310.project;
 
-import java.time.Duration;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -9,12 +8,12 @@ import io.cucumber.java.en.When;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-
-import org.openqa.selenium.Keys;
-
-import java.util.ArrayList;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MyStepdefs_Search {
@@ -62,7 +61,7 @@ public class MyStepdefs_Search {
 
     @And("I click the dropdown Name")
     public void iClickTheDropdownName() {
-        driver.findElement(By.xpath("//*[@id=\"searchByName\"]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div[2]/div[2]/form/div[2]/div[1]/div/input")).click();
 
     }
 
@@ -75,7 +74,7 @@ public class MyStepdefs_Search {
 
     @When("I enter {string} in the search bar")
     public void iEnterInTheSearchBar(String arg0) {
-        driver.findElement(By.xpath("//*[@id=\"search-term\"]")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div/div/div[2]/div[2]/form/div[1]/div[1]/input")).sendKeys(arg0);
     }
 
     @Then("I should get an error message {string}")
@@ -144,7 +143,7 @@ public class MyStepdefs_Search {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div[2]/div[2]/form/div[1]/div[2]/button")).click();
 
 
     }
@@ -281,6 +280,7 @@ public class MyStepdefs_Search {
     @Then("I wait a little")
     public void iWaitALittle() {
         iClickThePlusButton();
+        iClickThePlusButton();
     }
 
     @And("I click the Load More button")
@@ -337,6 +337,19 @@ public class MyStepdefs_Search {
         }
 
     }
+
+    @When("I click on the state code")
+    public void iClickOnTheStateCode() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        driver.findElement(By.xpath("html/body/div/div/div[2]/div/div[4]/div/div[2]/p[1]/a")).click();
+
+    }
+
 
 
 //

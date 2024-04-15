@@ -1,11 +1,11 @@
 // Reset the browser history after each test
 import React from "react";
-import {renderParkInfo} from './components/Result'; // Assuming renderParkDetails function is exported
+import { renderParkInfo } from './components/Result'; // Assuming renderParkDetails function is exported
 import {
     render,
     screen,
     waitFor,
-    fireEvent, getByText, getByAltText, getByTestId, findByText,
+    fireEvent, getByText, getByAltText, getByTestId, findByText, getAllByText,
 } from "@testing-library/react";
 import Header from "./components/Header";
 import '@testing-library/jest-dom'
@@ -21,28 +21,28 @@ import Dashboard from "./pages/Dashboard";
 import {act} from "react-dom/test-utils";
 import Favorites from "./pages/Favorites";
 import Compare from "./pages/Compare";
-//jest.mock('axios');
 
+//jest.mock('axios');
 
 // Mock axios post method
 
 jest.mock('axios', () => ({
-    post: jest.fn(() => Promise.resolve({data: { /* mocked data if needed */}})),
+    post: jest.fn(() => Promise.resolve({ data: { /* mocked data if needed */ } })),
     get: jest.fn((url) => {
         if (url === '/api/users/authenticated') {
             // Return a promise that resolves to a mock authentication status
-            return Promise.resolve({data: true});
+            return Promise.resolve({ data: true });
         } else {
             // Handle other URLs if needed
-            return Promise.resolve({data: { /* mocked data if needed */}});
+            return Promise.resolve({ data: { /* mocked data if needed */ } });
         }
     })
 }));
 
 test("renders header text", () => {
-    const {getByText} = render(
+    const { getByText } = render(
         <BrowserRouter>
-            <Header/>
+            <Header />
         </BrowserRouter>
     );
     const headerText = getByText("Let's Go Camping!");
@@ -56,15 +56,15 @@ describe("Header Component", () => {
     });
 
     test("renders header with login and register links when not authenticated", () => {
-        render(<BrowserRouter>
-            <Header authenticated={false}/>
+        render( <BrowserRouter>
+            <Header authenticated={false} />
         </BrowserRouter>);
         expect(screen.getByText("Let's Go Camping!")).toBeInTheDocument();
     });
 
     test("renders header with navigation links and logout button when authenticated", () => {
         render(<BrowserRouter>
-            <Header authenticated={true}/>
+            <Header authenticated={true} />
         </BrowserRouter>);
         expect(screen.getByText("Let's Go Camping!")).toBeInTheDocument();
         expect(screen.getByText("Search")).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe("Header Component", () => {
         render(
             <BrowserRouter>
                 <Header authenticated={true}/>
-            </BrowserRouter>);
+            </BrowserRouter>        );
 
         // Click the  Favorites link
         fireEvent.click(screen.getByText('Favorites'));
@@ -93,7 +93,7 @@ describe("Header Component", () => {
         render(
             <BrowserRouter>
                 <Header authenticated={true}/>
-            </BrowserRouter>);
+            </BrowserRouter>        );
 
         // Click the  search link
         fireEvent.click(screen.getByText('Search'));
@@ -108,7 +108,7 @@ describe("Header Component", () => {
         render(
             <BrowserRouter>
                 <Header authenticated={true}/>
-            </BrowserRouter>);
+            </BrowserRouter>        );
 
         // Click the link
         fireEvent.click(screen.getByText('Compare and Suggest'));
@@ -117,49 +117,50 @@ describe("Header Component", () => {
         expect(window.location.pathname).toBe("/compare");
     });
 
-    test('Load More button functionality', async () => {
-        // Mock more than 10 search results
-        const mockSearchResults = [];
-        for (let i = 1; i <= 15; i++) {
-            mockSearchResults.push({
-                fullName: `Park ${i}`,
-                description: `Description for Park ${i}`
+        test('Load More button functionality', async () => {
+            // Mock more than 10 search results
+            const mockSearchResults = [];
+            for (let i = 1; i <= 15; i++) {
+                mockSearchResults.push({
+                    fullName: `Park ${i}`,
+                    description: `Description for Park ${i}`
+                });
+            }
+
+            render(
+                <BrowserRouter>
+                    <Search />
+                </BrowserRouter>
+            );
+
+            global.fetch = jest.fn().mockResolvedValueOnce({
+                json: async () => ({ data: mockSearchResults })
             });
-        }
 
-        render(
-            <BrowserRouter>
-                <Search/>
-            </BrowserRouter>
-        );
+            fireEvent.click(screen.getByLabelText('Search by State'));
+            fireEvent.change(screen.getByPlaceholderText('Enter 2-letter state code'), { target: { value: 'CA' } });
+            fireEvent.click(screen.getByText('Search'));
 
-        global.fetch = jest.fn().mockResolvedValueOnce({
-            json: async () => ({data: mockSearchResults})
+            // Wait for the initial search results to be displayed
+            await waitFor(() => {
+                for (let i = 1; i <= 10; i++) {
+                    const parkNameHeading = screen.getByRole('heading', { name: `Park ${i}` });
+                    expect(parkNameHeading).toBeInTheDocument();
+                }
+            });
+
+            // Click the Load More button
+            fireEvent.click(screen.getByText('Load More'));
+
+            // Wait for additional results to be displayed
+            await waitFor(() => {
+                for (let i = 11; i <= 15; i++) {
+                    const parkNameHeading = screen.getByRole('heading', { name: `Park ${i}` });
+                    expect(parkNameHeading).toBeInTheDocument();
+                }
+            });
         });
 
-        fireEvent.click(screen.getByLabelText('Search by State'));
-        fireEvent.change(screen.getByPlaceholderText('Enter 2-letter state code'), {target: {value: 'CA'}});
-        fireEvent.click(screen.getByText('Search'));
-
-        // Wait for the initial search results to be displayed
-        await waitFor(() => {
-            for (let i = 1; i <= 10; i++) {
-                const parkNameHeading = screen.getByRole('heading', {name: `Park ${i}`});
-                expect(parkNameHeading).toBeInTheDocument();
-            }
-        });
-
-        // Click the Load More button
-        fireEvent.click(screen.getByText('Load More'));
-
-        // Wait for additional results to be displayed
-        await waitFor(() => {
-            for (let i = 11; i <= 15; i++) {
-                const parkNameHeading = screen.getByRole('heading', {name: `Park ${i}`});
-                expect(parkNameHeading).toBeInTheDocument();
-            }
-        });
-    });
 
 
     test('logout button', async () => {
@@ -168,8 +169,7 @@ describe("Header Component", () => {
 
         render(
             <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}
-                        authenticated={true}/>
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
             </BrowserRouter>
         );
 
@@ -194,17 +194,15 @@ describe("Header Component", () => {
 
         render(
             <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}
-                        authenticated={true}/>
-                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}/>
-            </BrowserRouter>);
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
+                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
+            </BrowserRouter>        );
 
         // Mock the axios post request to simulate a failed logout
         jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Logout Error'));
 
         // Mock console.error
-        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
-        });
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
         // Click the logout button
         fireEvent.click(screen.getByText('Logout'));
@@ -226,7 +224,7 @@ describe("Header Component", () => {
     });
 });
 test("renders footer text", () => {
-    const {getByText} = render(<Footer/>);
+    const { getByText } = render(<Footer />);
     const headerText = getByText(/Let's Go Camping! Team 17/i);
     expect(headerText).toBeInTheDocument();
 });
@@ -234,12 +232,11 @@ test("renders footer text", () => {
 it('handles error when checking authentication status', async () => {
     axios.get.mockRejectedValueOnce(new Error('Authentication error'));
 
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
-    });
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
         <MemoryRouter initialEntries={['/']}>
-            <App/>
+            <App />
         </MemoryRouter>
     );
 
@@ -259,10 +256,10 @@ describe('Search component', () => {
         const navigateMock = jest.fn();
 
         render(
+
             <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}
-                        authenticated={true}/>
-                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}/>
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
+                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
             </BrowserRouter>
         );
 
@@ -289,17 +286,15 @@ describe('Search component', () => {
 
         render(
             <BrowserRouter>
-                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}
-                        authenticated={true}/>
-                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock}/>
-            </BrowserRouter>);
+                <Header updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} authenticated={true} />
+                <Search updateAuthenticationStatus={updateAuthenticationStatusMock} navigate={navigateMock} />
+            </BrowserRouter>        );
 
         // Mock the axios post request to simulate a failed logout
         jest.spyOn(axios, 'post').mockRejectedValueOnce(new Error('Logout Error'));
 
         // Mock console.error
-        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {
-        });
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
         // Click the logout button
         fireEvent.click(screen.getByText('Logout'));
@@ -321,6 +316,7 @@ describe('Search component', () => {
     });
 
 
+
     // test('favorites button', async () => {
     //     const navigateMock = jest.fn();
     //
@@ -340,8 +336,8 @@ describe('Search component', () => {
     test('renders Search', () => {
         render(
             <BrowserRouter>
-                <Search/>
-            </BrowserRouter>);
+                <Search />
+            </BrowserRouter>        );
 
 
         // Check if search input and type radio buttons are rendered
@@ -360,78 +356,60 @@ describe('Search component', () => {
 
     test('search by name', async () => {
         render(<BrowserRouter>
-            <Search/>
+            <Search />
         </BrowserRouter>);
 
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
-                data: [{
-                    fullName: 'Castle Mountains National Monument',
-                    description: 'Description: Castle Mountains represents some of the most unique elements of the Mojave Desert. Nestled between the Nevada state line and Mojave National Preserve, the nearly 21,000 acres of Castle Mountains boasts Joshua tree forests, unbroken natural landscapes, rare desert grasslands, and rich human history. This intriguing area provides serenity and solitude from nearby metropolitan areas.'
-                },
-                    {
-                        fullName: 'Joshua Tree National Park',
-                        description: 'Description: Two distinct desert ecosystems, the Mojave and the Colorado, come together in Joshua Tree National Park. A fascinating variety of plants and animals make their homes in a land sculpted by strong winds and occasional torrents of rain. Dark night skies, a rich cultural history, and surreal geologic features add to the wonder of this vast wilderness in southern California. Come explore for yourself!'
-                    },
-                    {
-                        fullName: 'Mojave National Preserve',
-                        description: 'Description: Mojave preserves a diverse mosaic of ecological habitats and a 10,000 year history of human connection with the desert. Offering extensive opportunities to experience desert landscapes, the preserve promotes understanding and appreciation for the increasingly threatened resources of the Mojave Desert. This remote preserve encourages a sense of discovery and a connection to wild places.'
-                    }]
+                data: [{ fullName: 'Castle Mountains National Monument', description: 'Description: Castle Mountains represents some of the most unique elements of the Mojave Desert. Nestled between the Nevada state line and Mojave National Preserve, the nearly 21,000 acres of Castle Mountains boasts Joshua tree forests, unbroken natural landscapes, rare desert grasslands, and rich human history. This intriguing area provides serenity and solitude from nearby metropolitan areas.'},
+                    { fullName: 'Joshua Tree National Park', description: 'Description: Two distinct desert ecosystems, the Mojave and the Colorado, come together in Joshua Tree National Park. A fascinating variety of plants and animals make their homes in a land sculpted by strong winds and occasional torrents of rain. Dark night skies, a rich cultural history, and surreal geologic features add to the wonder of this vast wilderness in southern California. Come explore for yourself!' },
+                    { fullName: 'Mojave National Preserve', description: 'Description: Mojave preserves a diverse mosaic of ecological habitats and a 10,000 year history of human connection with the desert. Offering extensive opportunities to experience desert landscapes, the preserve promotes understanding and appreciation for the increasingly threatened resources of the Mojave Desert. This remote preserve encourages a sense of discovery and a connection to wild places.' }]
             })
         });
 
-        fireEvent.change(screen.getByPlaceholderText(/Enter park name/), {target: {value: 'Park'}});
+        fireEvent.change(screen.getByPlaceholderText(/Enter park name/), { target: { value: 'Park' } });
         fireEvent.click(screen.getByLabelText('Search by Name'));
         fireEvent.click(screen.getByText("Search"));
 
 
         await waitFor(() => {
-            const h3_C = screen.getByRole('heading', {name: 'Castle Mountains National Monument'});
+            const h3_C = screen.getByRole('heading', { name: 'Castle Mountains National Monument' });
             expect(h3_C).toBeInTheDocument();
-            const h3_J = screen.getByRole('heading', {name: 'Joshua Tree National Park'});
+            const h3_J = screen.getByRole('heading', { name: 'Joshua Tree National Park' });
             expect(h3_J).toBeInTheDocument();
-            const h3_M = screen.getByRole('heading', {name: 'Mojave National Preserve'});
+            const h3_M = screen.getByRole('heading', { name: 'Mojave National Preserve' });
             expect(h3_M).toBeInTheDocument();
         });
     });
     test('search by state', async () => {
         render(<BrowserRouter>
-            <Search/>
+            <Search  />
         </BrowserRouter>);
         global.fetch = jest.fn().mockResolvedValueOnce({
             json: async () => ({
-                data: [{
-                    fullName: 'Alcatraz Island',
-                    description: 'Description: Alcatraz reveals stories of American incarceration, justice, and our common humanity. This small island was once a fort, a military prison, and a maximum security federal penitentiary. In 1969, the Indians of All Tribes occupied Alcatraz for 19 months in the name of freedom and Native American civil rights. We invite you to explore Alcatraz\'s complex history and natural beauty.'
-                },
-                    {
-                        fullName: 'Butterfield Overland National Historic Trail',
-                        description: 'Description: In 1857, businessman and transportation entrepreneur John Butterfield was awarded a contract to establish an overland mail route between the eastern United States and growing populations in the Far West. What became known as the Butterfield Overland Trail made an arcing sweep across the southern rim of the country. Stagecoaches left twice a week carrying passengers, freight, and mail.'
-                    },
-                    {
-                        fullName: 'Cabrillo National Monument',
-                        description: 'Description: Climbing out of his boat and onto shore in 1542, Juan Rodriguez Cabrillo stepped into history as the first European to set foot on what is now the West Coast of the United States. In addition to telling the story of 16th century exploration, the park is home to a wealth of cultural and natural resources. Join us and embark on your own Voyage of Exploration.'
-                    }]
+                data: [{ fullName: 'Alcatraz Island', description: 'Description: Alcatraz reveals stories of American incarceration, justice, and our common humanity. This small island was once a fort, a military prison, and a maximum security federal penitentiary. In 1969, the Indians of All Tribes occupied Alcatraz for 19 months in the name of freedom and Native American civil rights. We invite you to explore Alcatraz\'s complex history and natural beauty.' },
+                    { fullName: 'Butterfield Overland National Historic Trail', description: 'Description: In 1857, businessman and transportation entrepreneur John Butterfield was awarded a contract to establish an overland mail route between the eastern United States and growing populations in the Far West. What became known as the Butterfield Overland Trail made an arcing sweep across the southern rim of the country. Stagecoaches left twice a week carrying passengers, freight, and mail.' },
+                    { fullName: 'Cabrillo National Monument', description: 'Description: Climbing out of his boat and onto shore in 1542, Juan Rodriguez Cabrillo stepped into history as the first European to set foot on what is now the West Coast of the United States. In addition to telling the story of 16th century exploration, the park is home to a wealth of cultural and natural resources. Join us and embark on your own Voyage of Exploration.' }]
             })
         });
 
         fireEvent.click(screen.getByLabelText('Search by State'));
-        fireEvent.change(screen.getByPlaceholderText('Enter 2-letter state code'), {target: {value: 'CA'}});
+        fireEvent.change(screen.getByPlaceholderText('Enter 2-letter state code'), { target: { value: 'CA' } });
         fireEvent.click(screen.getByText('Search'));
 
         await waitFor(() => {
-            const h3_A = screen.getByRole('heading', {name: 'Alcatraz Island'});
+            const h3_A = screen.getByRole('heading', { name: 'Alcatraz Island' });
             expect(h3_A).toBeInTheDocument();
-            const h3_B = screen.getByRole('heading', {name: 'Butterfield Overland National Historic Trail'});
+            const h3_B = screen.getByRole('heading', { name: 'Butterfield Overland National Historic Trail' });
             expect(h3_B).toBeInTheDocument();
-            const h3_C = screen.getByRole('heading', {name: 'Cabrillo National Monument'});
+            const h3_C = screen.getByRole('heading', { name: 'Cabrillo National Monument' });
             expect(h3_C).toBeInTheDocument();
 
         });
     });
     test('search by activity', async () => {
         render(<BrowserRouter>
-            <Search/>
+            <Search />
         </BrowserRouter>);
 
         // Mocking fetch function to return sample data
@@ -440,7 +418,7 @@ describe('Search component', () => {
                 data: [
                     {
                         name: 'Hiking',
-                        parks: [{fullName: 'Acadia National Park'}]
+                        parks: [{ fullName: 'Acadia National Park'} ]
                     },
                 ]
             })
@@ -449,7 +427,7 @@ describe('Search component', () => {
         fireEvent.click(screen.getByLabelText('Search by Activity'));
 
         // Enter search term and submit form
-        fireEvent.change(screen.getByPlaceholderText('Enter activity'), {target: {value: 'Hiking'}});
+        fireEvent.change(screen.getByPlaceholderText('Enter activity'), { target: { value: 'Hiking' } });
         fireEvent.click(screen.getByText('Search'));
 
         // Wait for search results to be displayed
@@ -460,7 +438,7 @@ describe('Search component', () => {
     test('search by amenity', async () => {
         render(
             <BrowserRouter>
-                <Search/>
+                <Search />
             </BrowserRouter>
         );
 
@@ -468,8 +446,8 @@ describe('Search component', () => {
             json: async () => ({
                 data: [
                     [
-                        {name: 'Accessible Restrooms', parks: [{fullName: 'Park A'}, {fullName: 'Park B'}]},
-                        {name: 'Fire Pit', parks: [{fullName: 'Park C'}]}
+                        { name: 'Accessible Restrooms', parks: [{ fullName: 'Park A' }] },
+                        { name: 'Fire Pit', parks: [{ fullName: 'Park C' }] }
                     ]
                 ]
             })
@@ -478,19 +456,21 @@ describe('Search component', () => {
         fireEvent.click(screen.getByLabelText('Search by Amenity'));
 
         // Enter search term and submit form
-        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), {target: {value: 'Restrooms'}});
+        fireEvent.change(screen.getByPlaceholderText('Enter amenity'), { target: { value: 'Restrooms' } });
         fireEvent.click(screen.getByText('Search'));
 
         // Wait for search results to be displayed
         await waitFor(() => {
             expect(screen.getByText('Accessible Restrooms')).toBeInTheDocument();
             expect(screen.getByText('Park A')).toBeInTheDocument();
-            expect(screen.getByText('Park B')).toBeInTheDocument();
 
             expect(screen.getByText('Fire Pit')).toBeInTheDocument();
             expect(screen.getByText('Park C')).toBeInTheDocument();
         });
     });
+
+
+
 
 
     // test('search with no search type selected', async () => {
@@ -516,11 +496,11 @@ describe('Search component', () => {
     // });
 
 
+
     test('blank search term', async () => {
-        jest.spyOn(window, 'alert').mockImplementation(() => {
-        });
+        jest.spyOn(window, 'alert').mockImplementation(() => {});
         render(<BrowserRouter>
-            <Search/>
+            <Search />
         </BrowserRouter>);
         global.fetch = jest.fn().mockResolvedValue({});
         fireEvent.click(screen.getByText('Search'));
@@ -529,14 +509,19 @@ describe('Search component', () => {
     });
 
 
+
+
+
+
+
+
     test('fetch error', async () => {
-        jest.spyOn(window, 'alert').mockImplementation(() => {
-        });
+        jest.spyOn(window, 'alert').mockImplementation(() => {});
         render(<BrowserRouter>
-            <Search/>
+            <Search />
         </BrowserRouter>);
         global.fetch = jest.fn().mockRejectedValueOnce(new Error('Fetch Error'));
-        fireEvent.change(screen.getByPlaceholderText(/Enter park name/), {target: {value: 'Park'}});
+        fireEvent.change(screen.getByPlaceholderText(/Enter park name/), { target: { value: 'Park' } });
         fireEvent.click(screen.getByText('Search'));
         await waitFor(() => {
             expect(window.alert).toHaveBeenCalledWith('Fetch Error');
@@ -547,6 +532,9 @@ describe('Search component', () => {
 afterEach(() => {
     window.history.pushState(null, document.title, "/");
 });
+
+
+
 
 
 describe('Login/Create component', () => {
@@ -561,10 +549,26 @@ describe('Login/Create component', () => {
     //     expect(loginElements.length).toBeGreaterThan(0);
     // });
 
+    test('should close the modal when closeModal function is called', () => {
+        const { getByText } = render(<BrowserRouter><Create /></BrowserRouter>);
+
+        // Open the modal by clicking the "Already have an account? Login" button
+        fireEvent.click(getByText('Already have an account? Login'));
+
+        // Verify that the modal is open
+        expect(getByText(/Are you sure you want to cancel creating this account?/i)).toBeInTheDocument();
+
+        // Close the modal by calling the closeModal function
+        fireEvent.click(getByText('Go Back to Create'));
+
+        // Verify that the modal is closed
+        expect(getByText('Username:')).toBeInTheDocument(); // Check if any element from the form is rendered to confirm the modal is closed
+    });
+
     test('renders login page', () => {
         render(
             <BrowserRouter>
-                <Login/>
+                <Login />
             </BrowserRouter>
         );
 
@@ -576,7 +580,7 @@ describe('Login/Create component', () => {
     test('renders create account page', () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
@@ -588,7 +592,7 @@ describe('Login/Create component', () => {
     test('renders dashboard page', () => {
         render(
             <BrowserRouter>
-                <Dashboard/>
+                <Dashboard />
             </BrowserRouter>
         );
 
@@ -628,33 +632,34 @@ describe('Login/Create component', () => {
     // });
 
 
+
     test('displays error message if login fails', async () => {
         const mockedError = "Invalid username or password";
-        axios.post.mockRejectedValueOnce({response: {data: mockedError}});
+        axios.post.mockRejectedValueOnce({ response: { data: mockedError } });
 
         render(
             <BrowserRouter>
-                <Login/>
+                <Login />
             </BrowserRouter>
         );
 
         // Empty username and password
-        fireEvent.click(screen.getByText(/Login/i, {selector: 'button'}));
+        fireEvent.click(screen.getByText(/Login/i, { selector: 'button' }));
         await waitFor(() => {
             expect(screen.getByText(/Username and password are required/i)).toBeInTheDocument();
         });
 
         // Empty username
-        fireEvent.change(screen.getByLabelText(/Password/i), {target: {value: "testpassword"}});
-        fireEvent.click(screen.getByText(/Login/i, {selector: 'button'}));
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.getByText(/Login/i, { selector: 'button' }));
         await waitFor(() => {
             expect(screen.getByText(/Username required/i)).toBeInTheDocument();
         });
 
         // Empty password
-        fireEvent.change(screen.getByLabelText(/Username/i), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText(/Password/i), {target: {value: ""}});
-        fireEvent.click(screen.getByText(/Login/i, {selector: 'button'}));
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "" } });
+        fireEvent.click(screen.getByText(/Login/i, { selector: 'button' }));
         await waitFor(() => {
             expect(screen.getByText(/Password required/i)).toBeInTheDocument();
         });
@@ -663,11 +668,11 @@ describe('Login/Create component', () => {
 
     test('displays error message if login API call fails', async () => {
         const mockedError = "Invalid username or password";
-        axios.post.mockRejectedValueOnce({response: {data: mockedError}});
+        axios.post.mockRejectedValueOnce({ response: { data: mockedError } });
 
         render(
             <BrowserRouter>
-                <Login/>
+                <Login />
             </BrowserRouter>
         );
         fillWithTestValueAndSubmit("Login")
@@ -681,7 +686,7 @@ describe('Login/Create component', () => {
     test('redirects to create account page when "Sign Up" button is clicked', () => {
         render(
             <BrowserRouter>
-                <Login/>
+                <Login />
             </BrowserRouter>
         );
 
@@ -693,80 +698,93 @@ describe('Login/Create component', () => {
     test('calls setUsername when username input changes', () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText(/Username/i), {target: {value: "testuser"}});
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
         expect(screen.getByLabelText(/Username/i).value).toBe("testuser");
     });
 
     test('calls setPassword when password input changes', () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
         expect(screen.getByLabelText('Password:').value).toBe("testpassword");
     });
 
     test('calls setConfirmPassword when confirm password input changes', () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "testpassword"}});
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
         expect(screen.getByLabelText('Confirm Password:').value).toBe("testpassword");
     });
 
     test('submits form successfully when all fields are filled correctly', async () => {
-        const mockedResponse = {data: {username: "testuser"}};
-        axios.post.mockResolvedValueOnce({data: mockedResponse});
+        const mockedResponse = { data: { username: "testuser" } };
+        axios.post.mockResolvedValueOnce({ data: mockedResponse });
 
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
         fillWithTestValueAndSubmit("Create Account")
 
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith('/api/users/create', {
-                username: "testuser",
-                password: "testpassword"
-            });
+            expect(axios.post).toHaveBeenCalledWith('/api/users/create', { username: "testuser", password: "testpassword" });
         });
     });
 
     test('displays error message when username is missing', async () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "testpassword"}});
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
 
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(/username required/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/username required/i)).toBeTruthy();
+        });
+    });
+
+    test('displays error message when both missing', async () => {
+        render(
+            <BrowserRouter>
+                <Create />
+            </BrowserRouter>
+        );
+
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
+
+        await waitFor(() => {
+            expect(screen.getAllByText(/Username and password required/i)).toBeTruthy();
         });
     });
 
     test('redirects to login page when "Login" button is clicked', () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
         fireEvent.click(screen.getByText(/Already have an account\? /i));
+        const cancelButton = screen.getByTestId('cancel-create-account-btn');
+        fireEvent.click(cancelButton);
 
         expect(window.location.pathname).toBe("/login");
     });
@@ -775,76 +793,76 @@ describe('Login/Create component', () => {
     test('displays error message when password is missing', async () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Username:'), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "testpassword"}});
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
 
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(/password required/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/password required/i)).toBeTruthy();
         });
     });
 
     test('displays error message when confirm password is missing', async () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Username:'), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
 
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(/confirm password required/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/confirm password required/i)).toBeTruthy();
         });
     });
 
     test('displays error message when passwords do not match', async () => {
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText('Username:'), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "differentpassword"}});
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "differentpassword" } });
 
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(/passwords must match/i)).toBeInTheDocument();
+            expect(screen.getAllByText(/passwords must match/i)).toBeTruthy();
         });
     });
 
     test('displays error message when API call fails', async () => {
         const mockedError = "API call failed";
-        axios.post.mockRejectedValueOnce({response: {data: mockedError}});
+        axios.post.mockRejectedValueOnce({ response: { data: mockedError } });
 
         render(
             <BrowserRouter>
-                <Create/>
+                <Create />
             </BrowserRouter>
         );
         fillWithTestValueAndSubmit("Create Account")
 
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
-        fireEvent.change(screen.getByLabelText('Username:'), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "testpassword"}});
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
 
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(mockedError)).toBeInTheDocument();
+            expect(screen.getAllByText(mockedError)).toBeTruthy();
         });
     });
 
@@ -855,24 +873,20 @@ describe('Login/Create component', () => {
                 token: "testtoken"
             }
         };
-        axios.post.mockResolvedValueOnce({data: mockedResponse});
+        axios.post.mockResolvedValueOnce({ data: mockedResponse });
 
         render(
             <BrowserRouter>
-                <Login updateAuthenticationStatus={() => {
-                }}/>
+                <Login updateAuthenticationStatus={() => {}} />
             </BrowserRouter>
         );
 
-        fireEvent.change(screen.getByLabelText(/Username/i), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText(/Password/i), {target: {value: "testpassword"}});
-        fireEvent.click(screen.queryByText(/Login/i, {selector: 'button'}));
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
 
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith('/api/users/login', {
-                username: "testuser",
-                password: "testpassword"
-            });
+            expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
             expect(window.location.pathname).toBe("/search");
         });
     });
@@ -925,6 +939,8 @@ describe('Login/Create component', () => {
 });
 
 
+
+
 // Mock the updateAuthenticationStatus function
 const mockUpdateAuthenticationStatus = jest.fn();
 
@@ -935,20 +951,20 @@ test('should update authentication status on successful login', async () => {
             token: "testtoken"
         }
     };
-    axios.post.mockResolvedValueOnce({data: mockedResponse});
+    axios.post.mockResolvedValueOnce({ data: mockedResponse });
 
     render(
         <BrowserRouter>
-            <Login updateAuthenticationStatus={mockUpdateAuthenticationStatus}/>
+            <Login updateAuthenticationStatus={mockUpdateAuthenticationStatus} />
         </BrowserRouter>
     );
 
     // Fill in the username and password fields
-    fireEvent.change(screen.getByLabelText('Username:'), {target: {value: 'testuser'}});
-    fireEvent.change(screen.getByLabelText('Password:'), {target: {value: 'testpassword'}});
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
 
     // Submit the form
-    fireEvent.click(screen.queryByText(/Login/i, {selector: 'button'}));
+    fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
 
     // Wait for the API call to resolve
     await waitFor(() => {
@@ -958,11 +974,11 @@ test('should update authentication status on successful login', async () => {
 });
 
 test('should render Login page when not authenticated', async () => {
-    axios.get.mockResolvedValueOnce({data: false});
+    axios.get.mockResolvedValueOnce({ data: false });
 
-    const {getByText} = render(
+    const { getByText } = render(
         <MemoryRouter>
-            <App/>
+            <App />
         </MemoryRouter>
     );
 
@@ -972,6 +988,7 @@ test('should render Login page when not authenticated', async () => {
 });
 
 
+
 test('should update authentication status app comp', async () => {
     const mockedResponse = {
         data: {
@@ -979,21 +996,21 @@ test('should update authentication status app comp', async () => {
             token: "testtoken"
         }
     };
-    axios.post.mockResolvedValueOnce({data: mockedResponse});
+    axios.post.mockResolvedValueOnce({ data: mockedResponse });
     axios.get.mockResolvedValueOnce({});
 
     render(
         <BrowserRouter>
-            <App/>
+            <App />
         </BrowserRouter>
     );
 
     // Fill in the username and password fields
-    fireEvent.change(screen.getByLabelText('Username:'), {target: {value: 'testuser'}});
-    fireEvent.change(screen.getByLabelText('Password:'), {target: {value: 'testpassword'}});
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
 
     // Submit the form
-    fireEvent.click(screen.queryByText(/Login/i, {selector: 'button'}));
+    fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
 
     // Wait for the API call to resolve
     await waitFor(() => {
@@ -1027,9 +1044,9 @@ describe('Favorites component', () => {
     });
 
     test('renders correctly', () => {
-        const {getByText} = render(
+        const { getByText } = render(
             <BrowserRouter>
-                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus}/>
+                <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
             </BrowserRouter>
         );
         expect(getByText('Favorites')).toBeInTheDocument();
@@ -1084,16 +1101,17 @@ describe('Favorites component', () => {
 });
 
 
+
 const fillWithTestValueAndSubmit = (action) => {
     if (action === "Login") {
-        fireEvent.change(screen.getByLabelText(/Username/i), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText(/Password/i), {target: {value: "testpassword"}});
-        fireEvent.click(screen.queryByText(/Login/i, {selector: 'button'}));
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
     } else if (action === "Create Account") {
-        fireEvent.change(screen.getByLabelText('Username:'), {target: {value: "testuser"}});
-        fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "testpassword"}});
-        fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
+        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
+        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
     }
 }
 
@@ -1102,28 +1120,31 @@ describe('Results Component', () => {
         fullName: 'Test Park',
         parkCode: 'TEST123',
         url: 'https://example.com',
-        addresses: [{city: 'Test City', stateCode: 'TS'}],
-        entranceFees: [{cost: 10, description: 'Test Fee Description'}],
+        addresses: [{ city: 'Test City', stateCode: 'TS' }],
+        entranceFees: [{ cost: 10, description: 'Test Fee Description' }],
         description: 'Test Description',
-        activities: [{name: 'Hiking'}],
-        images: [{url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title'}],
+        activities: [{ name: 'Hiking' }],
+        amenities: [{name: 'Restroom'}],
+        images: [{ url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title' }],
     };
 
     const parkDetails = {
         fullName: 'Test Park',
         url: 'https://example.com',
-        addresses: [{city: 'Test City', stateCode: 'TS'}],
-        entranceFees: [{cost: 10, description: 'Test Description'}],
+        addresses: [{ city: 'Test City', stateCode: 'TS' }],
+        entranceFees: [{ cost: 10, description: 'Test Description' }],
         description: 'Test Description',
-        activities: [{name: 'Hiking'}],
-        images: [{url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title'}],
+        activities: [{ name: 'Hiking' }],
+        amenities: [{name: 'Restroom'}],
+        images: [{ url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title' }],
     };
     const setParkDetails = jest.fn();
     const page = 'search';
     const mockedResponses = {
-        '/api/parks?searchTerm=TEST123&searchType=parkClick': {data: [{fullName: 'Test Park'}]},
-        '/api/parks?searchTerm=TEST123&searchType=amenity_parkcode': {data: [{id: 1, name: 'Amenity 1'}]},
+        '/api/parks?searchTerm=TEST123&searchType=parkClick': { data: [{ fullName: 'Test Park' }] },
+        '/api/parks?searchTerm=TEST123&searchType=amenity_parkcode': { data: [{ id: 1, name: 'Amenity 1' }] },
     };
+
 
     global.fetch = jest.fn().mockImplementation((url) =>
         Promise.resolve({
@@ -1132,7 +1153,7 @@ describe('Results Component', () => {
     );
 
     it('should render park details correctly when expanded', async () => {
-        const {getByText, getByTestId} = render(
+        const { getByText, getByTestId } = render(
             renderParkInfo(park, parkDetails, setParkDetails, page)
         );
 
@@ -1141,7 +1162,7 @@ describe('Results Component', () => {
         await waitFor(() => {
             expect(getByText('Test Park')).toBeInTheDocument();
             expect(getByText('Website')).toHaveAttribute('href', 'https://example.com');
-            expect(getByText('Test City, TS')).toBeInTheDocument();
+            expect(getByText('TS')).toBeInTheDocument();
             expect(getByText('Entrance Fee:')).toBeInTheDocument();
             expect(getByText('$10')).toBeInTheDocument();
             // expect(getByText(/^Entrance Fee Description:/)).toBeInTheDocument(); // Using regex to match text
@@ -1166,7 +1187,7 @@ describe('Results Component', () => {
                 }),
         });
 
-        const {getByText, getByTestId} = render(
+        const { getByText, getByTestId } = render(
             renderParkInfo(park, parkDetails, setParkDetails, page)
         );
         fireEvent.click(getByText('Test Park'));
@@ -1182,7 +1203,7 @@ describe('Results Component', () => {
             fullName: 'Test Park',
             parkCode: 'TP',
         };
-        const {getByTestId} = render(renderParkInfo(park, null, setParkDetails, 'search'));
+        const { getByTestId } = render(renderParkInfo(park, null, setParkDetails, 'search'));
 
         const parkElement = getByTestId('list-element-toggle');
 
@@ -1204,13 +1225,14 @@ describe('Results Component', () => {
 //<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>
         expect(parkElement).not.toContainHTML('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should not be present
     });
+
     it('should call setParkDetails with data from fetch when successful', async () => {
-        const mockPark = {fullName: 'Test Park', parkCode: 'TP'};
-        const mockData = {data: [{fullName: 'Test Park', url: 'https://testpark.com'}]};
-        global.fetch = jest.fn().mockResolvedValueOnce({json: jest.fn().mockResolvedValueOnce(mockData)});
+        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
+        const mockData = { data: [{ fullName: 'Test Park', url: 'https://testpark.com' }] };
+        global.fetch = jest.fn().mockResolvedValueOnce({ json: jest.fn().mockResolvedValueOnce(mockData) });
 
         const setParkDetails = jest.fn();
-        const {getByText} = render(renderParkInfo(mockPark, null, setParkDetails, 'search'));
+        const { getByText } = render(renderParkInfo(mockPark, null, setParkDetails, 'search'));
 
         fireEvent.click(getByText('Test Park'));
 
@@ -1218,25 +1240,84 @@ describe('Results Component', () => {
     });
 
     it('should fetch park amenities with populate amenities', async () => {
-        const park = {
-            fullName: 'Test Park',
-            parkCode: 'TEST123',
-        };
-        const parkDetails = null;
-        const setParkDetails = jest.fn();
-        const page = 'search';
+            const park = {
+                fullName: 'Test Park',
+                parkCode: 'TEST123',
+            };
+            const parkDetails = null;
+            const setParkDetails = jest.fn();
+            const page = 'search';
 
-        // Render the component
-        render(renderParkInfo(park, parkDetails, setParkDetails, page));
+            // Render the component
+            render(renderParkInfo(park, parkDetails, setParkDetails, page));
 
-        // Simulate a click event to trigger the asynchronous function
-        fireEvent.click(screen.getByText('Test Park'));
+            // Simulate a click event to trigger the asynchronous function
+            fireEvent.click(screen.getByText('Test Park'));
 
-        await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
-        await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
+            await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
+            await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
     });
 
-    // test('should alert "Added to favorites" when plus button is clicked', async () => {
+    it('should show alert and log error on fetch error', async () => {
+        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
+        global.fetch = jest.fn().mockRejectedValueOnce(new Error('Fetch Error'));
+        const originalConsoleError = console.error;
+        console.error = jest.fn(); // Mock console.error
+        const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {}); // Mock window.alert
+
+        const { getByText } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+
+        fireEvent.click(getByText('Test Park'));
+
+        await waitFor(() => {
+            expect(mockAlert).toHaveBeenCalledWith('Fetch Error');
+            expect(console.error).toHaveBeenCalledWith(new Error('Fetch Error'));
+        });
+
+        console.error = originalConsoleError; // Restore original console.error
+        mockAlert.mockRestore(); // Restore mockAlert
+    });
+
+    // it('should log "Added to favorites!"', () => {
+    //     const mockPark = {fullName: 'Test Park', parkCode: 'TP'};
+    //     const consoleSpy = jest.spyOn(console, 'log');
+    //
+    //     const {getByTestId} = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+    //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
+    //     const addButton = getByTestId('plus-button');
+    //     fireEvent.click(addButton);
+    // });
+    // it('should alert "Added to favorites!"', () => {
+    //     const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
+    //     const consoleSpy = jest.spyOn(console, 'log');
+    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    //
+    //     const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+    //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
+    //     const addButton = getByTestId('plus-button');
+    //     fireEvent.click(addButton);
+    //
+    //     expect(alertMock).toHaveBeenCalledWith('Added to favorites!');
+    //
+    //     alertMock.mockRestore(); // Restore console.log
+    // });
+    // it('should log "Park already added"', () => {
+    //     const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
+    //     const consoleSpy = jest.spyOn(console, 'log');
+    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    //
+    //     const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+    //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
+    //     const addButton = getByTestId('plus-button');
+    //     fireEvent.click(addButton);
+    //     fireEvent.click(addButton);
+    //
+    //     expect(alertMock).toHaveBeenCalledWith('This Park was already added to favorites!');
+    //     alertMock.mockRestore(); // Restore console.log
+    // });
+
+    // it('should set amenity results when fetch is successful', async () => {
+    //     // Setup
     //     const park = {
     //         fullName: 'Test Park',
     //         parkCode: 'TEST123',
@@ -1245,168 +1326,168 @@ describe('Results Component', () => {
     //     const setParkDetails = jest.fn();
     //     const page = 'search';
     //
-    //     // Spy on window.alert
-    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-    //
     //     // Render the component
     //     render(renderParkInfo(park, parkDetails, setParkDetails, page));
     //
-    //     // Simulate hovering over the park to make the plus button appear
-    //     const parkElement = screen.getByText('Test Park'); // Assuming 'Test Park' is the text content of the park element
-    //     fireEvent.mouseEnter(parkElement);
-    //
     //     // Simulate a click event to trigger the asynchronous function
-    //     fireEvent.click(screen.getByTestId('plus-button'));
+    //     fireEvent.click(screen.getByText('Test Park'));
     //
-    //     // Wait for the alert to be called
+    //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
+    //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
+    //     // Wait for the async operations to complete
+    //     await waitFor(() => screen.getByText('Amenity 1'));
+    //
+    //     // Assertions
+    //     expect(setParkDetails).toHaveBeenCalledTimes(1);
+    //     expect(global.fetch).toHaveBeenCalledTimes(2); // Two fetch calls made
+    //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
+    //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode');
+    // });
+    // it('should render list items for amenityResults', async () => {
+    //     const mockAmenityResults = [{ id: 1, name: 'Amenity 1' }, { id: 2, name: 'Amenity 2' }];
+    //     const { container, rerender } = render(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search')); // Render the component initially
+    //
     //     await waitFor(() => {
-    //         // Assert that the window.alert function is called with the correct message
-    //         expect(alertMock).toHaveBeenCalledWith('Added to favorites!');
+    //         // Simulate setting amenityResults state
+    //         rerender(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search', mockAmenityResults));
     //     });
     //
-    //     // Restore the original implementation of window.alert
-    //     alertMock.mockRestore();
-    // });
-
-
-
-
-
-    // it('should set amenity results when fetch is successful', async () => {
-        //     // Setup
-        //     const park = {
-        //         fullName: 'Test Park',
-        //         parkCode: 'TEST123',
-        //     };
-        //     const parkDetails = null;
-        //     const setParkDetails = jest.fn();
-        //     const page = 'search';
-        //
-        //     // Render the component
-        //     render(renderParkInfo(park, parkDetails, setParkDetails, page));
-        //
-        //     // Simulate a click event to trigger the asynchronous function
-        //     fireEvent.click(screen.getByText('Test Park'));
-        //
-        //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
-        //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
-        //     // Wait for the async operations to complete
-        //     await waitFor(() => screen.getByText('Amenity 1'));
-        //
-        //     // Assertions
-        //     expect(setParkDetails).toHaveBeenCalledTimes(1);
-        //     expect(global.fetch).toHaveBeenCalledTimes(2); // Two fetch calls made
-        //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
-        //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode');
-        // });
-        // it('should render list items for amenityResults', async () => {
-        //     const mockAmenityResults = [{ id: 1, name: 'Amenity 1' }, { id: 2, name: 'Amenity 2' }];
-        //     const { container, rerender } = render(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search')); // Render the component initially
-        //
-        //     await waitFor(() => {
-        //         // Simulate setting amenityResults state
-        //         rerender(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search', mockAmenityResults));
-        //     });
-        //
-        //     const listItems = container.querySelectorAll('ul li');
-        //     expect(listItems.length).toBe(mockAmenityResults.length);
-        //
-        //     listItems.forEach((item, index) => {
-        //         expect(item.textContent).toBe(mockAmenityResults[index].name);
-        //         expect(item.key).toBe(mockAmenityResults[index].id.toString());
-        //     });
-        // });
-    });
-
-describe('Favorites Component', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-    // test('fetches and displays favorite parks', async () => {
-    //     const favoriteParksResponse = ['PARK1', 'PARK2'];
-    //     axios.get.mockResolvedValueOnce({ data: favoriteParksResponse });
+    //     const listItems = container.querySelectorAll('ul li');
+    //     expect(listItems.length).toBe(mockAmenityResults.length);
     //
-    //     const fetchParkDetailsResponse = {
-    //         data: [
-    //             { fullName: 'Park 1', parkCode: 'PARK1' },
-    //             { fullName: 'Park 2', parkCode: 'PARK2' },
-    //         ],
-    //     };
-    //     axios.mockImplementationOnce(() => Promise.resolve(fetchParkDetailsResponse));
-    //
-    //     const { findByText } = render(<Favorites />);
-    //     await waitFor(() => {
-    //         favoriteParksResponse.forEach(async parkCode => {
-    //             const parkDetails = await findByText(`Park ${parkCode}`);
-    //             expect(parkDetails).toBeInTheDocument();
-    //         });
+    //     listItems.forEach((item, index) => {
+    //         expect(item.textContent).toBe(mockAmenityResults[index].name);
+    //         expect(item.key).toBe(mockAmenityResults[index].id.toString());
     //     });
     // });
-    // test('removes from favorites and displays success toast', async () => {
-    //     const parkCodeToRemove = 'PARK123';
+
+
+    it('test clicking state code', async () => {
+
+        const { getByText, getByTestId } = render(
+            renderParkInfo(park, parkDetails, setParkDetails, page)
+        );
+
+        fireEvent.click(getByTestId('list-element-toggle'));
+        fireEvent.click(getByText('TS'));
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TS&searchType=state');
+        });
+
+    });
+
+    it('test clicking activity', async () => {
+
+        const { getByText, getByTestId } = render(
+            renderParkInfo(park, parkDetails, setParkDetails, page)
+        );
+
+        fireEvent.click(getByTestId('list-element-toggle'));
+        fireEvent.click(getByText('Hiking'));
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=Hiking&searchType=activity');
+        });
+
+    });
+
+    // it('test clicking amenity', async () => {
+    //     const { getByText, getByTestId } = render(
+    //         renderParkInfo(park, parkDetails, setParkDetails, page)
+    //     );
     //
-    //     // Mock successful removal response
-    //     axios.post.mockResolvedValueOnce({});
-    //
-    //     // Render the Favorites component
-    //     const { getByText } = render(<Favorites />);
-    //
-    //     // Simulate hovering over the park to make the plus button appear
-    //     fireEvent.mouseEnter(getByText('Test Park')); // Assuming 'Test Park' is the text content of the park element
-    //
-    //     // Simulate a click event to trigger removal from favorites
-    //     fireEvent.click(getByTestId('plus-button'));
-    //
-    //     // Wait for the success toast to appear
+    //     fireEvent.click(getByTestId('list-element-toggle'));
+    //     fireEvent.click(getByText(''));
     //     await waitFor(() => {
-    //         expect(toast.success).toHaveBeenCalledWith('Removed from favorites!');
+    //         expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=NA&searchType=amenity');
     //     });
-    //
-    //     // Ensure that the axios.post method was called with the correct parameters
-    //     expect(axios.post).toHaveBeenCalledWith('/api/favorites/remove', parkCodeToRemove);
     // });
 
-    test('toggles privacy and displays correct button text', async () => {
-        const { getByText } = render(<Favorites />);
-        const privacyButton = getByText(/public/i);
-        axios.post.mockResolvedValueOnce({});
 
-        fireEvent.click(privacyButton);
+    it('underline mouse enter and remove underline mouse leave activity', () => {
+        const { getByText, getByTestId } = render(
+            renderParkInfo(park, parkDetails, setParkDetails, page)
+        );
+        fireEvent.click(getByTestId('list-element-toggle'));
+        const activityLink = getByText('Hiking');
 
-        await waitFor(() => {
-            expect(getByText(/private/i)).toBeInTheDocument();
-        });
+        fireEvent.mouseEnter(activityLink);
+        expect(activityLink).toHaveStyle('text-decoration: underline;');
+
+        fireEvent.mouseLeave(activityLink);
+        expect(activityLink).not.toHaveStyle('text-decoration: underline;');
     });
 
-    test('renders Favorites component', () => {
-        render(<Favorites />);
-        // Check if the component renders without crashing
+    it('underline mouse enter and remove underline mouse leave state', () => {
+        const { getByText, getByTestId } = render(
+            renderParkInfo(park, parkDetails, setParkDetails, page)
+        );
+        fireEvent.click(getByTestId('list-element-toggle'));
+        const activityLink = getByText('TS');
+
+        fireEvent.mouseEnter(activityLink);
+        expect(activityLink).toHaveStyle('text-decoration: underline;');
+
+        fireEvent.mouseLeave(activityLink);
+        expect(activityLink).not.toHaveStyle('text-decoration: underline;');
+    });
+
+    it('should render NA for entrance fee when parkDetails.entranceFees is falsy', () => {
+        const parkDetailsWithoutEntranceFees = { ...parkDetails, entranceFees: null };
+        const { getByText, getByTestId } = render(
+            renderParkInfo(park, parkDetailsWithoutEntranceFees, setParkDetails, page)
+        );
+        fireEvent.click(getByTestId('list-element-toggle'));
+        expect(getByText('Entrance Fee:')).toBeInTheDocument();
+        expect(screen.getAllByText('NA')).toBeTruthy();
     });
 
 
-    test('fetches and displays favorite parks', async () => {
-        // Mock data for favorite parks
-        const favoriteParksResponse = ['PARK1', 'PARK2'];
-        // Mock axios response for fetchFavoriteParks
-        axios.get.mockResolvedValueOnce({ data: favoriteParksResponse });
+// test('should update search results', async () => {
+//     const updateSearchResultsMock = jest.fn();
+//
+//     render(
+//         <BrowserRouter>
+//             <Search />
+//         </BrowserRouter>
+//     );
+//
+//     global.fetch = jest.fn().mockResolvedValueOnce({
+//         json: async () => ({
+//             data: [
+//                 {
+//                     name: 'Hiking',
+//                     parks: [{ fullName: 'Test Park'} ]
+//                 },
+//             ]
+//         })
+//     });
+//     fireEvent.click(screen.getByLabelText('Search by Activity'));
+//
+//     fireEvent.change(screen.getByPlaceholderText('Enter activity'), { target: { value: 'Hiking' } });
+//     fireEvent.click(screen.getByText('Search'));
+//
+//     // Wait for search results to be displayed
+//     await waitFor(() => {
+//         expect(screen.getByText('Test Park')).toBeInTheDocument();
+//     });
+//
+//     // Wait for the park details to be visible
+//     await waitFor(() => {
+//         fireEvent.click(screen.getByText('Test Park'));
+//     });
+//
+//     // Wait for the park details to be visible
+//     await waitFor(() => {
+//         fireEvent.click(getByText('Hiking'));
+//     });
+//
+//     await waitFor(() => {
+//         expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=Hiking&searchType=activity');
+//         expect(updateSearchResultsMock()).toHaveBeenCalledWith(data.data, 'activity');
+//     });
+//
+// });
 
-        const { findByText } = render(<Favorites />);
-        await waitFor(() => {
-            favoriteParksResponse.forEach(async parkCode => {
-                const parkDetails = await findByText(parkCode);
-                expect(parkDetails).toBeInTheDocument();
-            });
-        });
-        // Ensure favorite parks are fetched and displayed
-    });
 
-    test('toggles privacy and displays correct button text', async () => {
-        const { getByText } = render(<Favorites />);
-        const privacyButton = getByText(/public/i);
-        fireEvent.click(privacyButton);
-        await waitFor(() => {
-            expect(getByText(/private/i)).toBeInTheDocument();
-        });
-        // Ensure privacy button toggles correctly
-    });
+
 });

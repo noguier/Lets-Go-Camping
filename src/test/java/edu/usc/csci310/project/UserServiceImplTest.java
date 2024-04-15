@@ -163,28 +163,28 @@ class UserServiceImplTest {
     void isValidPassword_ValidPassword() {
         String validPassword = "ValidPassword1";
 
-        assertTrue(userService.isValidPassword(validPassword));
+        assertTrue(userService.isValidPasswordLC(validPassword));
     }
 
     @Test
     void isValidPassword_InvalidPassword_NoLowercase() {
         String invalidPassword = "INVALIDPASSWORD1";
 
-        assertFalse(userService.isValidPassword(invalidPassword));
+        assertFalse(userService.isValidPasswordLC(invalidPassword));
     }
 
     @Test
     void isValidPassword_InvalidPassword_NoUppercase() {
         String invalidPassword = "invalidpassword1";
 
-        assertFalse(userService.isValidPassword(invalidPassword));
+        assertFalse(userService.isValidPasswordUC(invalidPassword));
     }
 
     @Test
     void isValidPassword_InvalidPassword_NoDigit() {
         String invalidPassword = "InvalidPassword";
 
-        assertFalse(userService.isValidPassword(invalidPassword));
+        assertFalse(userService.isValidPasswordDG(invalidPassword));
     }
 
     @Test

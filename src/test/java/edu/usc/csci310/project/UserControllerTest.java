@@ -118,11 +118,30 @@ class UserControllerTest {
         invalidPasswordRequest.setPassword("invalidpassword");
 
         UserService userService = getUserServiceMock();
-        when(userService.isValidPassword("invalidpassword")).thenReturn(false);
+        assert userService != null;
+        when(userService.isValidPasswordUC("invalidpassword")).thenReturn(false);
 
         ResponseEntity<String> invalidPasswordResponse = userController.createUser(invalidPasswordRequest);
         assertEquals(HttpStatus.BAD_REQUEST, invalidPasswordResponse.getStatusCode());
-        assertEquals("Password does not fit all requirements", invalidPasswordResponse.getBody());
+        assertEquals("Password requires lowercase", invalidPasswordResponse.getBody());
+    }
+
+    @Test
+    void noDigitInvalidPassword() throws NoSuchAlgorithmException {
+        // Test createUser() method with invalid password
+        CreateUserRequest invalidPasswordRequest = new CreateUserRequest();
+        invalidPasswordRequest.setUsername("test_username");
+        invalidPasswordRequest.setPassword("Invalidpassword");
+
+        UserService userService = getUserServiceMock();
+        assert userService != null;
+        when(userService.isValidPasswordLC("Invalidpassword")).thenReturn(true);
+        when(userService.isValidPasswordUC("Invalidpassword")).thenReturn(true);
+        when(userService.isValidPasswordDG("Invalidpassword")).thenReturn(false);
+
+        ResponseEntity<String> invalidPasswordResponse = userController.createUser(invalidPasswordRequest);
+        assertEquals(HttpStatus.BAD_REQUEST, invalidPasswordResponse.getStatusCode());
+        assertEquals("Password requires digit", invalidPasswordResponse.getBody());
     }
 
     @Test
@@ -134,7 +153,10 @@ class UserControllerTest {
 
         UserService userService = getUserServiceMock();
         when(userService.usernameExists("test_username")).thenReturn(false);
-        when(userService.isValidPassword("Test_password1")).thenReturn(true);
+        when(userService.isValidPasswordLC("Test_password1")).thenReturn(true);
+        when(userService.isValidPasswordUC("Test_password1")).thenReturn(true);
+        when(userService.isValidPasswordDG("Test_password1")).thenReturn(true);
+
 
         ResponseEntity<String> responseEntity = userController.createUser(validRequest);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
