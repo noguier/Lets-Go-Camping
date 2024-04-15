@@ -82,7 +82,6 @@ Feature: test create account functionality
     And I press the Create Account button
     Then I should get a "Username is taken" message
 
-
   Scenario: no confirm password
     Given I am on the create account page
     And the account TommyTrojan has already been created
