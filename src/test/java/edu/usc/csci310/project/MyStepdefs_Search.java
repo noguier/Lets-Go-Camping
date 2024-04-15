@@ -121,13 +121,13 @@ public class MyStepdefs_Search {
 //        System.out.println("DEBUG: NAME: " + name);
 //        assertTrue(name.equals(arg0));
 
-      assertTrue(driver.getPageSource().contains(arg0));
+        assertTrue(driver.getPageSource().contains(arg0));
 
     }
 
     @Then("I should see the Amenities title for {string}")
     public void iShouldSeeTheAmenitiesTitleFor(String arg0) {
-       assertTrue(driver.getPageSource().contains(arg0));
+        assertTrue(driver.getPageSource().contains(arg0));
 
     }
 
@@ -286,7 +286,7 @@ public class MyStepdefs_Search {
     @And("I click the Load More button")
     public void iClickTheLoadMoreButton() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(" //*[@id=\"root\"]/div/div/div[14]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div[11]/div/button")));
         try {
             loadElement.click();
         } catch (ElementClickInterceptedException e) {
@@ -299,7 +299,7 @@ public class MyStepdefs_Search {
     @And("I click the Load More button for Activity")
     public void iClickTheLoadMoreButtonForActivity() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(" //*[@id=\"root\"]/div/div/div[5]/div/div/div[11]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div/div/div[11]/div/button")));
         try {
             loadElement.click();
         } catch (ElementClickInterceptedException e) {
@@ -312,7 +312,7 @@ public class MyStepdefs_Search {
     @And("I click the Load More button for Amenity")
     public void iClickTheLoadMoreButtonForAmenity() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("  //*[@id=\"root\"]/div/div/div[4]/div/div/div[11]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div/div/div/div[11]/div/button")));
         try {
             loadElement.click();
         } catch (ElementClickInterceptedException e) {
@@ -322,20 +322,19 @@ public class MyStepdefs_Search {
         }
     }
 
-    @And("I click the Load More button two more times")
-    public void iClickTheLoadMoreButtonTwoMoreTimes() {
+    @And("I click the Load More button Again for Activity")
+    public void IClickTheLoadMoreButtonAgainForActivity() {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(" //*[@id=\"root\"]/div/div/div[5]/div/div/div[11]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div/div/div[21]/div/button")));
         try {
             loadElement.click();
-            loadElement.click();
+            //loadElement.click();
         } catch (ElementClickInterceptedException e) {
             // If the element is still not clickable after scrolling, there might be an overlay
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", loadElement);
             loadElement.click();
         }
-
     }
 
     @When("I click on the state code")
