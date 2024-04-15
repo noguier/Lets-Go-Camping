@@ -39,7 +39,7 @@ public class FavoritesController {
 
         try {
 //            System.out.println("start:4");
-            System.out.println("Username:" + username);
+//            System.out.println("Username:" + username);
             boolean result = favoritesService.addFavoritePark(username, parkCode); // Implement this method in your service layer
             if (result) {
                 return ResponseEntity.ok("Park added to favorites");
@@ -83,5 +83,36 @@ public class FavoritesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to remove park from favorites");
         }
     }
+
+
+    @GetMapping("/display")
+    public List<String> displayFavorites(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        String username = (String) session.getAttribute("username");
+        System.out.println("Debug: USERNAME:"+ username);
+
+        List<String> list = favoritesService.getFavoriteParksByUsername(username);
+        System.out.println("list:\n" + list);
+        return list;
+    }
+
+    @PostMapping("/togglePrivacy")
+    public ResponseEntity<String> togglePrivacy(@RequestBody boolean isPublic, HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        String username = (String) session.getAttribute("username");
+
+        if (session.getAttribute("username") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        try {
+            favoritesService.togglePrivacy(username, isPublic);
+            return ResponseEntity.ok("Privacy setting updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update privacy setting");
+        }
+    }
+
+
 
 }
