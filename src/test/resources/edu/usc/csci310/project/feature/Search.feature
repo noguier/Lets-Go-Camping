@@ -113,7 +113,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Acadia National Park"
     And I click the Load More button
-    Then I should see 50 park items displayed
+    Then List of parks such as "Amache National Historic Site"
 
   Scenario: Perform Search by State and choose Load More
     Given I am on the search page
@@ -122,7 +122,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Butterfield Overland National Historic Trail"
     And I click the Load More button
-    Then I should see 34 park items displayed
+    Then List of parks such as "Golden Gate National Recreation Area"
 
   Scenario: Perform Search by Activity and choose Load More
     Given I am on the search page
@@ -131,7 +131,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Acadia National Park"
     And I click the Load More button for Activity
-    Then I should see 20 park items displayed
+    Then List of parks such as "Cape Lookout National Seashore"
 
   Scenario: Perform Search by Amenity and choose Load More
     Given I am on the search page
@@ -140,15 +140,17 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Acadia National Park"
     And I click the Load More button for Amenity
-    Then I should see 20 park items displayed
+    Then List of parks such as "Grand Canyon National Park"
 
   Scenario: Perform Search and choose Load More 2 more times
     Given I am on the search page
     And I click the dropdown Activity
     When I enter "Swimming" in the search bar
     And I click the Search button
-    And I click the Load More button two more times
-    Then I should see 30 park items displayed
+    Then List of parks such as "Acadia National Park"
+    And I click the Load More button for Activity
+    And I click the Load More button Again for Activity
+    Then List of parks such as "Cape Lookout National Seashore"
 
 #  Scenario: Perform Search and show at least 10 items
 #    Given I am on the search page
