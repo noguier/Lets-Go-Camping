@@ -349,6 +349,15 @@ public class MyStepdefs_Search {
 
     }
 
+    @Then("List of ten parks such as {string}")
+    public void listOfParksSuchAs(String arg1) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        assertTrue(driver.getPageSource().contains(arg1));
+    }
 
 
 //
