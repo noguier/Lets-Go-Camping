@@ -152,13 +152,12 @@ Feature: Test search functionality
     And I click the Load More button Again for Activity
     Then List of parks such as "Cape Lookout National Seashore"
 
-#  Scenario: Perform Search and show at least 10 items
-#    Given I am on the search page
-#    And I click the dropdown Name
-#    When I enter "Yellowstone" in the search bar
-#    And I click the Search button
-#    Then I should get a list of parks such as "Josh"
-#    Then I should see 10 park items displayed
+  Scenario: Perform Search and show 10 parks
+    Given I am on the search page
+    And I click the dropdown Activity
+    When I enter "Swimming" in the search bar
+    And I click the Search button
+    Then List of ten parks such as "Acadia National Park"
 
 #  Scenario: Perform Search and see Inline description
 #    Given I am on the search page
