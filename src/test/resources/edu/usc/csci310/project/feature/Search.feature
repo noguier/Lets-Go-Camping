@@ -39,7 +39,7 @@ Feature: Test search functionality
     And I click the dropdown Activity
     When I enter "Swimming" in the search bar
     And I click the Search button
-    Then List of parks such as "Acadia National Park"
+    Then List of parks such as "American Memorial Park"
 
   Scenario: Perform Search based on default Park Name
     Given I am on the search page
@@ -61,15 +61,15 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Joshua Tree National Park"
     And I click on "Joshua Tree National Park" and see details
-    Then I see Location state "Twentynine Palms"
-    Then I see "$30.00"
-    Then I see "7-day vehicle permit"
-    Then I see "Two distinct desert ecosystems,"
-    Then I see "Automated External Defibrillator (AED)"
-    Then I see "Auto and ATV"
-    Then I see "The sky turns hues"
-    Then I click URL
-    Then tab opened should be "https://www.nps.gov/jotr/index.htm"
+    And I see Location state "Twentynine Palms"
+    And I see "$30.00"
+    And I see "7-day vehicle permit"
+    And I see "Two distinct desert ecosystems,"
+    And I see "Automated External Defibrillator (AED)"
+    And I see "Auto and ATV"
+    And I see "The sky turns hues"
+    And I click URL
+    And tab opened should be "https://www.nps.gov/jotr/index.htm"
 
   Scenario: non-expanded plus button, park not already in favorites
     Given I am on the search page
@@ -78,8 +78,8 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Joshua Tree National Park"
     And I hover over "Joshua Tree National Park" container
-    Then I click the plus button
-    Then I should get an alert saying "Added to favorites!"
+    And I click the plus button
+    And I should get an alert saying "Added to favorites!"
 
   Scenario: expanded plus button, park not already in favorites
     Given I am on the search page
@@ -88,9 +88,9 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Joshua Tree National Park"
     And I click on "Joshua Tree National Park" and see details
-    Then I should not see "In Favorites List"
-    Then I click the plus button
-    Then I should get an alert saying "Added to favorites!"
+    And I should not see "In Favorites List"
+    And I click the plus button
+    And I should get an alert saying "Added to favorites!"
 
   Scenario: park already in favorites
     Given I am on the search page
@@ -102,9 +102,9 @@ Feature: Test search functionality
     When I click on "Joshua Tree National Park" and see details
     Then I wait a little
     #timing issue
-    Then I see "In Favorites List"
-    Then I click the plus button
-    Then I should get an alert saying "This Park was already added to favorites"
+    And I see "In Favorites List"
+    And I click the plus button
+    And I should get an alert saying "This Park is already in Favorites"
 
   Scenario: Perform Search by Name and choose Load More
     Given I am on the search page
@@ -113,7 +113,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Acadia National Park"
     And I click the Load More button
-    Then List of parks such as "Amache National Historic Site"
+    And List of parks such as "Amache National Historic Site"
 
   Scenario: Perform Search by State and choose Load More
     Given I am on the search page
@@ -122,7 +122,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Butterfield Overland National Historic Trail"
     And I click the Load More button
-    Then List of parks such as "Golden Gate National Recreation Area"
+    And List of parks such as "Golden Gate National Recreation Area"
 
   Scenario: Perform Search by Activity and choose Load More
     Given I am on the search page
@@ -131,7 +131,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Acadia National Park"
     And I click the Load More button for Activity
-    Then List of parks such as "Cape Lookout National Seashore"
+    And List of parks such as "Cape Lookout National Seashore"
 
   Scenario: Perform Search by Amenity and choose Load More
     Given I am on the search page
@@ -140,7 +140,7 @@ Feature: Test search functionality
     And I click the Search button
     Then List of parks such as "Acadia National Park"
     And I click the Load More button for Amenity
-    Then List of parks such as "Grand Canyon National Park"
+    And List of parks such as "Grand Canyon National Park"
 
   Scenario: Perform Search and choose Load More 2 more times
     Given I am on the search page
@@ -150,7 +150,7 @@ Feature: Test search functionality
     Then List of parks such as "Acadia National Park"
     And I click the Load More button for Activity
     And I click the Load More button Again for Activity
-    Then List of parks such as "Cape Lookout National Seashore"
+    And List of parks such as "Cape Lookout National Seashore"
 
 #  Scenario: Perform Search and show at least 10 items
 #    Given I am on the search page
