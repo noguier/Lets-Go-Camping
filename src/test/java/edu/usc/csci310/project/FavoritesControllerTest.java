@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.Collections;
+
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -290,4 +292,81 @@ class FavoritesControllerTest {
         assertNotNull(response);
         assertEquals(0, response.size());
     }
+    @Test
+    void displayFavoritesPerUser_NullOrEmptyUsername() {
+        ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser("");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody().isEmpty(), "Expected empty list for bad request response");
+
+        response = favoritesController.displayFavoritesPerUser(null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getBody().isEmpty(), "Expected empty list for bad request response");
+    }
+
+    @Test
+    void displayFavoritesPerUser_EmptyFavoritesList() {
+        String username = "testUser";
+        when(favoritesService.getFavoriteParksByUsername(username)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser(username);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertTrue(response.getBody().isEmpty(), "Expected empty list when no favorites found");
+    }
+
+    @Test
+    void displayFavoritesPerUser_FavoritesExist() {
+        String username = "testUser";
+        List<String> expectedFavorites = Arrays.asList("Park1", "Park2");
+        when(favoritesService.getFavoriteParksByUsername(username)).thenReturn(expectedFavorites);
+
+        ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser(username);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedFavorites, response.getBody(), "Expected list of favorites to be returned");
+    }
+
+    @Test
+    void displayFavoritesPerUser_NullFavoritesList() {
+        String username = "testUser";
+        when(favoritesService.getFavoriteParksByUsername(username)).thenReturn(null);
+
+        ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser(username);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertTrue(response.getBody().isEmpty(), "Expected empty list when favorites list is null");
+    }
+
+    @Test
+    void getPrivacyStatus_NullOrEmptyUsername() {
+        ResponseEntity<Boolean> response = favoritesController.getPrivacyStatus(null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody(), "Expected null body for bad request response");
+
+        response = favoritesController.getPrivacyStatus("");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody(), "Expected null body for bad request response");
+
+        response = favoritesController.getPrivacyStatus("   ");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody(), "Expected null body for bad request response");
+    }
+
+    @Test
+    void getPrivacyStatus_PublicFavorites() {
+        String username = "user1";
+        when(favoritesService.isPublic(username)).thenReturn(true);
+
+        ResponseEntity<Boolean> response = favoritesController.getPrivacyStatus(username);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody(), "Expected true for public favorites");
+    }
+
+    @Test
+    void getPrivacyStatus_PrivateFavorites() {
+        String username = "user2";
+        when(favoritesService.isPublic(username)).thenReturn(false);
+
+        ResponseEntity<Boolean> response = favoritesController.getPrivacyStatus(username);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(response.getBody(), "Expected false for private favorites");
+    }
+
 }

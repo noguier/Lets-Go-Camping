@@ -14,4 +14,6 @@ public interface FavoritesService {
 
     //this method changes from public to private on favorites page
     void togglePrivacy(String username, boolean isPublic);
+
+    boolean isPublic(String username);
 }

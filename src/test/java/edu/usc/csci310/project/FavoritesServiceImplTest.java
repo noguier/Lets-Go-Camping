@@ -164,5 +164,30 @@ class FavoritesServiceImplTest {
         verify(favoritesRepository, never()).save(any());
     }
 
+    @Test
+    void isPublic_UserFavoritesListExists_ReturnsCorrectPrivacyStatus() {
+        String username = "testUser";
+        Favorite existingFavorite = new Favorite(username);
+        existingFavorite.setPublic(true); // Assuming setPublic is a method to set the privacy
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(existingFavorite));
+
+        boolean result = favoritesService.isPublic(username);
+
+        assertTrue(result, "The favorites list should be public.");
+    }
+
+    @Test
+    void isPublic_UserFavoritesListDoesNotExist_ReturnsDefaultPrivacyStatus() {
+        String username = "testUser";
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        boolean result = favoritesService.isPublic(username);
+
+        assertTrue(result, "The default privacy status should be true when the favorite does not exist.");
+    }
+
+
 
 }
