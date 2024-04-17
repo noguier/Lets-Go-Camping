@@ -13,7 +13,7 @@ import axios from "axios";
 
 function App() {
     // State to store user authentication status
-    const [authenticated, setAuthenticated] = useState(false);
+    const [authenticated, setAuthenticated] = useState(null);
 
     // Function to check user authentication status periodically
     useEffect(() => {
@@ -37,33 +37,37 @@ function App() {
     };
 
 
-
     return (
         <div>
-            <Toaster/>
-            <header>
-                <Header authenticated={authenticated} updateAuthenticationStatus={updateAuthenticationStatus}/>
-            </header>
-            <Routes>
-                <Route path="/" element={<Navigate to="/login"/>}/>
-                <Route path="/login" element={<Login updateAuthenticationStatus={updateAuthenticationStatus}/>}/>
-                <Route path="/create" element={<Create/>}/>
-                <Route path="/search"
-                       element={authenticated ? <Search updateAuthenticationStatus={updateAuthenticationStatus}/> :
-                           <Navigate to="/login"/>}/>
-                <Route path="/favorites"
-                       element={authenticated ? <Favorites updateAuthenticationStatus={updateAuthenticationStatus}/> :
-                           <Navigate to="/login"/>}/>
-                <Route path="/compare" element={authenticated ? <Compare/> : <Navigate to="/login"/>}/>
-                <Route path="*" element={<Navigate to="/login"/>}/>
-            </Routes>
-            <footer>
-                <Footer/>
-            </footer>
+            {authenticated !== null  && (
+                <div>
+                    <Toaster/>
+                    <header>
+                        <Header authenticated={authenticated} updateAuthenticationStatus={updateAuthenticationStatus}/>
+                    </header>
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/login"/>}/>
+                        <Route path="/login" element={<Login updateAuthenticationStatus={updateAuthenticationStatus}/>}/>
+                        <Route path="/create" element={<Create/>}/>
+                        <Route path="/search"
+                               element={authenticated ? <Search updateAuthenticationStatus={updateAuthenticationStatus}/> :
+                                   <Navigate to="/login"/>}/>
+                        <Route path="/favorites"
+                               element={authenticated ? <Favorites updateAuthenticationStatus={updateAuthenticationStatus}/> :
+                                   <Navigate to="/login"/>}/>
+                        <Route path="/compare" element={authenticated ? <Compare/> : <Navigate to="/login"/>}/>
+                        <Route path="*" element={<Navigate to="/login"/>}/>
+                    </Routes>
+                    <footer>
+                        <Footer/>
+                    </footer>
+                </div>
+            )}
         </div>
     );
-}
 
-export default App;
+
+}
+    export default App;
 
 
