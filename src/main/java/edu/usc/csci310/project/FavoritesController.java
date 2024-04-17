@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -95,9 +96,10 @@ public class FavoritesController {
         System.out.println("list:\n" + list);
         return list;
     }
-
     @PostMapping("/togglePrivacy")
-    public ResponseEntity<String> togglePrivacy(@RequestBody boolean isPublic, HttpServletRequest httpRequest) {
+    public ResponseEntity<String> togglePrivacy(@RequestBody Map<String, Boolean> requestBody, HttpServletRequest httpRequest) {
+        Boolean isPublic = requestBody.get("isPublic");
+
         HttpSession session = httpRequest.getSession(false);
         String username = (String) session.getAttribute("username");
 
@@ -112,6 +114,7 @@ public class FavoritesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update privacy setting");
         }
     }
+
 
 
 

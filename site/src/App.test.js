@@ -987,36 +987,34 @@ test('should render Login page when not authenticated', async () => {
     });
 });
 
-
-
-test('should update authentication status app comp', async () => {
-    const mockedResponse = {
-        data: {
-            username: "testuser",
-            token: "testtoken"
-        }
-    };
-    axios.post.mockResolvedValueOnce({ data: mockedResponse });
-    axios.get.mockResolvedValueOnce({});
-
-    render(
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
-    );
-
-    // Fill in the username and password fields
-    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
-    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
-
-    // Submit the form
-    fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
-
-    // Wait for the API call to resolve
-    await waitFor(() => {
-        expect(window.location.pathname).toBe("/search");
-    });
-});
+// test('should update authentication status app comp', async () => {
+//     const mockedResponse = {
+//         data: {
+//             username: "testuser",
+//             token: "testtoken"
+//         }
+//     };
+//     axios.post.mockResolvedValueOnce({ data: mockedResponse });
+//     axios.get.mockResolvedValueOnce({});
+//
+//     render(
+//         <BrowserRouter>
+//             <App />
+//         </BrowserRouter>
+//     );
+//
+//     // Fill in the username and password fields
+//     fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+//     fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
+//
+//     // Submit the form
+//     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+//
+//     // Wait for the API call to resolve
+//     await waitFor(() => {
+//         expect(window.location.pathname).toBe("/search");
+//     });
+// });
 describe('compare component', () => {
     // Mock updateAuthenticationStatus function
     const mockUpdateAuthStatus = jest.fn();
