@@ -1486,6 +1486,116 @@ describe('Results Component', () => {
 //
 // });
 
+    // describe('Compare component', () => {
+    //     beforeEach(() => {
+    //         fetchMock.resetMocks();
+    //         jest.clearAllMocks();
+    //     });
+    //
+    //     test('renders correctly', () => {
+    //         const { getByText } = render(
+    //             <BrowserRouter>
+    //                 <Compare />
+    //             </BrowserRouter>
+    //         );
+    //         expect(getByText('Compare and Suggest')).toBeInTheDocument();
+    //         expect(screen.getByPlaceholderText('Search for user')).toBeInTheDocument();
+    //     });
 
+        // test('handles user search and privacy check', async () => {
+        //     fetchMock.mockResponseOnce(JSON.stringify("User exists"), { status: 200 });
+        //     fetchMock.mockResponseOnce(JSON.stringify(true), { status: 200 });
+        //     fetchMock.mockResponseOnce(JSON.stringify(['Park1', 'Park2']), { status: 200 });
+        //
+        //     render(<BrowserRouter><Compare /></BrowserRouter>);
+        //
+        //     // Simulate user typing in the search input and clicking the search button
+        //     fireEvent.change(screen.getByPlaceholderText('Search for user'), { target: { value: 'johnDoe' } });
+        //     fireEvent.click(screen.getByRole('button', { name: /search/i }));
+        //
+        //     // Wait for all fetch calls to complete
+        //     await waitFor(() => {
+        //         expect(fetchMock).toHaveBeenCalledTimes(3);
+        //         expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/users/exists?username=johnDoe');
+        //         expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/favorites/privacy/johnDoe', { credentials: 'include' });
+        //         expect(fetchMock).toHaveBeenNthCalledWith(3, '/api/favorites/display/johnDoe', { credentials: 'include' });
+        //     });
+        //
+        //     // Expect the user to be added to the suggestion list if privacy is public and favorites exist
+        //     await waitFor(() => {
+        //         expect(screen.getByText('johnDoe')).toBeInTheDocument();
+        //     });
+        // });
+
+
+
+
+
+
+
+
+    // });
+
+    function renderComponent() {
+        render(
+            <MemoryRouter>
+                <Compare updateAuthenticationStatus={jest.fn()} />
+            </MemoryRouter>
+        );
+    }
+
+    describe('Compare Component', () => {
+        beforeEach(() => {
+            // Clear all mocks before each test
+            jest.clearAllMocks();
+        });
+
+        it('renders without crashing', () => {
+            renderComponent();
+            expect(screen.getByText(/Compare and Suggest/i)).toBeInTheDocument();
+        });
+
+        // it('displays an error message when search is triggered with an empty input', async () => {
+        //     renderComponent();
+        //     fireEvent.click(screen.getByText(/Search/i));
+        //     expect(await screen.findByText(/Please enter a username to search/i)).toBeInTheDocument();
+        // });
+
+        // it('displays an error when user does not exist', async () => {
+        //     // Mock fetch to simulate user not existing
+        //     global.fetch = jest.fn(() =>
+        //         Promise.resolve({
+        //             ok: true,
+        //             text: () => Promise.resolve("User does not exist.")
+        //         })
+        //     );
+        //
+        //     renderComponent();
+        //     fireEvent.change(screen.getByPlaceholderText(/Search for user/i), { target: { value: 'nonexistentuser' } });
+        //     fireEvent.click(screen.getByText(/Search/i));
+        //     expect(fetch).toHaveBeenCalledWith(`/api/users/exists?username=nonexistentuser`);
+        //     await waitFor(() => expect(screen.getByText(/User does not exist./i)).toBeInTheDocument());
+        // });
+
+        it('successfully searches for an existing user and checks privacy', async () => {
+            // Mock fetch for checking user existence and privacy
+            global.fetch = jest.fn((url) => {
+                if (url.includes('/exists')) {
+                    return Promise.resolve({ ok: true, text: () => Promise.resolve("User exists") });
+                } else if (url.includes('/privacy')) {
+                    return Promise.resolve({ ok: true, json: () => Promise.resolve(true) });
+                }
+                return Promise.reject(new Error('not found'));
+            });
+
+            renderComponent();
+            fireEvent.change(screen.getByPlaceholderText(/Search for user/i), { target: { value: 'existinguser' } });
+            fireEvent.click(screen.getByText(/Search/i));
+            expect(fetch).toHaveBeenCalledWith(`/api/users/exists?username=existinguser`);
+            await waitFor(() => expect(fetch).toHaveBeenCalledWith(`/api/favorites/privacy/existinguser`, {
+                credentials: 'include'
+            }));
+        });
+    });
 
 });

@@ -280,6 +280,7 @@ class UserControllerTest {
         assertEquals("Invalid username or password", invalidCredentialsResponse.getBody());
     }
 
+
     @Test
     void logoutUser_Successful() {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
@@ -351,6 +352,62 @@ class UserControllerTest {
         ResponseEntity<Boolean> responseEntity = userController.isAuthenticated(mockRequest);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertFalse(responseEntity.getBody());
+    }
+
+    @Test
+    void checkUserExists_UserExists() throws NoSuchAlgorithmException {
+        // Set up
+        String existingUsername = "existingUser";
+        when(getUserServiceMock().usernameExists(existingUsername)).thenReturn(true);
+
+        // Execution
+        ResponseEntity<String> response = userController.checkUserExists(existingUsername);
+
+        // Verify
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("User exists", response.getBody());
+    }
+
+    @Test
+    void checkUserExists_UserDoesNotExist() throws NoSuchAlgorithmException {
+        // Set up
+        String nonExistingUsername = "newUser";
+        when(getUserServiceMock().usernameExists(nonExistingUsername)).thenReturn(false);
+
+        // Execution
+        ResponseEntity<String> response = userController.checkUserExists(nonExistingUsername);
+
+        // Verify
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("User does not exist", response.getBody());
+    }
+
+    @Test
+    void checkUserExists_NullUsername() throws NoSuchAlgorithmException {
+        // Test the endpoint with a null username parameter
+        ResponseEntity<String> response = userController.checkUserExists(null);
+
+        // Verify that the response is as expected for null input
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Username is required", response.getBody());
+    }
+    void checkUserExists_EmptyUsername() throws NoSuchAlgorithmException {
+        // Test the endpoint with an empty string as username parameter
+        ResponseEntity<String> response = userController.checkUserExists("");
+
+        // Verify that the response is as expected for empty string input
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Username is required", response.getBody());
+    }
+
+    @Test
+    void checkUserExists_WhitespaceUsername() throws NoSuchAlgorithmException {
+        // Test the endpoint with whitespace string as username parameter
+        ResponseEntity<String> response = userController.checkUserExists("    ");
+
+        // Verify that the response is as expected for whitespace string input
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Username is required", response.getBody());
     }
 
 
