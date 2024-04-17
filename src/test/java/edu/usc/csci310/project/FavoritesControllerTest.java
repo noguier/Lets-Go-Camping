@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -182,7 +184,9 @@ class FavoritesControllerTest {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("username")).thenReturn(null);
 
-        ResponseEntity<String> response = favoritesController.togglePrivacy(true, request);
+        Map<String, Boolean> payload = Collections.singletonMap("isPublic", true);
+
+        ResponseEntity<String> response = favoritesController.togglePrivacy(payload, request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         verify(favoritesService, never()).togglePrivacy(anyString(), anyBoolean());
@@ -195,7 +199,9 @@ class FavoritesControllerTest {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("username")).thenReturn("testUser");
 
-        ResponseEntity<String> response = favoritesController.togglePrivacy(true, request);
+        Map<String, Boolean> payload = Collections.singletonMap("isPublic", true);
+
+        ResponseEntity<String> response = favoritesController.togglePrivacy(payload, request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(favoritesService, times(1)).togglePrivacy("testUser", true);
@@ -209,12 +215,13 @@ class FavoritesControllerTest {
         when(session.getAttribute("username")).thenReturn("testUser");
         doThrow(new RuntimeException("Some error")).when(favoritesService).togglePrivacy(anyString(), anyBoolean());
 
-        ResponseEntity<String> response = favoritesController.togglePrivacy(true, request);
+        Map<String, Boolean> payload = Collections.singletonMap("isPublic", true);
+
+        ResponseEntity<String> response = favoritesController.togglePrivacy(payload, request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         verify(favoritesService, times(1)).togglePrivacy("testUser", true);
     }
-
 
     @Test
     void togglePrivacy_NullUsername_ReturnsUnauthorized() {
@@ -223,11 +230,14 @@ class FavoritesControllerTest {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("username")).thenReturn(null);
 
-        ResponseEntity<String> response = favoritesController.togglePrivacy(true, request);
+        Map<String, Boolean> payload = Collections.singletonMap("isPublic", true);
+
+        ResponseEntity<String> response = favoritesController.togglePrivacy(payload, request);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         verify(favoritesService, never()).togglePrivacy(anyString(), anyBoolean());
     }
+
 
     @Test
     void displayFavorites_UserNotAuthenticated_ReturnsUnauthorized() {

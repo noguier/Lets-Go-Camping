@@ -13,11 +13,11 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleStateCodeClick = async (stateCode) => {
         try {
-            console.log(stateCode)
+            // console.log(stateCode)
             const response = await fetch(`/api/parks?searchTerm=${stateCode}&searchType=state`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
-            console.log(typeof updateSearchResults);
+            // console.log(typeof updateSearchResults);
             updateSearchResults(data.data, 'state'); // Call the callback function to update search results
 
         } catch (error) {
@@ -28,9 +28,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleActivityClick = async (activityName) => {
         try {
-            console.log(activityName)
+            // console.log(activityName)
             const response = await fetch(`/api/parks?searchTerm=${activityName}&searchType=activity`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
             updateSearchResults(data.data, 'activity');
         } catch (error) {
@@ -42,9 +42,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleAmenityClick = async (amenityName) => {
         try {
-            console.log(amenityName)
+            // console.log(amenityName)
             const response = await fetch(`/api/parks?searchTerm=${amenityName}&searchType=amenity`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
             updateSearchResults(data.data, 'amenity');
         } catch (error) {
@@ -83,12 +83,13 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     };
 
     const handleParkClick = async (parkCode, setParkDetails) => {
-        console.log("RESULT: Clicked park:", parkCode); // Log the clicked park code
+        // console.log("RESULT: Clicked park:", parkCode); // Log the clicked park code
         try {
             const response = await fetch(`/api/parks?searchTerm=${parkCode}&searchType=parkClick`);
             const data = await response.json();
-            console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
+            // console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
             setParkDetails(data.data[0]); // Update parkDetails state
+            // console.log("PARK DETAILS: ", parkDetails)
         } catch (error) {
             console.error('Error fetching park details:', error);
             alert('Fetch Error');
@@ -115,15 +116,16 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
         }
     };
     const removeFromFavorites = async (parkCode) => {
+
         try {
             await axios.post('/api/favorites/remove', parkCode);
             toast.success('Removed from favorites!');
             setInFavorites(false);
+            window.location.reload();
         } catch (error) {
             console.error('Error removing from favorites:', error);
         }
     };
-
     if (parkDetails && parkDetails.fullName === park.fullName) {
     // if (parkDetails ) {///use this if statement to debug
 
@@ -311,8 +313,6 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 };
 
 const renderParkInfo = (park, parkDetails, setParkDetails, page) => {
-    console.log("Park details:", parkDetails);
-
     return <ParkDetails
         park={park}
         parkDetails={parkDetails}
