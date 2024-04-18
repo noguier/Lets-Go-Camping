@@ -2,7 +2,9 @@ package edu.usc.csci310.project;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,7 +79,7 @@ class FavoriteTest {
     void testIsPublic() {
         Favorite favorite = new Favorite("testUser");
 
-        assertTrue(favorite.isPublic());
+        assertFalse(favorite.isPublic());//default is private
     }
 
     @Test
@@ -86,5 +88,36 @@ class FavoriteTest {
         favorite.setPublic(false);
 
         assertFalse(favorite.isPublic());
+    }
+    @Test
+    void testParkRankings() {
+        Favorite favorite = new Favorite("testUser");
+        Map<String, Integer> parkRankings = new HashMap<>();
+        parkRankings.put("ABC123", 5);
+        parkRankings.put("XYZ456", 3);
+        favorite.setParkRankings(parkRankings);
+
+        assertEquals(parkRankings, favorite.getParkRankings());
+    }
+
+
+    @Test
+    void testParkRankingsGetterAndSetter() {
+        // Create a Favorite instance
+        Favorite favorite = new Favorite("testUser");
+
+        // Create a sample park rankings map
+        Map<String, Integer> parkRankings = new HashMap<>();
+        parkRankings.put("ABC123", 5);
+        parkRankings.put("XYZ456", 3);
+
+        // Set the park rankings map using the setter
+        favorite.setParkRankings(parkRankings);
+
+        // Get the park rankings map using the getter
+        Map<String, Integer> retrievedParkRankings = favorite.getParkRankings();
+
+        // Assert that the retrieved map is the same as the original one
+        assertEquals(parkRankings, retrievedParkRankings);
     }
 }

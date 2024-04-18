@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 @Service
 public class FavoritesServiceImpl implements FavoritesService {
@@ -85,6 +86,35 @@ public class FavoritesServiceImpl implements FavoritesService {
             favoritesRepository.save(favorite);
         }
     }
+
+    @Override
+    public void updateParkRanking(String username, String parkCode, int newRanking) {
+        Optional<Favorite> optionalFavorite = favoritesRepository.findById(username);
+
+        if (optionalFavorite.isPresent()) {
+            Favorite favorite = optionalFavorite.get();
+            favorite.getParkRankings().put(parkCode, newRanking);
+            favoritesRepository.save(favorite);
+        }
+    }
+
+    ///this will get the ranking list, each user has a favorites object
+    // in each object there is a map of parks that correlate to its set ranking
+    //updated is persistant
+    @Override
+    public Map<String, Integer> geRankingByUsername(String username) {
+        Optional<Favorite> optionalFavorite = favoritesRepository.findById(username);
+
+        if (optionalFavorite.isPresent()) {
+            Favorite favorite = optionalFavorite.get();
+            return favorite.getParkRankings();
+        } else {
+            // User's favorite list doesn't exist
+            System.out.println("DEBUG: EMPTY LIST");
+            return Collections.emptyMap();
+        }
+    }
+
 
 
 }
