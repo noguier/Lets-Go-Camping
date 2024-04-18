@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "favorites")
@@ -18,8 +20,15 @@ public class Favorite implements Serializable {
     @CollectionTable(name = "favorite_parks", joinColumns = @JoinColumn(name = "username"))
     @Column(name = "park_code")
     private List<String> favoriteParks = new ArrayList<>();
+
+
+    @ElementCollection
+    @CollectionTable(name = "park_rankings", joinColumns = @JoinColumn(name = "username"))
+    @MapKeyColumn(name = "park_code")
+    @Column(name = "ranking")
+    private Map<String, Integer> parkRankings = new HashMap<>();
     @Column(name = "is_public")
-    private boolean isPublic = true; // Default to public
+    private boolean isPublic = false; // Default to private
 
     public Favorite() {
     }
@@ -58,5 +67,13 @@ public class Favorite implements Serializable {
 
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public Map<String, Integer> getParkRankings() {
+        return parkRankings;
+    }
+
+    public void setParkRankings(Map<String, Integer> parkRankings) {
+        this.parkRankings = parkRankings;
     }
 }

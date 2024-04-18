@@ -127,18 +127,38 @@ public class FavoritesController {
         HttpSession session = httpRequest.getSession(false);
         String username = (String) session.getAttribute("username");
 
+
         if (session.getAttribute("username") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
 
         try {
             favoritesService.togglePrivacy(username, isPublic);
+            System.out.println("DEBUG:PUBLIC:" + isPublic);
+            //need to send an updated part of updated piece of code
             return ResponseEntity.ok("Privacy setting updated successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update privacy setting");
         }
     }
+    @PostMapping("/updateRanking")
+    public ResponseEntity<String> updateParkRanking(@RequestBody Map<String, Object> requestBody, HttpServletRequest httpRequest) {
+        String parkCode = (String) requestBody.get("parkCode");
+        Integer newRanking = (Integer) requestBody.get("newRanking");
 
+        HttpSession session = httpRequest.getSession(false);
+        String username = (String) session.getAttribute("username");
 
+        if (session.getAttribute("username") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        try {
+            favoritesService.updateParkRanking(username, parkCode, newRanking);
+            return ResponseEntity.ok("Park ranking updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update park ranking");
+        }
+    }
 
 }

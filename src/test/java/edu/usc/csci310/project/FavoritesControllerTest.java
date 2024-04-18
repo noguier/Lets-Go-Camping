@@ -12,10 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Collections;
 
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -293,6 +290,84 @@ class FavoritesControllerTest {
         assertEquals(0, response.size());
     }
     @Test
+    void updateParkRanking_UserNotAuthenticated_ReturnsUnauthorized() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn(null);
+
+        // Act
+        ResponseEntity<String> response = favoritesController.updateParkRanking(Collections.emptyMap(), request);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(favoritesService, never()).updateParkRanking(any(), any(), anyInt());
+    }
+
+    @Test
+    void updateParkRanking_SuccessfullyUpdated_ReturnsOk() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+
+        // Mocking request body
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("parkCode", "ABC123");
+        requestBody.put("newRanking", 5);
+
+        // Act
+        ResponseEntity<String> response = favoritesController.updateParkRanking(requestBody, request);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(favoritesService, times(1)).updateParkRanking("testUser", "ABC123", 5);
+    }
+
+    @Test
+    void updateParkRanking_ExceptionThrown_ReturnsInternalServerError() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        doThrow(new RuntimeException("Some error")).when(favoritesService).updateParkRanking(any(), any(), anyInt());
+
+        // Mocking request body
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("parkCode", "ABC123");
+        requestBody.put("newRanking", 5);
+
+        // Act
+        ResponseEntity<String> response = favoritesController.updateParkRanking(requestBody, request);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        verify(favoritesService, times(1)).updateParkRanking("testUser", "ABC123", 5);
+    }
+
+    @Test
+    void updateParkRanking_NullUsername_ReturnsUnauthorized() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn(null);
+
+        // Mocking request body
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("parkCode", "ABC123");
+        requestBody.put("newRanking", 5);
+
+        // Act
+        ResponseEntity<String> response = favoritesController.updateParkRanking(requestBody, request);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        verify(favoritesService, never()).updateParkRanking(any(), any(), anyInt());
+    }
     void displayFavoritesPerUser_NullOrEmptyUsername() {
         ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser("");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -368,5 +443,4 @@ class FavoritesControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertFalse(response.getBody(), "Expected false for private favorites");
     }
-
 }

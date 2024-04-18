@@ -1049,6 +1049,30 @@ describe('Favorites component', () => {
         );
         expect(getByText('Favorites')).toBeInTheDocument();
     });
+    test('clicking ranking buttons updates park ranking', async () => {
+        // Mock response for favorite parks display
+        axios.get.mockResolvedValueOnce({ data: ['ABC123'] });
+        // Mock response for fetching park details
+        axios.get.mockResolvedValueOnce({ data: [{ parkCode: 'ABC123' }] });
+
+        render(
+            <BrowserRouter>
+                <Favorites />
+            </BrowserRouter>
+        );
+
+        // Simulate clicking on the upvote button
+        fireEvent.click(await screen.findByText('↑'));
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 1 });
+
+        // Simulate clicking on the downvote button
+        fireEvent.click(await screen.findByText('↓'));
+        expect(axios.post).toHaveBeenCalledTimes(2);
+        expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 0 });
+    });
+
+
 
     // test('clicking logout button calls handleLogout', async () => {
     //     const { getByText } = render(
@@ -1597,5 +1621,7 @@ describe('Results Component', () => {
             }));
         });
     });
+
+
 
 });
