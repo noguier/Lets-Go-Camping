@@ -86,6 +86,11 @@ public class FavoritesServiceImpl implements FavoritesService {
             favoritesRepository.save(favorite);
         }
     }
+    public boolean isPublic(String username) {
+        Optional<Favorite> optionalFavorite = favoritesRepository.findById(username);
+        return optionalFavorite.map(Favorite::isPublic).orElse(true);
+    }
+
 
     @Override
     public void updateParkRanking(String username, String parkCode, int newRanking) {

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +97,29 @@ public class FavoritesController {
         System.out.println("list:\n" + list);
         return list;
     }
+
+    @GetMapping("/display/{username}")
+    public ResponseEntity<List<String>> displayFavoritesPerUser(@PathVariable String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
+        }
+        List<String> list = favoritesService.getFavoriteParksByUsername(username);
+        if (list == null || list.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/privacy/{username}")
+    public ResponseEntity<Boolean> getPrivacyStatus(@PathVariable String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        boolean isPublic = favoritesService.isPublic(username);
+        return ResponseEntity.ok(isPublic);
+    }
+
+
     @PostMapping("/togglePrivacy")
     public ResponseEntity<String> togglePrivacy(@RequestBody Map<String, Boolean> requestBody, HttpServletRequest httpRequest) {
         Boolean isPublic = requestBody.get("isPublic");
@@ -136,6 +160,5 @@ public class FavoritesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update park ranking");
         }
     }
-
 
 }

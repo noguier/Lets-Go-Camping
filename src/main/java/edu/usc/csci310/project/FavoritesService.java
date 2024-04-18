@@ -23,4 +23,5 @@ public interface FavoritesService {
     // in each object there is a map of parks that correlate to its set ranking
     //updated is persistant
     Map<String, Integer> geRankingByUsername(String username);
+    boolean isPublic(String username);
 }
