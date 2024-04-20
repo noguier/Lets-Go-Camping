@@ -100,7 +100,6 @@ Feature: Test search functionality
     Then List of parks such as "Joshua Tree National Park"
     And "Joshua Tree National Park" is already in my favorites
     When I click on "Joshua Tree National Park" and see details
-    Then I wait a little
     #timing issue
     Then I see "In Favorites List"
     Then I click the plus button
