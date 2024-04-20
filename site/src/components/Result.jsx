@@ -312,12 +312,15 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     }
 };
 
-const renderParkInfo = (park, parkDetails, setParkDetails, page) => {
+const renderParkInfo = (park, parkDetails, setParkDetails, page, updateSearchResults) => {
+    console.log("Park details:", parkDetails);
+
     return <ParkDetails
         park={park}
         parkDetails={parkDetails}
         setParkDetails={setParkDetails}
-        page={page}/>;
+        page={page}
+        updateSearchResults={updateSearchResults}/>;
 };
 
 export {renderParkInfo};

@@ -11,6 +11,8 @@ const Favorites = () => {
         const [searchTerm, setSearchTerm] = useState('');
         const [searchType, setSearchType] = useState('name');
         const [parkRankings, setParkRankings] = useState({});
+     const [searchResults, setSearchResults] = useState([]);
+
 
         useEffect(() => {
             const fetchData = async () => {
