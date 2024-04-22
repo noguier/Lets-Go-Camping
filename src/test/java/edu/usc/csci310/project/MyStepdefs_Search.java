@@ -62,6 +62,7 @@ public class MyStepdefs_Search {
         //login
         //given on login page
         driver.get(ROOT_URL + "login");
+        Thread.sleep(1000);
         //enter username
         driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/div[1]/input")).sendKeys("Tommy");
         //enter password
@@ -396,7 +397,13 @@ public class MyStepdefs_Search {
             throw new RuntimeException(e);
         }
 
-        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a")).click();
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a"));
+
+        Actions actions = new Actions(driver);
+
+        actions.moveToElement(element).click().perform();
+
+        //driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a")).click();
         Thread.sleep(2000);
     }
 
@@ -409,7 +416,13 @@ public class MyStepdefs_Search {
             throw new RuntimeException(e);
         }
 
-        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a")).click();
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a"));
+
+        Actions actions = new Actions(driver);
+
+        actions.moveToElement(element).click().perform();
+
+        //driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a")).click();
         Thread.sleep(2000);
     }
 
