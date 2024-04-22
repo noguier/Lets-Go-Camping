@@ -105,6 +105,23 @@ const Favorites = () => {
         }
     };
 
+    const removeAll = async () => {
+        try {
+            if (confirm("Remove all parks from favorites list?") === true) {
+                for (const favorite of favoriteParks) {
+                    await axios.post('/api/favorites/remove', favorite);
+                    console.log("Removed park:", favorite);
+                }
+
+                toast.success('Removed all parks from favorites!');
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error removing from favorites:', error);
+        }
+    };
+
+
 
 
     //the problem: park details is properly stated and updated, but in the code below, it is undefined
@@ -115,6 +132,7 @@ const Favorites = () => {
                 <button onClick={togglePrivacy}>
                     {isPublic ? 'Public' : 'Private'}
                 </button>
+                <button onClick={removeAll}>Remove All</button>
                 {favoriteParks && favoriteParks.length > 0 ? (
                         favoriteParks.map(parkCode => {
                                 const parkDetailsForCode = parkDetailsData[parkCode];

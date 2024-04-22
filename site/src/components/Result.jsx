@@ -118,7 +118,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     const removeFromFavorites = async (parkCode) => {
 
         try {
-            if (confirm("Are you sure you want to remove this park from your favorites list?") === true){
+            if (confirm("Remove this park from your favorites list?") === true){
                 await axios.post('/api/favorites/remove', parkCode);
                 toast.success('Removed from favorites!');
                 setInFavorites(false);

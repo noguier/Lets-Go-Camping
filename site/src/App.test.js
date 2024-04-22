@@ -1786,3 +1786,5 @@ describe('Results Component', () => {
 //             expect(window.location.pathname).toBe("/login");
 //         });
 // }, 70 * SECONDS);
+
+
