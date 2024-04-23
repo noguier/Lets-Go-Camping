@@ -7,7 +7,6 @@ import { renderParkInfo } from "../components/Result";
 const Compare = ({ updateAuthenticationStatus }) => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedOption, setSelectedOption] = useState('compare');
     const [error, setError] = useState("");
     const [isFavoritesPublic, setIsFavoritesPublic] = useState(true);
     const [favoritesList, setFavoritesList] = useState([]);
@@ -27,13 +26,11 @@ const Compare = ({ updateAuthenticationStatus }) => {
             setError("Please enter a username to search");
             return;
         }
-
         try {
             const response = await fetch(`/api/users/exists?username=${searchTerm}`);
             const message = await response.text();
 
             if (message === "User exists") {
-                // User exists, proceed to check privacy
                 await checkPrivacy();
             } else {
                 setError("User does not exist.");
@@ -51,12 +48,14 @@ const Compare = ({ updateAuthenticationStatus }) => {
                 credentials: 'include'
             });
             const isPublic = await response.json();
+
             setIsFavoritesPublic(isPublic);
             if (response.ok && isPublic) {
-                // Only fetch favorites if privacy is public
                 await fetchFavorites();
             } else {
+
                 console.log("Favorites list is private.");
+                alert("Favorites list is private.");
             }
         } catch (error) {
             setError("Failed to retrieve privacy status");
@@ -70,13 +69,13 @@ const Compare = ({ updateAuthenticationStatus }) => {
                 credentials: 'include'
             });
             const favorites = await response.json();
+
             if (response.ok && favorites.length > 0) {
                 setFavoritesList(prev => [...prev, ...favorites]);
                 setUserList(prev => [...prev, searchTerm]);
                 toast.success("User successfully added");
             } else {
-                setFavoritesList([]);
-                console.log("This user has no favorites, but we will add it to the list because it is just going to be an empty set ");
+                console.log("This user has no favorites, but we will add it to the list because it is just going to be an empty set");
                 setUserList(prev => [...prev, searchTerm]);
             }
         } catch (error) {
@@ -165,3 +164,4 @@ const Compare = ({ updateAuthenticationStatus }) => {
 };
 
 export default Compare;
+

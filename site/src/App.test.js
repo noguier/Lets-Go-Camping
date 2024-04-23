@@ -1592,6 +1592,50 @@ describe('Results Component', () => {
             renderComponent();
             expect(screen.getByText(/Compare and Suggest/i)).toBeInTheDocument();
         });
+        // test('updates search term state on input change', () => {
+        //     render(<Compare />);
+        //     const input = screen.getByPlaceholderText('Search for user');
+        //     fireEvent.change(input, { target: { value: 'john_doe' } });
+        //     expect(input.value).toBe('john_doe');
+        // });
+        //
+        // test('displays error when trying to search with an empty input', () => {
+        //     render(<Compare />);
+        //     const button = screen.getByRole('button', { name: 'Search' });
+        //     fireEvent.click(button);
+        //     expect(screen.getByText('Please enter a username to search')).toBeInTheDocument();
+        // });
+        //
+        // test('handles user existence check', async () => {
+        //     fetchMock.get('/api/users/exists?username=john_doe', 'User exists');
+        //     render(<Compare />);
+        //     const input = screen.getByPlaceholderText('Search for user');
+        //     const button = screen.getByRole('button', { name: 'Search' });
+        //     fireEvent.change(input, { target: { value: 'john_doe' } });
+        //     fireEvent.click(button);
+        //     await waitFor(() => {
+        //         expect(screen.getByText('User does not exist.')).toBeInTheDocument();
+        //     });
+        // });
+        //
+        // test('suggests a park correctly after fetching user favorites', async () => {
+        //     fetchMock.getOnce('/api/users/exists?username=jane_doe', 'User exists');
+        //     fetchMock.getOnce('/api/favorites/privacy/jane_doe', { body: { isPublic: true }, headers: { 'content-type': 'application/json' } });
+        //     fetchMock.getOnce('/api/favorites/display/jane_doe', { body: ['Yellowstone', 'Yosemite'], headers: { 'content-type': 'application/json' } });
+        //
+        //     render(<Compare />);
+        //     const input = screen.getByPlaceholderText('Search for user');
+        //     const buttonSearch = screen.getByRole('button', { name: 'Search' });
+        //     fireEvent.change(input, { target: { value: 'jane_doe' } });
+        //     fireEvent.click(buttonSearch);
+        //
+        //     await waitFor(() => {
+        //         const buttonSuggest = screen.getByRole('button', { name: 'Suggest a Park' });
+        //         fireEvent.click(buttonSuggest);
+        //         expect(screen.getByText('Most common park: Yellowstone')).toBeInTheDocument();
+        //     });
+        // });
+
 
         // it('displays an error message when search is triggered with an empty input', async () => {
         //     renderComponent();
