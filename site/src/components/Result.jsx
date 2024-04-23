@@ -2,7 +2,6 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import toast from "react-hot-toast";
-import Search from "../pages/Search";
 import {useState} from "react";
 const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResults}) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -10,6 +9,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     const [showPlusButton, setShowPlusButton] = useState(false);
     const [inFavorites, setInFavorites] = useState(false);
     const isFavoritesPage = page === "favorites";
+    const isOtherPage = page === "other";
 
     const handleStateCodeClick = async (stateCode) => {
         try {
@@ -136,7 +136,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                 <div data-testid={"list-element-toggle"} id="expand1" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
                      onClick={handleToggleDetails}>
                     <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
-                    {showPlusButton && !isExpanded && (
+                    {!isOtherPage && showPlusButton && !isExpanded &&(
                         <a
                             href="#"
                             id="plus"
@@ -163,25 +163,28 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                 {/*)}*/}
                 {isExpanded && (
                     <div>
-                        <a
-                            href="#"
-                            id="plus"
-                            data-testid={"plus-button"}
-                            style={{
-                                position: "relative",
-                                top: "0px",
-                                right: "0px",
-                            }}
-                            onClick={() => {
-                                if (isFavoritesPage) {
-                                    removeFromFavorites(parkDetails.parkCode);
-                                } else {
-                                    addToFavorites(parkDetails.parkCode);
-                                }
-                            }}
-                        >
-                            <FontAwesomeIcon icon={isFavoritesPage ? faMinus : faPlus} /> {/* Render minus icon if on favorites page */}
-                        </a>
+                        { !isOtherPage && (
+                            <a
+                                href="#"
+                                id="plus"
+                                data-testid={"plus-button"}
+                                style={{
+                                    position: "relative",
+                                    top: "0px",
+                                    right: "0px",
+                                }}
+                                onClick={() => {
+                                    if (isFavoritesPage) {
+                                        removeFromFavorites(parkDetails.parkCode);
+                                    } else {
+                                        addToFavorites(parkDetails.parkCode);
+                                    }
+                                }}
+                            >
+                                <FontAwesomeIcon
+                                    icon={isFavoritesPage ? faMinus : faPlus}/> {/* Render minus icon if on favorites page */}
+                            </a>
+                        )}
                         <h3><a id="url" href={parkDetails.url} target="_blank">Website</a></h3>
                         <p>
                             {/*<strong>Location:</strong> {parkDetails.addresses[0].city}, {parkDetails.addresses[0].stateCode}*/}
@@ -287,7 +290,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                  onMouseLeave={handleMouseLeave}
                  onClick={handleToggleDetails}>
                 <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
-                {showPlusButton && (
+                {showPlusButton && !isOtherPage && (
                     <a
                         href="#"
                         id="plus"

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
-import { InputGroup, FormControl, Button, Form, Container } from 'react-bootstrap';
-import Header from "../components/Header";
+import {InputGroup, FormControl, Button, Container, Form} from 'react-bootstrap';
+import toast from "react-hot-toast";
+import { renderParkInfo } from "../components/Result";
 
 const Compare = ({ updateAuthenticationStatus }) => {
     const navigate = useNavigate();
@@ -10,7 +11,16 @@ const Compare = ({ updateAuthenticationStatus }) => {
     const [error, setError] = useState("");
     const [isFavoritesPublic, setIsFavoritesPublic] = useState(true);
     const [favoritesList, setFavoritesList] = useState([]);
-    const [userList, setUserList] = useState([]);  // State to track users with public favorites
+    const [userList, setUserList] = useState([]);
+    const [commonParks, setCommonParks] = useState([]);
+    const [suggestedPark, setSuggestedPark] = useState(''); // State for storing the most common park
+    const [suggestedParkDetails, setSuggestedParkDetails] = useState(''); // State for storing the most common park
+    const [parkDetails, setParkDetails] = useState(''); // State for storing the most common park
+    const [parkImages, setParkImages] = useState([]);
+    const [searchType, setSearchType] = useState('name');
+    useEffect(() => {
+        console.log("Updated Favorites List:", favoritesList);
+    }, [favoritesList]);
 
     const handleSearch = async () => {
         if (!searchTerm) {
@@ -61,10 +71,9 @@ const Compare = ({ updateAuthenticationStatus }) => {
             });
             const favorites = await response.json();
             if (response.ok && favorites.length > 0) {
-                setFavoritesList(favorites);
-                setUserList(prev => [...prev, searchTerm]);  // Add username to user list
-                alert("User successfully added");
-                console.log("Favorites:", favorites);  // Log the public favorites to console
+                setFavoritesList(prev => [...prev, ...favorites]);
+                setUserList(prev => [...prev, searchTerm]);
+                toast.success("User successfully added");
             } else {
                 setFavoritesList([]);
                 console.log("This user has no favorites, but we will add it to the list because it is just going to be an empty set ");
@@ -72,8 +81,44 @@ const Compare = ({ updateAuthenticationStatus }) => {
             }
         } catch (error) {
             setError("Failed to retrieve favorites for the specified user");
-            //
-            // console.error('Error retrieving favorites:', error);
+            console.error('Error retrieving favorites:', error);
+        }
+    };
+
+    const updateSearchResults = (newResults, type) => {
+        setSearchType(type);
+        setSearchResults(newResults);
+    };
+
+    const handleSuggest = async () => {
+        const parkCount = {};
+        favoritesList.forEach(park => {
+            parkCount[park] = (parkCount[park] || 0) + 1;
+        });
+
+        const commonPark = Object.keys(parkCount).reduce((a, b) => parkCount[a] > parkCount[b] ? a : b, '');
+
+        // setSuggestedPark(commonPark); // Set the most common park
+        toast.success(`Most common park: ${commonPark}`);
+        console.log(commonPark)
+        // const commonPark = Object.keys(parkCount).reduce((a, b) => parkCount[a] > parkCount[b] ? a : b, '');
+        setSuggestedPark(commonPark); // Set the most common park
+        // Fetch park details based on the park code
+        try {
+            const response = await fetch(`/api/parks?searchTerm=${commonPark}&searchType=parkClick`);
+            const data = await response.json();
+            console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
+            setSuggestedPark(data.data[0].fullName); // Set the most common park
+            setSuggestedParkDetails(data.data[0]); // Set the most common park
+            const images = data.data[0].images.slice(0,3).map(img => ({
+                url: img.url,
+                title: img.title
+            }));
+            setParkImages(images);
+            console.log(images);
+        } catch (error) {
+            console.error('Error fetching park details:', error);
+            alert('Fetch Error');
         }
     };
 
@@ -92,23 +137,6 @@ const Compare = ({ updateAuthenticationStatus }) => {
                     <Button variant="primary" onClick={handleSearch}>Search</Button>
                 </InputGroup>
 
-                <Form>
-                    <Form.Check
-                        type="radio"
-                        label="Compare Parks"
-                        name="option"
-                        value="compare"
-                        //checked={selectedOption === 'compare'}
-                    />
-                    <Form.Check
-                        type="radio"
-                        label="Suggest a Park"
-                        name="option"
-                        value="suggest"
-                        //checked={selectedOption === 'suggest'}
-                    />
-                </Form>
-
                 {/* Optional: Display the list of users for suggestions */}
                 <div>
                     <h3>Users for Park Suggestions:</h3>
@@ -117,6 +145,19 @@ const Compare = ({ updateAuthenticationStatus }) => {
                             <li key={index}>{user}</li>
                         ))}
                     </ul>
+                    <Button variant="secondary" /*onClick={handleCompare}*/>Compare Parks</Button>
+                    <Button variant="info" onClick={handleSuggest}>Suggest a Park</Button>
+                    {/*{suggestedPark && <div>Suggested Park: {suggestedPark}</div>}*/}
+                    {suggestedPark && <div>
+                        <h4>Suggested Park:</h4>
+                        {renderParkInfo(suggestedParkDetails, parkDetails, setParkDetails, "other", updateSearchResults)}
+                        {parkImages.map((img, index) => (
+                            <div key={index}>
+                                <img src={img.url} alt={img.title} style={{ width: "100%", height: "auto" }} />
+
+                            </div>
+                        ))}
+                    </div>}
                 </div>
             </Container>
         </div>
