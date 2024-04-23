@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
-import { InputGroup, FormControl, Button, Container } from 'react-bootstrap';
+import {InputGroup, FormControl, Button, Container, Form} from 'react-bootstrap';
+import toast from "react-hot-toast";
 import { renderParkInfo } from "../components/Result";
-import Header from "../components/Header";
 
 const Compare = ({ updateAuthenticationStatus }) => {
     const navigate = useNavigate();
@@ -13,7 +13,10 @@ const Compare = ({ updateAuthenticationStatus }) => {
     const [userList, setUserList] = useState([]);
     const [commonParks, setCommonParks] = useState([]);
     const [suggestedPark, setSuggestedPark] = useState(''); // State for storing the most common park
+    const [suggestedParkDetails, setSuggestedParkDetails] = useState(''); // State for storing the most common park
+    const [parkDetails, setParkDetails] = useState(''); // State for storing the most common park
     const [parkImages, setParkImages] = useState([]);
+    const [searchType, setSearchType] = useState('name');
     useEffect(() => {
         console.log("Updated Favorites List:", favoritesList);
     }, [favoritesList]);
@@ -70,7 +73,7 @@ const Compare = ({ updateAuthenticationStatus }) => {
             if (response.ok && favorites.length > 0) {
                 setFavoritesList(prev => [...prev, ...favorites]);
                 setUserList(prev => [...prev, searchTerm]);
-                alert("User successfully added");
+                toast.success("User successfully added");
             } else {
                 console.log("This user has no favorites, but we will add it to the list because it is just going to be an empty set");
                 setUserList(prev => [...prev, searchTerm]);
@@ -79,6 +82,11 @@ const Compare = ({ updateAuthenticationStatus }) => {
             setError("Failed to retrieve favorites for the specified user");
             console.error('Error retrieving favorites:', error);
         }
+    };
+
+    const updateSearchResults = (newResults, type) => {
+        setSearchType(type);
+        setSearchResults(newResults);
     };
 
     const handleSuggest = async () => {
@@ -90,7 +98,8 @@ const Compare = ({ updateAuthenticationStatus }) => {
         const commonPark = Object.keys(parkCount).reduce((a, b) => parkCount[a] > parkCount[b] ? a : b, '');
 
         // setSuggestedPark(commonPark); // Set the most common park
-        alert(`Most common park: ${commonPark}`);
+        toast.success(`Most common park: ${commonPark}`);
+        console.log(commonPark)
         // const commonPark = Object.keys(parkCount).reduce((a, b) => parkCount[a] > parkCount[b] ? a : b, '');
         setSuggestedPark(commonPark); // Set the most common park
         // Fetch park details based on the park code
@@ -99,6 +108,7 @@ const Compare = ({ updateAuthenticationStatus }) => {
             const data = await response.json();
             console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
             setSuggestedPark(data.data[0].fullName); // Set the most common park
+            setSuggestedParkDetails(data.data[0]); // Set the most common park
             const images = data.data[0].images.slice(0,3).map(img => ({
                 url: img.url,
                 title: img.title
@@ -126,6 +136,7 @@ const Compare = ({ updateAuthenticationStatus }) => {
                     <Button variant="primary" onClick={handleSearch}>Search</Button>
                 </InputGroup>
 
+                {/* Optional: Display the list of users for suggestions */}
                 <div>
                     <h3>Users for Park Suggestions:</h3>
                     <ul>
@@ -137,7 +148,8 @@ const Compare = ({ updateAuthenticationStatus }) => {
                     <Button variant="info" onClick={handleSuggest}>Suggest a Park</Button>
                     {/*{suggestedPark && <div>Suggested Park: {suggestedPark}</div>}*/}
                     {suggestedPark && <div>
-                        <h4>Suggested Park: {suggestedPark}</h4>
+                        <h4>Suggested Park:</h4>
+                        {renderParkInfo(suggestedParkDetails, parkDetails, setParkDetails, "other", updateSearchResults)}
                         {parkImages.map((img, index) => (
                             <div key={index}>
                                 <img src={img.url} alt={img.title} style={{ width: "100%", height: "auto" }} />

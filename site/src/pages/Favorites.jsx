@@ -67,7 +67,7 @@ const Favorites = () => {
                 }
                 await axios.post('/api/favorites/togglePrivacy', payload);
                 // Update state
-                setIsPublic(isPublic);
+                setIsPublic(!isPublic);
                 toast.success(`Favorites set to ${isPublic ? 'private' : 'public'}`);
             } catch (error) {
                 console.error('Error toggling privacy:', error);
