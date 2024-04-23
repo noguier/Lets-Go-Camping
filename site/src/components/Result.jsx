@@ -118,10 +118,12 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     const removeFromFavorites = async (parkCode) => {
 
         try {
-            await axios.post('/api/favorites/remove', parkCode);
-            toast.success('Removed from favorites!');
-            setInFavorites(false);
-            window.location.reload();
+            if (confirm("Remove this park from your favorites list?") === true){
+                await axios.post('/api/favorites/remove', parkCode);
+                toast.success('Removed from favorites!');
+                setInFavorites(false);
+                window.location.reload();
+            }
         } catch (error) {
             console.error('Error removing from favorites:', error);
         }
@@ -274,7 +276,6 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                              title={parkDetails.images[0].title}/>
                     </div>
                 )}
-
             </div>
 
 
@@ -312,12 +313,15 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     }
 };
 
-const renderParkInfo = (park, parkDetails, setParkDetails, page) => {
+const renderParkInfo = (park, parkDetails, setParkDetails, page, updateSearchResults) => {
+    console.log("Park details:", parkDetails);
+
     return <ParkDetails
         park={park}
         parkDetails={parkDetails}
         setParkDetails={setParkDetails}
-        page={page}/>;
+        page={page}
+        updateSearchResults={updateSearchResults}/>;
 };
 
 export {renderParkInfo};

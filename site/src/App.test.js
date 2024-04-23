@@ -5,7 +5,7 @@ import {
     render,
     screen,
     waitFor,
-    fireEvent, getByText, getByAltText, getByTestId, findByText, getAllByText,
+    fireEvent, getByText, getByAltText, getByTestId, findByText, getAllByText, renderHook,
 } from "@testing-library/react";
 import Header from "./components/Header";
 import '@testing-library/jest-dom'
@@ -18,17 +18,15 @@ import axios from 'axios';
 import Login from "./pages/Login";
 import Create from "./pages/Create";
 import Dashboard from "./pages/Dashboard";
-import {act} from "react-dom/test-utils";
 import Favorites from "./pages/Favorites";
 import Compare from "./pages/Compare";
+jest.mock('axios');
 
-//jest.mock('axios');
-
-// Mock axios post method
-
-jest.mock('axios', () => ({
-    post: jest.fn(() => Promise.resolve({ data: { /* mocked data if needed */ } })),
-    get: jest.fn((url) => {
+ let mockGet;
+ let mockPost;
+//
+beforeEach(()=> {
+    mockGet = jest.fn((url) => {
         if (url === '/api/users/authenticated') {
             // Return a promise that resolves to a mock authentication status
             return Promise.resolve({ data: true });
@@ -36,8 +34,15 @@ jest.mock('axios', () => ({
             // Handle other URLs if needed
             return Promise.resolve({ data: { /* mocked data if needed */ } });
         }
-    })
-}));
+    });
+   mockPost = jest.fn(() => Promise.resolve({ data: { /* mocked data if needed */ } }));
+// jest.mock('axios', () => ({
+//     post: (()=>{mockPost()}),
+//     get: ((url)=>{mockGet(url)})
+// }));
+    axios.post.mockImplementation(()=> {return mockPost()});
+    axios.get.mockImplementation(()=> {return mockGet()});
+});
 
 test("renders header text", () => {
     const { getByText } = render(
@@ -601,35 +606,39 @@ describe('Login/Create component', () => {
     });
 
 
-    // test('redirects to dashboard after successful login', async () => {
-    //     const mockedResponse = {
-    //         data: {
-    //             username: "testuser",
-    //             token: "testtoken"
-    //         }
-    //     };
-    //     axios.post.mockResolvedValueOnce({ data: mockedResponse });
-    //
-    //     render(
-    //         <BrowserRouter>
-    //             <App />
-    //         </BrowserRouter>
-    //     );
-    //
-    //     fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-    //     fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
-    //     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
-    //
-    //     expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
-    //
-    //     // Wait for Dashboard to appear asynchronously
-    //     await waitFor(() => {
-    //         expect(screen.getByText((content, element) => {
-    //             // Custom logic to match text
-    //             return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
-    //         })).toBeInTheDocument();
-    //     });
-    // });
+    test('redirects to dashboard after successful login', async () => {
+        const mockedResponse = {
+            data: {
+                username: "testuser",
+                token: "testtoken"
+            }
+        };
+        axios.post.mockResolvedValueOnce({ data: mockedResponse });
+
+        render(
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        );
+
+        await waitFor (()=>{
+            expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+        })
+
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+
+        expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+
+        // Wait for Dashboard to appear asynchronously
+        await waitFor(() => {
+            expect(screen.getByText((content, element) => {
+                // Custom logic to match text
+                return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
+            })).toBeInTheDocument();
+        });
+    });
 
 
 
@@ -987,6 +996,10 @@ test('should render Login page when not authenticated', async () => {
     });
 });
 
+
+
+
+
 // test('should update authentication status app comp', async () => {
 //     const mockedResponse = {
 //         data: {
@@ -998,9 +1011,7 @@ test('should render Login page when not authenticated', async () => {
 //     axios.get.mockResolvedValueOnce({});
 //
 //     render(
-//         <BrowserRouter>
-//             <App />
-//         </BrowserRouter>
+//             <App />, {wrapper: BrowserRouter}
 //     );
 //
 //     // Fill in the username and password fields
@@ -1015,6 +1026,9 @@ test('should render Login page when not authenticated', async () => {
 //         expect(window.location.pathname).toBe("/search");
 //     });
 // });
+
+
+
 describe('compare component', () => {
     // Mock updateAuthenticationStatus function
     const mockUpdateAuthStatus = jest.fn();
@@ -1049,6 +1063,30 @@ describe('Favorites component', () => {
         );
         expect(getByText('Favorites')).toBeInTheDocument();
     });
+    test('clicking ranking buttons updates park ranking', async () => {
+        // Mock response for favorite parks display
+        axios.get.mockResolvedValueOnce({ data: ['ABC123'] });
+        // Mock response for fetching park details
+        axios.get.mockResolvedValueOnce({ data: [{ parkCode: 'ABC123' }] });
+
+        render(
+            <BrowserRouter>
+                <Favorites />
+            </BrowserRouter>
+        );
+
+        // Simulate clicking on the upvote button
+        fireEvent.click(await screen.findByText('↑'));
+        expect(axios.post).toHaveBeenCalledTimes(1);
+        expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 1 });
+
+        // Simulate clicking on the downvote button
+        fireEvent.click(await screen.findByText('↓'));
+        expect(axios.post).toHaveBeenCalledTimes(2);
+        expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 0 });
+    });
+
+
 
     // test('clicking logout button calls handleLogout', async () => {
     //     const { getByText } = render(
@@ -1598,4 +1636,155 @@ describe('Results Component', () => {
         });
     });
 
+
+
 });
+
+// import { useIdleTimer } from 'react-idle-timer';
+// // Define the sleep function
+// export function sleep(time = 0) {
+//     return new Promise(resolve => setTimeout(resolve, time));
+// }
+//
+// describe('useIdleTimer', () => {
+//     let props
+//
+//     const idleTimer = () => {
+//         return renderHook(() => useIdleTimer(props))
+//     }
+//
+//
+//     beforeEach(() => {
+//         props = {
+//             timeout: undefined,
+//             promptTimeout: undefined,
+//             element: undefined,
+//             events: undefined,
+//             timers: undefined,
+//             immediateEvents: undefined,
+//             onPresenceChange: undefined,
+//             onPrompt: undefined,
+//             onIdle: undefined,
+//             onActive: undefined,
+//             onAction: undefined,
+//             onMessage: undefined,
+//             debounce: undefined,
+//             throttle: undefined,
+//             eventsThrottle: undefined,
+//             startOnMount: undefined,
+//             startManually: undefined,
+//             stopOnIdle: undefined,
+//             capture: undefined,
+//             passive: undefined,
+//             crossTab: undefined,
+//             name: undefined,
+//             syncTimers: undefined,
+//             leaderElection: undefined,
+//             disabled: undefined
+//         }
+//     })
+//
+// test('logout idle user', async () => {
+//     const updateAuthenticationStatusMock = jest.fn();
+//
+//     render(
+//         <BrowserRouter>
+//             <App />
+//         </BrowserRouter>
+//     );
+//
+//     await waitFor (()=>{
+//         expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+//     })
+//
+//     // Set a short timeout for testing purposes
+//     props.timeout = 2000;
+//
+//     // Simulate user activity to prevent idle state
+//     fireEvent.mouseMove(document);
+//
+//     // Wait for the timeout to trigger idle state
+//     await sleep(2500);
+//
+//     // Mock the axios post request
+//     jest.spyOn(axios, 'post').mockResolvedValueOnce();
+//
+//     await waitFor(() =>{
+//         // Check if axios.post is called with the correct endpoint
+//     expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+//     });
+//
+//     // // Wait for axios.post to be called
+//     //     await waitFor(() => {
+//     //         expect(mockPost).toHaveBeenCalledWith('/api/users/logout');
+//     //     });
+//
+//         // Check if updateAuthenticationStatus and navigate are called
+//         await waitFor(() =>{
+//             expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
+//             expect(window.location.pathname).toBe("/login");
+//         });
+// });
+//
+// });
+
+// const SECONDS = 1000;
+// jest.useFakeTimers();
+// it('logout idle user', async () => {
+//     const updateAuthenticationStatusMock = jest.fn();
+//     const mockedResponse = {
+//         data: {
+//             username: "testuser",
+//             token: "testtoken"
+//         }
+//     };
+//     axios.post.mockResolvedValueOnce({ data: mockedResponse });
+//
+//
+//     render(
+//         <BrowserRouter>
+//             <App />
+//         </BrowserRouter>
+//     );
+//
+//     await waitFor (()=>{
+//         expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+//     })
+//
+//     fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+//     fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+//     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+//
+//     expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+//
+//     // Wait for Dashboard to appear asynchronously
+//     await waitFor(() => {
+//         expect(screen.getByText((content, element) => {
+//             // Custom logic to match text
+//             return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
+//         })).toBeInTheDocument();
+//     });
+//
+//     jest.advanceTimersByTime(5000);
+//
+//     // Mock the axios post request
+//     jest.spyOn(axios, 'post').mockResolvedValueOnce();
+//
+//     await waitFor(() =>{
+//         // Check if axios.post is called with the correct endpoint
+//     expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+//     });
+//
+//     // // Wait for axios.post to be called
+//     //     await waitFor(() => {
+//     //         expect(mockPost).toHaveBeenCalledWith('/api/users/logout');
+//     //     });
+//
+//         // Check if updateAuthenticationStatus and navigate are called
+//         await waitFor(() =>{
+//             expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
+//             expect(window.location.pathname).toBe("/login");
+//         });
+// }, 70 * SECONDS);
+
+

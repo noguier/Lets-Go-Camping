@@ -22,37 +22,62 @@ public class MyStepdefs_Search {
     private final WebDriver driver = new ChromeDriver();
     private static boolean accountCreated = false;
 
-    private void createAccount() throws InterruptedException{
-        accountCreated = true;
-        driver.get(ROOT_URL + "create");
-        //username
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
-        //password
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
-        //confirm password
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("testPassword1");
-        //click create account
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
-        //wait for redirect to login
-        Thread.sleep(1000);
-    }
+//    private void createAccount() throws InterruptedException{
+//        accountCreated = true;
+//        driver.get(ROOT_URL + "create");
+//        //username
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
+//        //password
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
+//        //confirm password
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("testPassword1");
+//        //click create account
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
+//        //wait for redirect to login
+//        Thread.sleep(1000);
+//    }
 
     @Given("I am on the search page")
     public void iAmOnTheSearchPage() throws InterruptedException {
-        System.out.println("Account created:"+accountCreated);
-        if (!accountCreated) {
-            createAccount();
-        } else {
-            driver.get(ROOT_URL + "login");
-        }
-        //login username
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
-        //login password
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
-        //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
-        Thread.sleep(1000);
+//        System.out.println("Account created:"+accountCreated);
+//        if (!accountCreated) {
+//            createAccount();
+//        }
 
+        //go to create account page
+        driver.get(ROOT_URL + "create");
+
+        Thread.sleep(1000);
+        //enter Tommy as username
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[1]/input")).sendKeys("Tommy");
+        //enter Trojan123 as password
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[2]/input")).sendKeys("Trojan123");
+        //enter Trojan123 as confirm password
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[3]/input")).sendKeys("Trojan123");
+        //click create account (where I should be automatically redirected to login)
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/button[1]")).click();
+        //wait a little
+        Thread.sleep(500);
+
+        //login
+        //given on login page
+        driver.get(ROOT_URL + "login");
+        Thread.sleep(1000);
+        //enter username
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/div[1]/input")).sendKeys("Tommy");
+        //enter password
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/div[2]/input")).sendKeys("Trojan123");
+        //click login
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/button[1]")).click();
+        Thread.sleep(1000);
+        driver.get(ROOT_URL + "search");
+//        //login username
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
+//        //login password
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
+//        //click login
+//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
+        Thread.sleep(5000);
     }
     @After
     public void after(){
@@ -61,7 +86,7 @@ public class MyStepdefs_Search {
 
     @And("I click the dropdown Name")
     public void iClickTheDropdownName() {
-        driver.findElement(By.xpath("/html/body/div/div/div[2]/div[2]/form/div[2]/div[1]/div/input")).click();
+        driver.findElement(By.id("searchByName")).click();
 
     }
 
@@ -74,7 +99,7 @@ public class MyStepdefs_Search {
 
     @When("I enter {string} in the search bar")
     public void iEnterInTheSearchBar(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div[2]/div[2]/form/div[1]/div[1]/input")).sendKeys(arg0);
+        driver.findElement(By.id("search-term")).sendKeys(arg0);
     }
 
     @Then("I should get an error message {string}")
@@ -137,13 +162,14 @@ public class MyStepdefs_Search {
     }
 
     @And("I click the Search button")
-    public void iClickTheSearchButton() {
+    public void iClickTheSearchButton() throws InterruptedException {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        driver.findElement(By.xpath("/html/body/div/div/div[2]/div[2]/form/div[1]/div[2]/button")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[2]/form/div[1]/div[2]/button")).click();
+        Thread.sleep(2000);
 
 
     }
@@ -201,7 +227,7 @@ public class MyStepdefs_Search {
     @And("I press enter")
     public void iPressEnter() {
 
-        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/form/div[1]/div[2]/button")).sendKeys(Keys.ENTER);
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[2]/form/div[1]/div[2]/button")).sendKeys(Keys.ENTER);
     }
 
     @Then("I see {string}")
@@ -275,6 +301,8 @@ public class MyStepdefs_Search {
         String currentUrl = driver.getCurrentUrl();
         String expectedUrl = ROOT_URL+arg0;
 
+        assertEquals(expectedUrl, currentUrl);
+
     }
 
     @Then("I wait a little")
@@ -286,7 +314,7 @@ public class MyStepdefs_Search {
     @And("I click the Load More button")
     public void iClickTheLoadMoreButton() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div[11]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[11]/div/button")));
         try {
             loadElement.click();
         } catch (ElementClickInterceptedException e) {
@@ -299,7 +327,7 @@ public class MyStepdefs_Search {
     @And("I click the Load More button for Activity")
     public void iClickTheLoadMoreButtonForActivity() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div/div/div[11]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div/div[2]/div[3]/div/div/div[11]/div/button")));
         try {
             loadElement.click();
         } catch (ElementClickInterceptedException e) {
@@ -312,7 +340,7 @@ public class MyStepdefs_Search {
     @And("I click the Load More button for Amenity")
     public void iClickTheLoadMoreButtonForAmenity() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div/div/div/div[11]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div/div[2]/div[3]/div/div/div/div[11]/div/button")));
         try {
             loadElement.click();
         } catch (ElementClickInterceptedException e) {
@@ -326,7 +354,7 @@ public class MyStepdefs_Search {
     public void IClickTheLoadMoreButtonAgainForActivity() {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds timeout
-        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"root\"]/div/div[2]/div[3]/div/div/div[21]/div/button")));
+        WebElement loadElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div/div/div/div[2]/div[3]/div/div/div[21]/div/button")));
         try {
             loadElement.click();
             //loadElement.click();
@@ -338,14 +366,15 @@ public class MyStepdefs_Search {
     }
 
     @When("I click on the state code")
-    public void iClickOnTheStateCode() {
+    public void iClickOnTheStateCode() throws InterruptedException {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        driver.findElement(By.xpath("html/body/div/div/div[2]/div/div[4]/div/div[2]/p[1]/a")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/p[1]/a")).click();
+        Thread.sleep(2000);
 
     }
 
@@ -357,6 +386,44 @@ public class MyStepdefs_Search {
             throw new RuntimeException(e);
         }
         assertTrue(driver.getPageSource().contains(arg1));
+    }
+
+    @When("I click on the activity")
+    public void iClickOnTheActivity() throws InterruptedException {
+        Thread.sleep(5000);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a"));
+
+        Actions actions = new Actions(driver);
+
+        actions.moveToElement(element).click().perform();
+
+        //driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a")).click();
+        Thread.sleep(2000);
+    }
+
+    @When("I click on the amenity")
+    public void iClickOnTheAmenity() throws InterruptedException {
+        Thread.sleep(5000);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a"));
+
+        Actions actions = new Actions(driver);
+
+        actions.moveToElement(element).click().perform();
+
+        //driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a")).click();
+        Thread.sleep(2000);
     }
 
 
