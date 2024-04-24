@@ -25,5 +25,9 @@ public interface FavoritesService {
     Map<String, Integer> geRankingByUsername(String username);
     boolean isPublic(String username);
 
+// <<<<<<< feature/favorites
     int getParkRanking(String username, String parkCode);
+// ======= 
+// 
+// >>>>>>> develop
 }
