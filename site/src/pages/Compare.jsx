@@ -17,11 +17,14 @@ const Compare = ({ updateAuthenticationStatus }) => {
     const [parkDetails, setParkDetails] = useState(''); // State for storing the most common park
     const [parkImages, setParkImages] = useState([]);
     const [searchType, setSearchType] = useState('name');
+
+
     useEffect(() => {
         console.log("Updated Favorites List:", favoritesList);
     }, [favoritesList]);
 
     const handleSearch = async () => {
+
         if (!searchTerm) {
             setError("Please enter a username to search");
             return;
@@ -36,6 +39,7 @@ const Compare = ({ updateAuthenticationStatus }) => {
                 setError("User does not exist.");
                 alert(message);
             }
+
         } catch (error) {
             setError("Failed to search for user");
             console.error('Error searching user:', error);
@@ -121,6 +125,49 @@ const Compare = ({ updateAuthenticationStatus }) => {
         }
     };
 
+    // Add state for storing users for each common park
+    const [userParks, setUserParks] = useState({});
+
+    const handleCompare = async () => {
+        const parkCount = {};
+        const userParks = {}; // Object to store users for each common park
+
+        // Count occurrences of each park
+        favoritesList.forEach(park => {
+            parkCount[park] = (parkCount[park] || 0) + 1;
+        });
+
+        // Iterate through each user and fetch their favorite parks
+        for (const user of userList) {
+            try {
+                const response = await fetch(`/api/favorites/display/${user}`);
+                if (response.ok) {
+                    const userFavorites = await response.json();
+                    // Update userParks with the user's favorite parks
+                    console.log(userFavorites);
+                    userFavorites.forEach(park => {
+                        if (!userParks[park]) userParks[park] = [];
+                        userParks[park].push(user);
+                    });
+                } else {
+                    console.error(`Failed to fetch favorites for user ${user}`);
+                }
+            } catch (error) {
+                console.error(`Error fetching favorites for user ${user}:`, error);
+            }
+        }
+
+        const sortedParks = Object.entries(parkCount).sort((a, b) => b[1] - a[1]); // Sort by count in descending order
+
+        // Update state with common parks and users
+        setCommonParks(sortedParks);
+        setUserParks(userParks);
+    };
+
+
+
+
+
     return (
         <div>
             <h2>Compare and Suggest</h2>
@@ -144,7 +191,27 @@ const Compare = ({ updateAuthenticationStatus }) => {
                             <li key={index}>{user}</li>
                         ))}
                     </ul>
-                    <Button variant="secondary" /*onClick={handleCompare}*/>Compare Parks</Button>
+                    <Button variant="secondary" onClick={handleCompare}>Compare Parks</Button>
+
+                    {commonParks.map(([park, count]) => (
+                        <div key={park}>
+                            <h4>{park}</h4>
+                            <p>Count: {count}</p>
+                            <p>
+                                <Button
+                                    variant="link"
+                                    onClick={() => {
+                                        // Display users for the clicked park
+                                        const users = userParks[park] || []; // Check if userParks[park] exists
+                                        alert(`Users who have ${park} in their favorites: ${users.join(", ")}`);
+                                    }}
+                                >
+                                    Ratio: {count / userList.length}
+                                </Button>
+                            </p>
+                        </div>
+                    ))}
+
                     <Button variant="info" onClick={handleSuggest}>Suggest a Park</Button>
                     {/*{suggestedPark && <div>Suggested Park: {suggestedPark}</div>}*/}
                     {suggestedPark && <div>
