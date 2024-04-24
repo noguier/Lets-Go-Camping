@@ -26,4 +26,6 @@ public interface FavoritesService {
     boolean isPublic(String username);
 
 
+    int getParkRanking(String username, String parkCode);
+
 }

@@ -240,6 +240,38 @@ class FavoritesServiceImplTest {
 
         verify(favoritesRepository, never()).save(any());
     }
+    @Test
+    void getParkRanking_UserFavoritesListExists_ReturnsParkRanking() {
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int expectedRanking = 5;
+        Map<String, Integer> parkRankings = new HashMap<>();
+        parkRankings.put(parkCode, expectedRanking);
+
+        Favorite favorite = new Favorite();
+        favorite.setUsername(username);
+        favorite.setParkRankings(parkRankings);
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(favorite));
+
+        int actualRanking = favoritesService.getParkRanking(username, parkCode);
+
+        assertEquals(expectedRanking, actualRanking);
+    }
+
+    @Test
+    void getParkRanking_UserFavoritesListDoesNotExist_ReturnsDefaultRanking() {
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int expectedDefaultRanking = 0;
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        int actualRanking = favoritesService.getParkRanking(username, parkCode);
+
+        assertEquals(expectedDefaultRanking, actualRanking);
+    }
+
 
 
 }

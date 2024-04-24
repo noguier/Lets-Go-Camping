@@ -368,6 +368,7 @@ class FavoritesControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         verify(favoritesService, never()).updateParkRanking(any(), any(), anyInt());
     }
+    @Test
     void displayFavoritesPerUser_NullOrEmptyUsername() {
         ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser("");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -443,4 +444,105 @@ class FavoritesControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertFalse(response.getBody(), "Expected false for private favorites");
     }
+
+    @Test
+    void privacyStatus_UserAuthenticatedAndIsPublic_ReturnsIsPublicTrue() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        when(favoritesService.isPublic("testUser")).thenReturn(true);
+
+        // Act
+        ResponseEntity<Boolean> response = favoritesController.privacyStatus(request);
+
+        // Assert
+        assertAll(
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> assertTrue(response.getBody())
+        );
+    }
+
+    @Test
+    void privacyStatus_UserAuthenticatedAndIsNotPublic_ReturnsIsPublicFalse() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        when(favoritesService.isPublic("testUser")).thenReturn(false);
+
+        // Act
+        ResponseEntity<Boolean> response = favoritesController.privacyStatus(request);
+
+        // Assert
+        assertAll(
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> assertFalse(response.getBody())
+        );
+    }
+
+    @Test
+    void testGetPrivacyStatus_ValidUsername() {
+        String username = "user1";
+        when(favoritesService.isPublic(username)).thenReturn(true);
+        ResponseEntity<Boolean> response = favoritesController.getPrivacyStatus(username);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(true, response.getBody());
+    }
+
+    @Test
+    void testGetPrivacyStatus_NullUsername() {
+        String username = null;
+        ResponseEntity<Boolean> response = favoritesController.getPrivacyStatus(username);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
+
+    @Test
+    void testGetPrivacyStatus_EmptyUsername() {
+        String username = "";
+        ResponseEntity<Boolean> response = favoritesController.getPrivacyStatus(username);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(null, response.getBody());
+    }
+    @Test
+    void getParkRanking_UserAuthenticatedAndRankingExists_ReturnsParkRanking() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        when(favoritesService.getParkRanking("testUser", "ABC123")).thenReturn(5);
+
+        // Act
+        ResponseEntity<Integer> response = favoritesController.getParkRanking(request, "ABC123");
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(5, response.getBody());
+    }
+
+    @Test
+    void getParkRanking_UserAuthenticatedAndRankingDoesNotExist_ReturnsInternalServerError() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        when(favoritesService.getParkRanking("testUser", "ABC123")).thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<Integer> response = favoritesController.getParkRanking(request, "ABC123");
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+
+    
+
+
+
 }
