@@ -28,11 +28,17 @@ const Favorites = () => {
                     for (const parkCode of favoriteParksResponse) {
                         parkDetailsData[parkCode] = await fetchParkDetails(parkCode);
                         parkRankingsData[parkCode] = 0;
+
+                        const parkRanking = await fetchParkRanking(parkCode);
+                        parkRankingsData[parkCode] = parkRanking || 0;
+
                     }
                     // console.log("Park details for favorite parks fetched:", parkDetailsData);
                     setParkDetailsData(parkDetailsData); // Update parkDetails state with fetched details
                     // console.log("Updated parkDetails object:", parkDetailsData);
                     setParkRankings(parkRankingsData);
+                    const privacyStatus = await fetchPrivacyStatus();
+                    setIsPublic(privacyStatus);
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -54,27 +60,48 @@ const Favorites = () => {
             }
         };
 
-        const updateSearchResults = (newResults, type) => {
+
+    const fetchParkRanking = async (parkCode) => {
+        try {
+            const response = await axios.get(`/api/favorites/ranking/${parkCode}`);
+            const ranking = response.data;
+            setParkRankings(prevParkRankings => ({
+                ...prevParkRankings,
+                [parkCode]: ranking
+            }));
+            return ranking;
+        } catch (error) {
+            console.error('Error fetching park rankings:', error);
+            return 0; // Return default value if ranking is not available
+        }
+    };
+
+
+    const updateSearchResults = (newResults, type) => {
             setSearchType(type);
             setSearchResults(newResults);
         };
 
-        const togglePrivacy = async () => {
+    const fetchPrivacyStatus = async () => {
+        try {
+            const response = await axios.get('/api/favorites/privacy');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+
+    const togglePrivacy = async () => {
             try {
-                // Send request to backend to toggle privacy
-                const payload = {
-                    isPublic: isPublic
-                }
-                await axios.post('/api/favorites/togglePrivacy', payload);
-                // Update state
-                setIsPublic(isPublic);
-                toast.success(`Favorites set to ${isPublic ? 'private' : 'public'}`);
+                const newPrivacyStatus = !isPublic;
+                setIsPublic(newPrivacyStatus); // Update state with the new privacy status
+                await axios.post('/api/favorites/togglePrivacy', { isPublic: newPrivacyStatus });
             } catch (error) {
                 console.error('Error toggling privacy:', error);
                 toast.error('Failed to toggle privacy');
             }
         };
-
 
         const fetchParkDetails = async (parkCode) => {
             try {
@@ -89,21 +116,6 @@ const Favorites = () => {
             }
         };
 
-    const updateParkRanking = async (parkCode, increment) => {
-        const currentRanking = parkRankings[parkCode] || 0; // Get current ranking or default to 0
-        const newRanking = Math.max(0, currentRanking + increment); // Ensure new ranking is at least 0
-
-        try {
-            // Send updated ranking to the backend
-            await axios.post("/api/favorites/updateRanking", { parkCode, newRanking });
-            // Update local state with the new ranking
-            setParkRankings({ ...parkRankings, [parkCode]: newRanking });
-            console.log("Park ranking is updated");
-        } catch (error) {
-            console.error("Error updating park ranking:", error);
-            toast.error("Failed to update park ranking");
-        }
-    };
 
     const removeAll = async () => {
         try {
@@ -112,7 +124,6 @@ const Favorites = () => {
                     await axios.post('/api/favorites/remove', favorite);
                     console.log("Removed park:", favorite);
                 }
-
                 toast.success('Removed all parks from favorites!');
                 window.location.reload();
             }
@@ -121,58 +132,65 @@ const Favorites = () => {
         }
     };
 
+// Update park ranking function
+    const updateParkRanking = async (parkCode, increment) => {
+        const currentRanking = parkRankings[parkCode] || 0; // Get current ranking or default to 0
+        const newRanking = Math.max(1, currentRanking + increment); // Ensure new ranking is at least 1
 
+        try {
+            // Send updated ranking to the backend
+            await axios.post("/api/favorites/updateRanking", { parkCode, newRanking });
+            // Update local state with the new ranking
+            setParkRankings({ ...parkRankings, [parkCode]: newRanking });
 
+            // Reorder favorite parks based on updated rankings
+            const updatedFavoriteParks = favoriteParks.slice(); // Create a copy of the array
+            const parkIndex = updatedFavoriteParks.indexOf(parkCode);
+            updatedFavoriteParks.splice(parkIndex, 1); // Remove the park from its current position
+            updatedFavoriteParks.splice(newRanking - 1, 0, parkCode); // Insert the park at its new position
+            setFavoriteParks(updatedFavoriteParks);
+        } catch (error) {
+            console.error("Error updating park ranking:", error);
+            toast.error("Failed to update park ranking");
+        }
+    };
 
-    //the problem: park details is properly stated and updated, but in the code below, it is undefined
-        //this causes for parkDetails to be undefined at it won't show the details
-        return (
-            <div>
-                <h2>Favorites</h2>
-                <button onClick={togglePrivacy}>
-                    {isPublic ? 'Public' : 'Private'}
-                </button>
-                <button onClick={removeAll}>Remove All</button>
-                {favoriteParks && favoriteParks.length > 0 ? (
-                        favoriteParks.map(parkCode => {
-                                const parkDetailsForCode = parkDetailsData[parkCode];
-                                return (
-                                    <div key={parkCode}>
-                                        {parkDetailsForCode ? (
-                                                // renderParkInfo(park, parkDetails, setParkDetails, "favorites", updateSearchResults)
-                                                renderParkInfo(
-                                                    parkDetailsForCode,
-                                                    parkDetails,
-                                                    setParkDetails,
-                                                    'favorites',
-                                                    updateSearchResults
-                                                )
-
-                                            ) :
-                                            (
-                                                <p>Loading...</p>
-                                            )
-                                        }
-                                        <button onClick={() => updateParkRanking(parkCode, 1)}>↑</button>
-                                        <span>{parkRankings[parkCode]}</span>
-                                        <button onClick={() => updateParkRanking(parkCode, -1)}>↓</button>
-                                        <hr/>
-                                    </div>
-                                );
-                            }
-                        )
-                    ) :
-                    (
-                        <div>This list is empty</div>
-                    )
-                }
-            </div>
-        )
-            ;
-
-
-    }
-;
+    return (
+        <div>
+            <h2>Favorites</h2>
+            <button onClick={togglePrivacy}>
+                {isPublic ? 'Public' : 'Private'}
+            </button>
+            <button onClick={removeAll}>Remove All</button>
+            {favoriteParks && favoriteParks.length > 0 ? (
+                <ol>
+                    {favoriteParks.map((parkCode, index) => (
+                        <li key={parkCode}>
+                            {parkDetailsData[parkCode] ? (
+                                // renderParkInfo component
+                                <div>
+                                    {renderParkInfo(
+                                        parkDetailsData[parkCode],
+                                        parkDetailsData,
+                                        setParkDetailsData,
+                                        'favorites',
+                                        updateSearchResults
+                                    )}
+                                    <button onClick={() => updateParkRanking(parkCode, -1)} disabled={index === 0}>↑</button>
+                                    <span>{index + 1}</span>
+                                    <button onClick={() => updateParkRanking(parkCode, 1)} disabled={index === favoriteParks.length - 1}>↓</button>
+                                </div>
+                            ) : (
+                                <p>Loading...</p>
+                            )}
+                        </li>
+                    ))}
+                </ol>
+            ) : (
+                <div>This list is empty</div>
+            )}
+        </div>
+    );
+};
 
 export default Favorites;
-
