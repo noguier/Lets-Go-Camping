@@ -118,7 +118,28 @@ public class FavoritesController {
         boolean isPublic = favoritesService.isPublic(username);
         return ResponseEntity.ok(isPublic);
     }
+    @GetMapping("/privacy")
+    public ResponseEntity<Boolean> privacyStatus(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
 
+        String username = (String) session.getAttribute("username");
+        boolean isPublic = favoritesService.isPublic(username);
+        return ResponseEntity.ok(isPublic);
+    }
+
+    @GetMapping("/ranking/{parkCode}")
+    public ResponseEntity<Integer> getParkRanking(HttpServletRequest httpRequest, @PathVariable String parkCode) {
+        try {
+            HttpSession session = httpRequest.getSession(false);
+            // Call the service layer method to get the park ranking
+            String username = (String) session.getAttribute("username");
+            int ranking = favoritesService.getParkRanking(username,parkCode);
+//            System.out.println("DEBUG CONTROLLER: PARK RANKING" + ranking );
+            return ResponseEntity.ok(ranking);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @PostMapping("/togglePrivacy")
     public ResponseEntity<String> togglePrivacy(@RequestBody Map<String, Boolean> requestBody, HttpServletRequest httpRequest) {
@@ -160,5 +181,7 @@ public class FavoritesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update park ranking");
         }
     }
+
+
 
 }
