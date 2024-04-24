@@ -368,6 +368,7 @@ class FavoritesControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         verify(favoritesService, never()).updateParkRanking(any(), any(), anyInt());
     }
+    @Test
     void displayFavoritesPerUser_NullOrEmptyUsername() {
         ResponseEntity<List<String>> response = favoritesController.displayFavoritesPerUser("");
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -506,6 +507,40 @@ class FavoritesControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(null, response.getBody());
     }
+    @Test
+    void getParkRanking_UserAuthenticatedAndRankingExists_ReturnsParkRanking() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        when(favoritesService.getParkRanking("testUser", "ABC123")).thenReturn(5);
+
+        // Act
+        ResponseEntity<Integer> response = favoritesController.getParkRanking(request, "ABC123");
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(5, response.getBody());
+    }
+
+    @Test
+    void getParkRanking_UserAuthenticatedAndRankingDoesNotExist_ReturnsInternalServerError() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("username")).thenReturn("testUser");
+        when(favoritesService.getParkRanking("testUser", "ABC123")).thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<Integer> response = favoritesController.getParkRanking(request, "ABC123");
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+
     
 
 
