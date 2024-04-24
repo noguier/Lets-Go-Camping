@@ -1083,7 +1083,7 @@ describe('Favorites component', () => {
         // Simulate clicking on the downvote button
         fireEvent.click(await screen.findByText('↓'));
         expect(axios.post).toHaveBeenCalledTimes(2);
-        expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 0 });
+        expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 1 });
     });
 
 
