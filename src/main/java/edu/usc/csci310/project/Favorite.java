@@ -28,8 +28,8 @@ public class Favorite implements Serializable {
     @Column(name = "ranking")
     private Map<String, Integer> parkRankings = new HashMap<>();
     @Column(name = "is_public")
-    private boolean isPublic = false; // Default to private
-//    private boolean isPublic = true; // Default to public for debbugging compare and suggest
+    //private boolean isPublic = false; // Default to private
+    private boolean isPublic = true; // Default to public for debbugging compare and suggest
     public Favorite() {
     }
 
