@@ -7,6 +7,17 @@ Feature: test favorites functionality
   Scenario: view favorites list
     Given I am now on the favorites page
     And I have added "Joshua Tree" to my favorites list
+    And I return to the favorites page
+    Then I should see a list of parks including "Joshua Tree National Preserve"
+
+  Scenario: view empty favorites list
+    Given I am now on the favorites page
+    And I have not added any parks to my favorites list
+    Then I should see "This list is empty"
+
+  Scenario: view favorites list
+    Given I am now on the favorites page
+    And I have added "Joshua Tree" to my favorites list
     Then I should see a list of parks including "Joshua Tree National Preserve"
 
   Scenario: view favorites list details
