@@ -1,10 +1,5 @@
 package edu.usc.csci310.project;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,7 +112,40 @@ public class FavoritesController {
         boolean isPublic = favoritesService.isPublic(username);
         return ResponseEntity.ok(isPublic);
     }
+    @GetMapping("/privacy")
+    public ResponseEntity<Boolean> privacyStatus(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
 
+        String username = (String) session.getAttribute("username");
+        boolean isPublic = favoritesService.isPublic(username);
+        return ResponseEntity.ok(isPublic);
+    }
+
+    @GetMapping("/ranking/{parkCode}")
+    public ResponseEntity<Integer> getParkRanking(HttpServletRequest httpRequest, @PathVariable String parkCode) {
+        try {
+            HttpSession session = httpRequest.getSession(false);
+            // Call the service layer method to get the park ranking
+            String username = (String) session.getAttribute("username");
+            int ranking = favoritesService.getParkRanking(username,parkCode);
+//            System.out.println("DEBUG CONTROLLER: PARK RANKING" + ranking );
+            return ResponseEntity.ok(ranking);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @GetMapping("/ranking/{username}/{parkCode}")
+    public ResponseEntity<Integer> getParkRanking(HttpServletRequest httpRequest, @PathVariable String username,@PathVariable String parkCode) {
+        try {
+            HttpSession session = httpRequest.getSession(false);
+            // Call the service layer method to get the park ranking
+            int ranking = favoritesService.getParkRanking(username,parkCode);
+            System.out.println("DEBUG CONTROLLER: PARK RANKING" + ranking );
+            return ResponseEntity.ok(ranking);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @PostMapping("/togglePrivacy")
     public ResponseEntity<String> togglePrivacy(@RequestBody Map<String, Boolean> requestBody, HttpServletRequest httpRequest) {
@@ -160,5 +187,6 @@ public class FavoritesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update park ranking");
         }
     }
+
 
 }

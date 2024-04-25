@@ -24,4 +24,8 @@ public interface FavoritesService {
     //updated is persistant
     Map<String, Integer> geRankingByUsername(String username);
     boolean isPublic(String username);
+
+
+    int getParkRanking(String username, String parkCode);
+
 }

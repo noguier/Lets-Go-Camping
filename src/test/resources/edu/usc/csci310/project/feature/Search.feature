@@ -101,6 +101,7 @@ Feature: Test search functionality
     And "Joshua Tree National Park" is already in my favorites
     When I click on "Joshua Tree National Park" and see details
     #timing issue
+    And I wait a little
     Then I see "In Favorites List"
     Then I click the plus button
     Then I should get an alert saying "This Park was already added to favorites"

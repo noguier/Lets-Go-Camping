@@ -3,10 +3,8 @@ package edu.usc.csci310.project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 @Service
 public class FavoritesServiceImpl implements FavoritesService {
 
@@ -84,6 +82,7 @@ public class FavoritesServiceImpl implements FavoritesService {
             Favorite favorite = optionalFavorite.get();
             favorite.setPublic(isPublic);
             favoritesRepository.save(favorite);
+
         }
     }
     public boolean isPublic(String username) {
@@ -119,7 +118,18 @@ public class FavoritesServiceImpl implements FavoritesService {
             return Collections.emptyMap();
         }
     }
-
+    @Override
+    public int getParkRanking(String username, String parkCode) {
+        Optional<Favorite> optionalFavorite = favoritesRepository.findById(username);
+        if (optionalFavorite.isPresent()) {
+            Favorite favorite = optionalFavorite.get();
+            Map<String, Integer> parkRankings = favorite.getParkRankings();
+            System.out.println("DEBUG: PARK RANKING" );
+            return parkRankings.getOrDefault(parkCode, 0);
+        } else {
+            return 0; // Default ranking if the user doesn't have favorites or the park doesn't exist
+        }
+    }
 
 
 }
