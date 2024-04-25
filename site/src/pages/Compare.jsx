@@ -75,14 +75,16 @@ const Compare = ({ updateAuthenticationStatus }) => {
                 credentials: 'include'
             });
             const favorites = await response.json();
-
+            console.log(response);
             if (response.ok && favorites.length > 0) {
                 setFavoritesList(prev => [...prev, ...favorites]);
                 setUserList(prev => [...prev, searchTerm]);
                 toast.success("User successfully added");
             } else {
-                console.log("This user has no favorites, but we will add it to the list because it is just going to be an empty set");
-                setUserList(prev => [...prev, searchTerm]);
+                // console.log("This user has no favorites, but we will add it to the list because it is just going to be an empty set");
+                // setUserList(prev => [...prev, searchTerm]);
+                console.log("Existed user but with an empty list");
+                toast.error("Favorites list is private");
             }
         } catch (error) {
             setError("Failed to retrieve favorites for the specified user");
@@ -100,27 +102,156 @@ const Compare = ({ updateAuthenticationStatus }) => {
         favoritesList.forEach(park => {
             parkCount[park] = (parkCount[park] || 0) + 1;
         });
+        // Get the maximum count value only if it is greater than 1
+        const maxCount = Math.max(0, ...Object.values(parkCount).filter(count => count > 1));
 
-        const commonPark = Object.keys(parkCount).reduce((a, b) => parkCount[a] > parkCount[b] ? a : b, '');
+// Filter keys where the value equals maxCount and maxCount is greater than 1
+        const commonParks = Object.keys(parkCount).filter(park => parkCount[park] === maxCount && maxCount > 1);
+        console.log("common parks length "+ commonParks.length);
+        console.log("common parks array",commonParks);
+        if (commonParks.length > 1) {
+            let userSpecificParks = {};
 
-        // setSuggestedPark(commonPark); // Set the most common park
-        toast.success(`Most common park: ${commonPark}`);
-        console.log(commonPark)
-        // const commonPark = Object.keys(parkCount).reduce((a, b) => parkCount[a] > parkCount[b] ? a : b, '');
-        setSuggestedPark(commonPark); // Set the most common park
-        // Fetch park details based on the park code
-        try {
-            const response = await fetch(`/api/parks?searchTerm=${commonPark}&searchType=parkClick`);
-            const data = await response.json();
-            console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
-            setSuggestedPark(data.data[0].fullName); // Set the most common park
-            setSuggestedParkDetails(data.data[0]); // Set the most common park
-            const images = data.data[0].images.slice(0,3).map(img => ({
-                url: img.url,
-                title: img.title
+            // Gather ratings for each park by each user who listed it as a favorite
+            for (const user of userList) {
+                for(const park of commonParks) {
+                    try {
+                        const response = await fetch(`/api/favorites/ranking/${user}/${park}`);
+                        const rating = await response.json();
+                        console.log("Fetched user rankins " + rating);
+                        if (!userSpecificParks[park]) {
+                            userSpecificParks[park] = [];
+                        }
+                        userSpecificParks[park].push(rating);
+                        console.log("common parks amd thier favorites list", userSpecificParks)
+
+                    } catch (error) {
+                        console.error('Error fetching park ratings:', error);
+                        alert('Error fetching park ratings');
+                        return;
+                    }
+                }
+            }
+
+            // Calculate average ratings for each park
+            const parksWithAverageRatings = Object.entries(userSpecificParks).map(([park, ratings]) => ({
+                park,
+                averageRating: ratings.reduce((a, b) => a + b, 0) / ratings.length
+
             }));
-            setParkImages(images);
-            console.log(images);
+            console.log(parksWithAverageRatings);
+
+            // Sort parks by average rating and select the highest rated one
+            parksWithAverageRatings.sort((a, b) => a.averageRating - b.averageRating);
+            const highestRatedPark = parksWithAverageRatings[0].park;
+
+            setSuggestedPark(highestRatedPark);
+            console.log(suggestedPark);
+            await fetchParkDetails(highestRatedPark);
+            toast.success(`Most common park with the highest average rating: ${highestRatedPark}`);
+        } else if (commonParks.length === 1){
+            const commonPark = commonParks[0];
+            setSuggestedPark(commonPark);
+            console.log(suggestedPark);
+            toast.success(`Most common park: ${commonPark}`);
+        }
+        //no parks in teh intersection
+        else {
+            let parksAndLocations = [];
+            for (const fav of favoritesList) {
+                console.log("favorite" + fav)
+                try {
+                    const response = await fetch (`/api/parks?searchTerm=${fav}&searchType=parkClick`);
+                    const data = await response.json();
+                    console.log(data.data[0].states);
+                    parksAndLocations.push([fav, data.data[0].states])
+                    console.log("Park and locations array", parksAndLocations);
+
+                }
+                catch(error) {
+                    console.error('Error fetching park details:', error);
+                    alert('Fetch Error');
+                }
+            }
+            let stateCount = {};
+            parksAndLocations.forEach(([park, state]) => {
+                if (stateCount[state]) {
+                    stateCount[state] += 1;
+                } else {
+                    stateCount[state] = 1;
+                }
+            });
+
+            console.log(stateCount);
+            let mostFrequentState = '';
+            let maxCount = 0;
+
+            // Iterate over the stateCount object to find the state with the maximum count
+            for (const [state, count] of Object.entries(stateCount)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    mostFrequentState = state;
+                }
+            }
+            console.log(`The most frequent state is ${mostFrequentState} with a count of ${maxCount}.`);
+            let parksInMostFrequentState = parksAndLocations.filter(([park, state]) => state === mostFrequentState).map(([park]) => park);
+            let parksRankings = [];
+
+            for (const park of parksInMostFrequentState) {
+                let totalRating = 0;
+                let ratingsCount = 0;
+                for (const user of userList) { // userList should be an array of user IDs or usernames
+                    try {
+                        const response = await fetch(`/api/favorites/ranking/${user}/${park}`);
+                        const rating = await response.json();
+                        totalRating += rating;
+                        ratingsCount++;
+                    } catch (error) {
+                        console.error('Error fetching rankings for park:', error);
+                        alert('Fetch Error');
+                    }
+                }
+                if (ratingsCount > 0) {
+                    parksRankings.push({ park, averageRating: totalRating / ratingsCount });
+                }
+            }
+
+            if (parksRankings.length > 0) {
+                parksRankings.sort((a, b) => a.averageRating - b.averageRating);
+                const highestRatedPark = parksRankings[0].park;
+
+                setSuggestedPark(highestRatedPark);
+                console.log(`Suggested Park: ${highestRatedPark}`);
+                toast.success(`Park with the highest rating in the most frequent state: ${highestRatedPark}`);
+            } else {
+                console.log("No matching parks found in the most frequent state.");
+            }
+
+        }
+    };
+    useEffect(() => {
+        if (suggestedPark) {
+            fetchParkDetails(suggestedPark);
+        }
+    }, [suggestedPark]);
+    const fetchParkDetails = async (park) => {
+        try {
+            const response = await fetch(`/api/parks?searchTerm=${park}&searchType=parkClick`);
+            if (!response.ok) throw new Error('Failed to fetch park details');
+
+            const data = await response.json();
+            const parkDetails = {
+                ...data.data[0],
+                images: data.data[0].images.slice(0, 3).map(img => ({
+                    url: img.url,
+                    title: img.title
+                })),
+                city: data.data[0].addresses[0].city,
+                stateCode: data.data[0].addresses[0].stateCode
+            };
+
+            setSuggestedParkDetails(parkDetails);
+            setParkImages(parkDetails.images);
         } catch (error) {
             console.error('Error fetching park details:', error);
             alert('Fetch Error');
@@ -246,6 +377,7 @@ const Compare = ({ updateAuthenticationStatus }) => {
                     {/*{suggestedPark && <div>Suggested Park: {suggestedPark}</div>}*/}
                     {suggestedPark && <div>
                         <h4>Suggested Park:</h4>
+                        <strong>Location: </strong>{suggestedParkDetails.city}, {suggestedParkDetails.stateCode}
                         {renderParkInfo(suggestedParkDetails, parkDetails, setParkDetails, "other", updateSearchResults)}
                         {parkImages.map((img, index) => (
                             <div key={index}>
