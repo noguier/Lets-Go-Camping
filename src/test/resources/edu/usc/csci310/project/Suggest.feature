@@ -1,10 +1,11 @@
 Feature: test suggest a park functionality
-#  Scenario: suggest a park for two users
+  Scenario: suggest a park for two users
 #    Given I am on the suggest a park page
 #    When I enter a username "TommyTrojan"
 #    And I click add a user button
 #    And "TommyTrojan" has a public list of favorites
 #    And I see "User successfully added" displayed on the page
+#    When I enter a username "TallyTrojan"
 #    And I click compare button
 #    Then I should see the information about one park that is on Favorite list of both users
 #
@@ -50,12 +51,12 @@ Feature: test suggest a park functionality
 #    And I click compare button
 #    Then I should see the park name that is on all of the selected users favorite lists with the highest ranking such as "Joshua Tree"
 #
-#  Scenario: suggest a park for a user that doesn't exist
-#    Given I am on the suggest a park page
-#    When I enter a username "NotAUser"
-#    And I click add a user button
-#    And that user doesnt exist in the database
-#    Then I should see "The User doesn't exist" displayed on the page
+  Scenario: suggest a park for a user that doesn't exist
+    Given I am on the suggest a park page
+    When I enter a username "NotAUser"
+    And I click add a user button
+    And that user doesnt exist in the database
+    Then I should see "User does not exist" displayed on the page
 
 #  Scenario: See the details of the park
 #    Given I am on the suggest a park page
