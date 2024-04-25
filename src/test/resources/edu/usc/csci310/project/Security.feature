@@ -1,7 +1,7 @@
 Feature: Secure Transmission of User Data - login page inaccessible without SSL for every page
-#Scenario: User login with encrypted data transmission
-#Given I try to access : http:localhost:8080
-#Then the server should reject the connection
+Scenario: User login with encrypted data transmission
+Given I try to access our landing page with http
+Then the server should reject the connection
 #
 ##only logged in users can use the website
 #Scenario: Accessing user information

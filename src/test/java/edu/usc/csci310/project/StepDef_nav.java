@@ -14,49 +14,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class StepDef_nav {
-    private WebDriver driver;
-    private WebDriverWait wait;
-    private static final String ROOT_URL = "http://localhost:8080/";
-    private static boolean accountCreated = false;
+public class StepDef_nav extends SharedStepDefs {
 
-    @Before
-    public void setup() {
-        driver = new ChromeDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10)); // 10 seconds wait
-    }
-
-//    @Before
-//    public void before() throws InterruptedException {
-//        //create account
-//        //go to create account page
-//        driver.get(ROOT_URL + "create");
-//        //enter Tommy as username
-//        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[1]/input")).sendKeys("Tommy");
-//        //enter Trojan123 as password
-//        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[2]/input")).sendKeys("Trojan123");
-//        //enter Trojan123 as confirm password
-//        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[3]/input")).sendKeys("Trojan123");
-//        //click create account (where I should be automatically redirected to login)
-//        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/button[1]")).click();
-//        //wait a little
-//        Thread.sleep(500);
-//
-//        //login
-//        //given on login page
-//        driver.get(ROOT_URL + "login");
-//        //enter username
-//        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/div[1]/input")).sendKeys("Tommy");
-//        //enter password
-//        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/div[2]/input")).sendKeys("Trojan123");
-//        //click login
-//        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/button[1]")).click();
-//    }
-
-    @After
-    public void after(){
-        driver.quit();
-    }
 
     @And("I click Logout button")
     public void iClickLogoutButton() {

@@ -6,16 +6,18 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+public class CompareStepDefs extends SharedStepDefs{
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class SuggestStepdefs extends SharedStepDefs {
-    @Given("I am on the suggest a park page")
-    public void iAmOnTheSuggestAParkPage() throws InterruptedException {
+    @Given("I am on the compare a park page")
+    public void iAmOnTheCompareAParkPage() throws InterruptedException {
+        //go to create account page
         driver.get(ROOT_URL + "create");
 
         Thread.sleep(1000);
@@ -30,7 +32,6 @@ public class SuggestStepdefs extends SharedStepDefs {
         //wait a little
         Thread.sleep(500);
 
-        //login
         //given on login page
         driver.get(ROOT_URL + "login");
         Thread.sleep(1000);
@@ -41,36 +42,35 @@ public class SuggestStepdefs extends SharedStepDefs {
         //click login
         driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/button[1]")).click();
         Thread.sleep(1000);
-        driver.get(ROOT_URL + "compare");
+        driver.get(ROOT_URL + "search");
         Thread.sleep(5000);
-    }
 
-    @When("I enter a username {string}")
-    public void iEnterAUsername(String arg0) throws InterruptedException {
-        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/div[1]/input")).sendKeys(arg0);
-
-    }
-
-    @And("I click add a user button")
-    public void iClickAddAUserButton() throws InterruptedException {
-        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/div[1]/button")).click();
+        //*[@id="basic-navbar-nav"]/div/a[3]
+        driver.findElement(By.xpath("//*[@id=\"basic-navbar-nav\"]/div/a[3]")).click();
         Thread.sleep(500);
     }
 
-    @And("that user doesnt exist in the database")
-    public void thatUserDoesntExistInTheDatabase() {
+//    @After
+//    public void after(){
+//        driver.quit();
+//    }
 
-    }
+//    @When("I enter a username {string}")
+//    public void iEnterAUsername(String arg0) {
+//        WebElement searchInput = driver.findElement(By.xpath("//*[@id='root']/div/div/div[2]/div/div[1]/input"));
+//        searchInput.sendKeys(arg0);
+//    }
 
-    @Then("I should see {string} displayed on the page")
-    public void iShouldSeeDisplayedOnThePage(String arg0) {
-        Alert alert = driver.switchTo().alert();
-        String error = alert.getText();
-        System.out.print(arg0);
-        System.out.print(error);
-        assertTrue(error.contains(arg0));
 
-        alert.accept();
+    @And("I click search button")
+    public void iClickAddAUserButton()  throws InterruptedException {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/div/div[1]/button")).click();
+        Thread.sleep(1000);
 
     }
 }
