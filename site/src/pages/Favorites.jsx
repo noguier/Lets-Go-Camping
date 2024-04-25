@@ -5,13 +5,13 @@ import {renderParkInfo} from "../components/Result";
 
 const Favorites = () => {
         const [favoriteParks, setFavoriteParks] = useState([]);
-        const [parkDetails, setParkDetails] = useState({});
         const [parkDetailsData, setParkDetailsData] = useState({});
         const [isPublic, setIsPublic] = useState(false);
         const [searchTerm, setSearchTerm] = useState('');
         const [searchType, setSearchType] = useState('name');
         const [parkRankings, setParkRankings] = useState({});
-     const [searchResults, setSearchResults] = useState([]);
+        const [searchResults, setSearchResults] = useState([]);
+        const [parkDetails, setParkDetails] = useState(''); // State for storing the most common park
 
 
         useEffect(() => {
@@ -171,8 +171,8 @@ const Favorites = () => {
                                 <div>
                                     {renderParkInfo(
                                         parkDetailsData[parkCode],
-                                        parkDetailsData,
-                                        setParkDetailsData,
+                                        parkDetails,
+                                        setParkDetails,
                                         'favorites',
                                         updateSearchResults
                                     )}
