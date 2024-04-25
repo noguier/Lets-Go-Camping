@@ -183,7 +183,7 @@ class FavoritesServiceImplTest {
 
         boolean result = favoritesService.isPublic(username);
 
-        assertTrue(result, "The default privacy status should be true when the favorite does not exist.");
+        assertFalse(result, "The default privacy status should be false when the favorite does not exist.");
     }
 
 

@@ -43,9 +43,15 @@ public class FavoritesServiceImpl implements FavoritesService {
         if (optionalFavorite.isPresent()) {
             Favorite favorite = optionalFavorite.get();
             List<String> favoriteParks = favorite.getFavoriteParks();
+            Map<String, Integer> parkRankings = favorite.getParkRankings();
+
             if (favoriteParks.contains(parkCode)) {
                 favoriteParks.remove(parkCode);
                 favorite.setFavoriteParks(favoriteParks);
+
+                parkRankings.remove(parkCode);
+                reassignParkRankings(parkRankings);
+
                 favoritesRepository.save(favorite);
                 return true;
             } else {
@@ -57,7 +63,12 @@ public class FavoritesServiceImpl implements FavoritesService {
             return false;
         }
     }
-
+    private void reassignParkRankings(Map<String, Integer> parkRankings) {
+        int index = 1;
+        for (String parkCode : parkRankings.keySet()) {
+            parkRankings.put(parkCode, index++);
+        }
+    }
     //this method will help with compare and suggest
     //this method will find the favorite list from username
     @Override
@@ -87,7 +98,7 @@ public class FavoritesServiceImpl implements FavoritesService {
     }
     public boolean isPublic(String username) {
         Optional<Favorite> optionalFavorite = favoritesRepository.findById(username);
-        return optionalFavorite.map(Favorite::isPublic).orElse(true);
+        return optionalFavorite.map(Favorite::isPublic).orElse(false);
     }
 
 
@@ -113,8 +124,6 @@ public class FavoritesServiceImpl implements FavoritesService {
             Favorite favorite = optionalFavorite.get();
             return favorite.getParkRankings();
         } else {
-            // User's favorite list doesn't exist
-            System.out.println("DEBUG: EMPTY LIST");
             return Collections.emptyMap();
         }
     }

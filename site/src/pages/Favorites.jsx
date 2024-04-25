@@ -36,6 +36,7 @@ const Favorites = () => {
                     // console.log("Park details for favorite parks fetched:", parkDetailsData);
                     setParkDetailsData(parkDetailsData); // Update parkDetails state with fetched details
                     // console.log("Updated parkDetails object:", parkDetailsData);
+
                     setParkRankings(parkRankingsData);
                     const privacyStatus = await fetchPrivacyStatus();
                     setIsPublic(privacyStatus);
@@ -97,6 +98,7 @@ const Favorites = () => {
                 const newPrivacyStatus = !isPublic;
                 setIsPublic(newPrivacyStatus); // Update state with the new privacy status
                 await axios.post('/api/favorites/togglePrivacy', { isPublic: newPrivacyStatus });
+                toast.success("Park List is " + (newPrivacyStatus ? "Public" : "Private"));
             } catch (error) {
                 console.error('Error toggling privacy:', error);
                 toast.error('Failed to toggle privacy');
