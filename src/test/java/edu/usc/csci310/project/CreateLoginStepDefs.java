@@ -1,5 +1,6 @@
 package edu.usc.csci310.project;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -11,10 +12,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CreateLoginStepDefs {
+public class CreateLoginStepDefs extends SharedStepDefs {
 
-    public static final String ROOT_URL = "http://localhost:8080/";
-    private final WebDriver driver = new ChromeDriver();
+    @Before
+    public void before() {beforeSetup();}
+    @After
+    public void after() {afterCleanUp();}
 
     @Given("I am on the create account page")
     public void iAmOnTheCreateAccountPage(){
@@ -26,10 +29,10 @@ public class CreateLoginStepDefs {
         driver.get(ROOT_URL);
     }
 
-    @After
-    public void after(){
-        driver.quit();
-    }
+//    @After
+//    public void after(){
+//        driver.quit();
+//    }
 
     @When("I click on the already have account button")
     public void iClickOnTheLoginButton() {

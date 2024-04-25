@@ -1,6 +1,7 @@
 package edu.usc.csci310.project;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -12,10 +13,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-public class CompareStepDefs {
+public class CompareStepDefs extends SharedStepDefs{
 
-    private static final String ROOT_URL = "http://localhost:8080/";
-    private final WebDriver driver = new ChromeDriver();
     @Given("I am on the compare a park page")
     public void iAmOnTheCompareAParkPage() throws InterruptedException {
         //go to create account page
@@ -51,16 +50,16 @@ public class CompareStepDefs {
         Thread.sleep(500);
     }
 
-    @After
-    public void after(){
-        driver.quit();
-    }
+//    @After
+//    public void after(){
+//        driver.quit();
+//    }
 
-    @When("I enter a username {string}")
-    public void iEnterAUsername(String arg0) {
-        WebElement searchInput = driver.findElement(By.xpath("//*[@id='root']/div/div/div[2]/div/div[1]/input"));
-        searchInput.sendKeys(arg0);
-    }
+//    @When("I enter a username {string}")
+//    public void iEnterAUsername(String arg0) {
+//        WebElement searchInput = driver.findElement(By.xpath("//*[@id='root']/div/div/div[2]/div/div[1]/input"));
+//        searchInput.sendKeys(arg0);
+//    }
 
 
     @And("I click search button")
@@ -73,9 +72,5 @@ public class CompareStepDefs {
         driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[2]/div/div[1]/button")).click();
         Thread.sleep(1000);
 
-    }
-
-    @Then("I should see {string} displayed on the page")
-    public void iShouldSeeDisplayedOnThePage(String arg0) {
     }
 }

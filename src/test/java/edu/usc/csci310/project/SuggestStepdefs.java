@@ -1,5 +1,7 @@
 package edu.usc.csci310.project;
 
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -11,9 +13,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SuggestStepdefs {
-    private static final String ROOT_URL = "http://localhost:8080/";
-    private final WebDriver driver = new ChromeDriver();
+public class SuggestStepdefs extends SharedStepDefs {
     @Given("I am on the suggest a park page")
     public void iAmOnTheSuggestAParkPage() throws InterruptedException {
         driver.get(ROOT_URL + "create");
@@ -48,8 +48,6 @@ public class SuggestStepdefs {
     @When("I enter a username {string}")
     public void iEnterAUsername(String arg0) throws InterruptedException {
         driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/div[1]/input")).sendKeys(arg0);
-
-
 
     }
 
