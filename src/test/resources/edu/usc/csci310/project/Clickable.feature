@@ -26,3 +26,4 @@ Feature: test clickable terms
     And I click on "Joshua Tree National Park" and see details
     When I click on the amenity
     Then List of parks such as "Alcatraz Island"
+    
