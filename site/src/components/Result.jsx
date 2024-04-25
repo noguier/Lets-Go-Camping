@@ -2,7 +2,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import toast from "react-hot-toast";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResults}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [amenityResults, setAmenityResults] = useState([]);
@@ -10,6 +10,10 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     const [inFavorites, setInFavorites] = useState(false);
     const isFavoritesPage = page === "favorites";
     const isOtherPage = page === "other";
+
+    useEffect(() => {
+        console.log("park details use effect", parkDetails)
+    }, [parkDetails]);
 
     const handleStateCodeClick = async (stateCode) => {
         try {
@@ -83,13 +87,13 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     };
 
     const handleParkClick = async (parkCode, setParkDetails) => {
-        // console.log("RESULT: Clicked park:", parkCode); // Log the clicked park code
+        console.log("RESULT: Clicked park:", parkCode); // Log the clicked park code
         try {
             const response = await fetch(`/api/parks?searchTerm=${parkCode}&searchType=parkClick`);
             const data = await response.json();
-            // console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
+            console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
             setParkDetails(data.data[0]); // Update parkDetails state
-            // console.log("PARK DETAILS: ", parkDetails)
+            console.log("PARK DETAILS: ", parkDetails)
         } catch (error) {
             console.error('Error fetching park details:', error);
             alert('Fetch Error');
@@ -318,7 +322,6 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
 const renderParkInfo = (park, parkDetails, setParkDetails, page, updateSearchResults) => {
     console.log("Park details:", parkDetails);
-
     return <ParkDetails
         park={park}
         parkDetails={parkDetails}

@@ -17,6 +17,8 @@ const Compare = ({ updateAuthenticationStatus }) => {
     const [parkDetails, setParkDetails] = useState(''); // State for storing the most common park
     const [parkImages, setParkImages] = useState([]);
     const [searchType, setSearchType] = useState('name');
+    const [commonParkDetails, setCommonParkDetails] = useState({});
+    const [triggerRerender, setTriggerRerender] = useState(false);
 
 
     useEffect(() => {
@@ -127,45 +129,66 @@ const Compare = ({ updateAuthenticationStatus }) => {
 
     // Add state for storing users for each common park
     const [userParks, setUserParks] = useState({});
-
+    // useEffect(() => {
     const handleCompare = async () => {
-        const parkCount = {};
-        const userParks = {}; // Object to store users for each common park
+        try {
+            const parkCount = {};
+            const userParks = {};
 
-        // Count occurrences of each park
-        favoritesList.forEach(park => {
-            parkCount[park] = (parkCount[park] || 0) + 1;
-        });
+            // Count occurrences of each park
+            favoritesList.forEach(park => {
+                parkCount[park] = (parkCount[park] || 0) + 1;
+            });
 
-        // Iterate through each user and fetch their favorite parks
-        for (const user of userList) {
-            try {
-                const response = await fetch(`/api/favorites/display/${user}`);
-                if (response.ok) {
-                    const userFavorites = await response.json();
-                    // Update userParks with the user's favorite parks
-                    console.log(userFavorites);
-                    userFavorites.forEach(park => {
-                        if (!userParks[park]) userParks[park] = [];
-                        userParks[park].push(user);
-                    });
-                } else {
-                    console.error(`Failed to fetch favorites for user ${user}`);
+            // Iterate through each user and fetch their favorite parks
+            for (const user of userList) {
+                try {
+                    const response = await fetch(`/api/favorites/display/${user}`);
+                    if (response.ok) {
+                        const userFavorites = await response.json();
+                        userFavorites.forEach(park => {
+                            if (!userParks[park]) userParks[park] = [];
+                            userParks[park].push(user);
+                        });
+                    } else {
+                        throw new Error(`Failed to fetch favorites for user ${user}`);
+                    }
+                } catch (error) {
+                    throw new Error(`Error fetching favorites for user ${user}: ${error.message}`);
                 }
-            } catch (error) {
-                console.error(`Error fetching favorites for user ${user}:`, error);
             }
+
+            const sortedParks = Object.entries(parkCount).sort((a, b) => b[1] - a[1]);
+
+            const commonParkDetails = {};
+            // Fetch details for each park
+            for (const [park, count] of sortedParks) {
+                try {
+                    const response = await fetch(`/api/parks?searchTerm=${park}&searchType=parkClick`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        commonParkDetails[park] = data.data[0];
+                    } else {
+                        throw new Error(`Failed to fetch details for park ${park}`);
+                    }
+                } catch (error) {
+                    console.error(`Error fetching details for park ${park}: ${error.message}`);
+                    // You can handle errors here, such as setting commonParkDetails[park] to null or displaying an error message
+                }
+            }
+
+            setCommonParks(sortedParks);
+            setUserParks(userParks);
+            setCommonParkDetails(commonParkDetails);
+            setTriggerRerender(true); // Trigger re-render after data is fetched
+        } catch (error) {
+            console.error('Error in handleCompare:', error.message);
+            // Handle overall error, display an error message, or set a global error state
         }
-
-        const sortedParks = Object.entries(parkCount).sort((a, b) => b[1] - a[1]); // Sort by count in descending order
-
-        // Update state with common parks and users
-        setCommonParks(sortedParks);
-        setUserParks(userParks);
     };
 
-
-
+    //     handleCompare();
+    // }, [commonParkDetails]);
 
 
     return (
@@ -192,10 +215,17 @@ const Compare = ({ updateAuthenticationStatus }) => {
                         ))}
                     </ul>
                     <Button variant="secondary" onClick={handleCompare}>Compare Parks</Button>
-
                     {commonParks.map(([park, count]) => (
                         <div key={park}>
-                            <h4>{park}</h4>
+                            {commonParkDetails[park] && triggerRerender && (
+                                commonParkDetails[park] ? (
+                                    <div>
+                                        {renderParkInfo(commonParkDetails[park], parkDetails, setParkDetails, "other", updateSearchResults)}
+                                    </div>
+                                ) : (
+                                    <p>Loading...</p>
+                                )
+                            )}
                             <p>Count: {count}</p>
                             <p>
                                 <Button
