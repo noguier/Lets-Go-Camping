@@ -134,6 +134,18 @@ public class FavoritesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/ranking/{username}/{parkCode}")
+    public ResponseEntity<Integer> getParkRanking(HttpServletRequest httpRequest, @PathVariable String username,@PathVariable String parkCode) {
+        try {
+            HttpSession session = httpRequest.getSession(false);
+            // Call the service layer method to get the park ranking
+            int ranking = favoritesService.getParkRanking(username,parkCode);
+            System.out.println("DEBUG CONTROLLER: PARK RANKING" + ranking );
+            return ResponseEntity.ok(ranking);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @PostMapping("/togglePrivacy")
     public ResponseEntity<String> togglePrivacy(@RequestBody Map<String, Boolean> requestBody, HttpServletRequest httpRequest) {
