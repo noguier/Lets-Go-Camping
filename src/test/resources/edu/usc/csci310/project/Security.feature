@@ -1,7 +1,23 @@
 Feature: Security
-Scenario: User login with encrypted data transmission
-Given I try to access our landing page with http
-Then the server should reject the connection
+  Scenario: User login with encrypted data transmission
+    Given I try to access our landing page with http
+    Then the server should reject the connection
+  Scenario: User create with encrypted data transmission
+    Given I try to access create page with http
+    Then the server should reject the connection
+  Scenario: Search page with encrypted data transmission
+    Given I try to access search page with http
+    Then the server should reject the connection
+  Scenario: Compare and Suggest with encrypted data transmission
+    Given I try to access compare and suggest page with http
+    Then the server should reject the connection
+  Scenario:Favorites with encrypted data transmission
+    Given I try to access favorites page with http
+    Then the server should reject the connection
+
+
+
+
 #
 ##only logged in users can use the website
 #Scenario: Accessing user information

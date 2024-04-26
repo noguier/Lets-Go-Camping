@@ -20,4 +20,30 @@ public class https_StepDefs {
     public void theServerShouldRejectTheConnection() {
         assertTrue(driver.getPageSource().contains("This combination of host and port requires TLS."));
     }
+
+    @Given("I try to access favorites page with http")
+    public void iTryToAccessFavoritesPageWithHttp() {
+        driver = new ChromeDriver();
+        driver.get(ROOT_URL + "/favorites");
+    }
+
+    @Given("I try to access compare and suggest page with http")
+    public void iTryToAccessComparePageWithHttp() {
+        driver = new ChromeDriver();
+        driver.get(ROOT_URL + "/compare");
+
+    }
+
+    @Given("I try to access search page with http")
+    public void iTryToAccessSearchPageWithHttp() {
+        driver = new ChromeDriver();
+        driver.get(ROOT_URL+ "/search");
+
+    }
+
+    @Given("I try to access create page with http")
+    public void iTryToAccessCreatePageWithHttp() {
+        driver = new ChromeDriver();
+        driver.get(ROOT_URL + "/create");
+    }
 }
