@@ -43,6 +43,3 @@ Feature: test navigation functionality
     Given I am on the Compare and Suggest page
     And I click Logout button
     Then I should be redirected to the login page
-
-
-

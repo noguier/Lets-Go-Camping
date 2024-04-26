@@ -1,9 +1,16 @@
 Feature: test compare a park functionality
-#  Scenario: compare a park for two users
-#    Given I am on the compare a park page
-#    When I enter a username "TommyTrojan"
-#    And I click add a user button
-#    And "TommyTrojan" has a public list of favorites
+
+    Scenario: compare a park for a user that doesn't exist
+    Given I am on the compare a park page
+    When I enter a username "NotAUser"
+    And I click search button
+    Then I should see "The User doesn't exist" displayed on the page
+
+  Scenario: compare a park for two users
+    Given I am on the compare a park page
+    When I enter a username "USC"
+    And I click search button
+#    And "USC" has a public list of favorites
 #    And I see "User successfully added" displayed on the page
 #    And I click suggest button
 #    Then I should see the all the parks that are on Favorite list of at least one user
@@ -16,6 +23,7 @@ Feature: test compare a park functionality
 #    Then I should see ""BillyBruin" doesnt have a public Favorites List" displayed on the page
 #
 ##    two people out of three like joshua tree then it should displayed "liked by 2 out of 3"
+
 #  Scenario: compare a park for three users
 #    Given I am on the compare a park page
 #    And My favorites list doesnt have a "Joshua Tree" Park
@@ -50,13 +58,6 @@ Feature: test compare a park functionality
 #    And I should see the 2/3 ratio on the "Joshua Tree" park
 #    And I hover over "Joshua Tree" park
 #    Then I should see that "Tommy Trojan" and "Tally Trojan" liked that park
-#
-#  Scenario: compare a park for a user that doesn't exist
-#    Given I am on the compare a park page
-#    When I enter a username "NotAUser"
-#    And I click add a user button
-#    And "NotAUser" doesnt exist in the database
-#    Then I should see "The User doesn't exist" displayed on the page
 #
 #  Scenario: See the details of the park
 #    When I enter a username "TommyTrojan"

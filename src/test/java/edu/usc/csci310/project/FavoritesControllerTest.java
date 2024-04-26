@@ -540,8 +540,50 @@ class FavoritesControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
+    @Test
+    void getParkRanking_SuccessfulRetrieval_ReturnsOkWithRanking() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int expectedRanking = 5;
 
-    
+        when(request.getSession(false)).thenReturn(session); // Assume the session is valid
+        when(favoritesService.getParkRanking(username, parkCode)).thenReturn(expectedRanking);
+
+        // Act
+        ResponseEntity<Integer> response = favoritesController.getParkRanking(request, username, parkCode);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Integer.valueOf(expectedRanking), response.getBody());
+        verify(favoritesService).getParkRanking(username, parkCode);
+    }
+
+    @Test
+    void getParkRanking_ServiceThrowsException_ReturnsInternalServerError() {
+        // Arrange
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
+        String username = "testUser";
+        String parkCode = "DEF456";
+
+        when(request.getSession(false)).thenReturn(session); // Assume the session is valid
+        when(favoritesService.getParkRanking(username, parkCode)).thenThrow(new RuntimeException("Database error"));
+
+        // Act
+        ResponseEntity<Integer> response = favoritesController.getParkRanking(request, username, parkCode);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(favoritesService).getParkRanking(username, parkCode);
+    }
+
+
+
+
 
 
 

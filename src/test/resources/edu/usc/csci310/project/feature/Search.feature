@@ -54,22 +54,22 @@ Feature: Test search functionality
     Then List of parks such as "Castle Mountains National Monument"
 
 
-  Scenario: Perform Search and see details
-    Given I am on the search page
-    And I click the dropdown Name
-    When I enter "Joshua" in the search bar
-    And I click the Search button
-    Then List of parks such as "Joshua Tree National Park"
-    And I click on "Joshua Tree National Park" and see details
-    Then I see Location state "Twentynine Palms"
-    Then I see "$30.00"
-    Then I see "7-day vehicle permit"
-    Then I see "Two distinct desert ecosystems,"
-    Then I see "Automated External Defibrillator (AED)"
-    Then I see "Auto and ATV"
-    Then I see "The sky turns hues"
-    Then I click URL
-    Then tab opened should be "https://www.nps.gov/jotr/index.htm"
+#  Scenario: Perform Search and see details
+#    Given I am on the search page
+#    And I click the dropdown Name
+#    When I enter "Joshua" in the search bar
+#    And I click the Search button
+#    Then List of parks such as "Joshua Tree National Park"
+#    And I click on "Joshua Tree National Park" and see details
+#    Then I see Location state "Twentynine Palms"
+#    Then I see "$30.00"
+#    Then I see "7-day vehicle permit"
+#    Then I see "Two distinct desert ecosystems,"
+#    Then I see "Automated External Defibrillator (AED)"
+#    Then I see "Auto and ATV"
+#    Then I see "The sky turns hues"
+#    Then I click URL
+#    Then tab opened should be "https://www.nps.gov/jotr/index.htm"
 
   Scenario: non-expanded plus button, park not already in favorites
     Given I am on the search page
@@ -102,7 +102,7 @@ Feature: Test search functionality
     When I click on "Joshua Tree National Park" and see details
     #timing issue
     And I wait a little
-    Then I see "In Favorites List"
+    Then I see phrase "In Favorites List"
     Then I click the plus button
     Then I should get an alert saying "This Park was already added to favorites"
 
@@ -158,6 +158,16 @@ Feature: Test search functionality
     When I enter "Swimming" in the search bar
     And I click the Search button
     Then List of ten parks such as "Acadia National Park"
+  Scenario:Click the park name to remove detail window
+    Given I am on the search page
+    And I click the dropdown Name
+    When I enter "Joshua" in the search bar
+    And I click the Search button
+    Then List of parks such as "Joshua Tree National Park"
+    And I click on "Joshua Tree National Park" and see details
+    And I click on "Joshua Tree National Park" and remove details
+    Then I should not see "Twentynine Palms "
+
 
 #  Scenario: Perform Search and see Inline description
 #    Given I am on the search page

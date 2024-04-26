@@ -1,6 +1,7 @@
 package edu.usc.csci310.project;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -8,14 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class ProtectedStepdefs {
-    public static final String ROOT_URL = "http://localhost:8080/";
-    private final WebDriver driver = new ChromeDriver();
-
-    @After
-    public void after(){
-        driver.quit();
-    }
+public class ProtectedStepdefs  extends SharedStepDefs{
 
     @And("I am not an authenticated user")
     public void iAmNotAnAuthenticatedUser() {
