@@ -7,7 +7,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -205,8 +204,12 @@ public class MyStepdefs_Search extends SharedStepDefs {
 
     @Then("I see {string}")
     public void iSee(String arg0) {
-        assertTrue(driver.getPageSource().contains(arg0));
-    }
+            WebElement parkElement = driver.findElement(By.id("park"));
+            String actualText = parkElement.getText();
+            assertEquals(arg0, actualText, "The park name does not match.");
+        }
+
+
 
     @Then("I should not see {string}")
     public void iShouldNotSee(String arg0) {
@@ -280,6 +283,7 @@ public class MyStepdefs_Search extends SharedStepDefs {
 
     @Then("I wait a little")
     public void iWaitALittle() {
+
         iClickThePlusButton();
         iClickThePlusButton();
     }
@@ -370,7 +374,7 @@ public class MyStepdefs_Search extends SharedStepDefs {
             throw new RuntimeException(e);
         }
 
-        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a"));
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/div[2]/ul/li[1]/a"));
 
         Actions actions = new Actions(driver);
 
@@ -389,7 +393,7 @@ public class MyStepdefs_Search extends SharedStepDefs {
             throw new RuntimeException(e);
         }
 
-        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a"));
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/div[3]/ul/li[1]/a"));
 
         Actions actions = new Actions(driver);
 
@@ -397,5 +401,23 @@ public class MyStepdefs_Search extends SharedStepDefs {
 
         //driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a")).click();
         Thread.sleep(2000);
+    }
+
+    @Then("I see phrase {string}")
+    public void iSeePhrase(String arg0) {
+//        WebElement parkElement = driver.findElement(By.id("inFav"));
+//        String actualText = parkElement.getText();
+//        assertEquals(arg0, actualText, "In Favorites doesnt match ");
+    }
+
+    @And("I click on {string} and remove details")
+    public void iClickOnAndRemoveDetails(String arg0) {
+        WebElement parkElement = driver.findElement(By.xpath("//h3[text()='" + arg0 + "']"));
+        parkElement.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

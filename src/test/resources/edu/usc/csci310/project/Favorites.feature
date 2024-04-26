@@ -3,7 +3,6 @@ Feature: test favorites functionality
     Given I am on the favorites page
     And I have not added any parks to my favorites list
     Then I should see "This list is empty"
-
   Scenario: view favorites list
     Given I am on the favorites page
     And I have added "Joshua Tree National Preserve" to my favorites list
