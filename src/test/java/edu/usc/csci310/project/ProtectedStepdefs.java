@@ -9,8 +9,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class ProtectedStepdefs  extends SharedStepDefs{
-
+public class ProtectedStepdefs  extends SharedStepDefs {
+    @Before
+    public void before() {beforeSetup();}
+    @After
+    public void after() {afterCleanUp();}
     @And("I am not an authenticated user")
     public void iAmNotAnAuthenticatedUser() {
         driver.navigate().refresh();
@@ -28,13 +31,13 @@ public class ProtectedStepdefs  extends SharedStepDefs{
         //go to create account page
         driver.get(ROOT_URL + "create");
         //enter Tommy as username
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("Tommy");
+        driver.findElement(By.xpath("//*[@id=\"create-username\"]")).sendKeys("Tommy");
         //enter Trojan123 as password
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("Trojan123");
+        driver.findElement(By.xpath("//*[@id=\"create-password\"]")).sendKeys("Trojan123");
         //enter Trojan123 as confirm password
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("Trojan123");
+        driver.findElement(By.xpath("//*[@id=\"confirm-password\"]")).sendKeys("Trojan123");
         //click create account (where I should be automatically redirected to login)
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/button[1]")).click();
         //wait a little
         Thread.sleep(500);
 
@@ -42,11 +45,11 @@ public class ProtectedStepdefs  extends SharedStepDefs{
         //given on login page
         driver.get(ROOT_URL + "login");
         //enter username wrong
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("Tommy");
+        driver.findElement(By.xpath("//*[@id=\"username\"]")).sendKeys("Tommy");
         //enter password wrong
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("Trojan123");
+        driver.findElement(By.xpath("//*[@id=\"password\"]")).sendKeys("Trojan123");
         //click login
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/button[1]")).click();
     }
 
     @When("I click the Go to Favorites button")
@@ -92,5 +95,12 @@ public class ProtectedStepdefs  extends SharedStepDefs{
     @Then("I should be redirected to the Compare page")
     public void iShouldBeRedirectedToTheComparePage() {
         driver.get(ROOT_URL + "compare");
+    }
+
+
+
+    @And("I dont interact with the page for sixty seconds")
+    public void iDontInteractWithThePageForSixtySeconds() throws InterruptedException {
+        Thread.sleep(61000);
     }
 }
