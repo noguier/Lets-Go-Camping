@@ -15,6 +15,8 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
         console.log("park details use effect", parkDetails)
     }, [parkDetails]);
 
+
+
     const handleStateCodeClick = async (stateCode) => {
         try {
             // console.log(stateCode)
@@ -137,9 +139,20 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
         return (
             <div>
-                <div data-testid={"list-element-toggle"} id="expand1" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
+                <div data-testid={"list-element-toggle"} id="expand1" onMouseLeave={handleMouseLeave}
                      onClick={handleToggleDetails}>
-                    <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
+                    <h3
+                        onClick={() => handleParkClick(park.parkCode, setParkDetails)}
+                        tabIndex="0" // Make the <h3> focusable
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleParkClick(park.parkCode, setParkDetails);
+                                handleToggleDetails();
+                            }
+                        }}
+                    >
+                        {park.fullName}
+                    </h3>
                     {!isOtherPage && showPlusButton && !isExpanded &&(
                         <a
                             href="#"
@@ -293,7 +306,18 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
             <div data-testid={"list-element-toggle"} id="expand" onMouseEnter={handleMouseEnter}
                  onMouseLeave={handleMouseLeave}
                  onClick={handleToggleDetails}>
-                <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
+                <h3
+                    onClick={() => handleParkClick(park.parkCode, setParkDetails)}
+                    tabIndex="0" // Make the <h3> focusable
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleParkClick(park.parkCode, setParkDetails);
+                            handleToggleDetails();
+                        }
+                    }}
+                >
+                    {park.fullName}
+                </h3>
                 {showPlusButton && !isOtherPage && (
                     <a
                         href="#"

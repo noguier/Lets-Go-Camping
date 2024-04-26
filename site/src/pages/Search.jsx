@@ -166,30 +166,6 @@ const Search = ({ updateAuthenticationStatus }) => {
                     </div>
                 </form>
             </div>
-
-            {/*/!* Display search results and Load More button *!/*/}
-            {/*{searchResults.length > 0 && (*/}
-            {/*    <>*/}
-            {/*        /!* Display first 'resultsToShow' results *!/*/}
-            {/*        {searchResults.slice(0, resultsToShow).map((park, index) => (*/}
-            {/*            <div tabIndex={0} key={index} className="col-12">*/}
-            {/*                {renderParkInfo(park, parkDetails, setParkDetails, 'search', updateSearchResults)}*/}
-            {/*                <hr />*/}
-            {/*            </div>*/}
-            {/*        ))}*/}
-
-            {/*        /!* Display Load More button if there are more results to show *!/*/}
-            {/*        {searchResults.length > resultsToShow && (*/}
-            {/*            <div className="row mt-4">*/}
-            {/*                <div className="col-12">*/}
-            {/*                    <button className="btn btn-primary" onClick={loadMoreResults}>*/}
-            {/*                        Load More*/}
-            {/*                    </button>*/}
-            {/*                </div>*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*    </>*/}
-            {/*)}*/}
             
 
             {/* Different display based on search type */}
