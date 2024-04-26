@@ -1,12 +1,12 @@
 package edu.usc.csci310.project;
 
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -16,33 +16,15 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MyStepdefs_Search {
+public class MyStepdefs_Search extends SharedStepDefs {
 
-    private static final String ROOT_URL = "http://localhost:8080/";
-    private final WebDriver driver = new ChromeDriver();
     private static boolean accountCreated = false;
-
-//    private void createAccount() throws InterruptedException{
-//        accountCreated = true;
-//        driver.get(ROOT_URL + "create");
-//        //username
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
-//        //password
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
-//        //confirm password
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys("testPassword1");
-//        //click create account
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
-//        //wait for redirect to login
-//        Thread.sleep(1000);
-//    }
-
+    @Before
+    public void before() {beforeSetup();}
+    @After
+    public void after() {afterCleanUp();}
     @Given("I am on the search page")
     public void iAmOnTheSearchPage() throws InterruptedException {
-//        System.out.println("Account created:"+accountCreated);
-//        if (!accountCreated) {
-//            createAccount();
-//        }
 
         //go to create account page
         driver.get(ROOT_URL + "create");
@@ -71,17 +53,7 @@ public class MyStepdefs_Search {
         driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/button[1]")).click();
         Thread.sleep(1000);
         driver.get(ROOT_URL + "search");
-//        //login username
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys("testuser");
-//        //login password
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys("testPassword1");
-//        //click login
-//        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[1]")).click();
         Thread.sleep(5000);
-    }
-    @After
-    public void after(){
-        driver.quit();
     }
 
     @And("I click the dropdown Name")
@@ -232,8 +204,12 @@ public class MyStepdefs_Search {
 
     @Then("I see {string}")
     public void iSee(String arg0) {
-        assertTrue(driver.getPageSource().contains(arg0));
-    }
+            WebElement parkElement = driver.findElement(By.id("park"));
+            String actualText = parkElement.getText();
+            assertEquals(arg0, actualText, "The park name does not match.");
+        }
+
+
 
     @Then("I should not see {string}")
     public void iShouldNotSee(String arg0) {
@@ -307,6 +283,7 @@ public class MyStepdefs_Search {
 
     @Then("I wait a little")
     public void iWaitALittle() {
+
         iClickThePlusButton();
         iClickThePlusButton();
     }
@@ -373,7 +350,7 @@ public class MyStepdefs_Search {
             throw new RuntimeException(e);
         }
 
-        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/p[1]/a")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/p[1]/a")).click();
         Thread.sleep(2000);
 
     }
@@ -397,7 +374,7 @@ public class MyStepdefs_Search {
             throw new RuntimeException(e);
         }
 
-        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a"));
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/div[2]/ul/li[1]/a"));
 
         Actions actions = new Actions(driver);
 
@@ -416,7 +393,7 @@ public class MyStepdefs_Search {
             throw new RuntimeException(e);
         }
 
-        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a"));
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/div[3]/ul/li[1]/a"));
 
         Actions actions = new Actions(driver);
 
@@ -426,9 +403,19 @@ public class MyStepdefs_Search {
         Thread.sleep(2000);
     }
 
+    @Then("I see phrase {string}")
+    public void iSeePhrase(String arg0) {
+        assertTrue(driver.getPageSource().contains(arg0));
+    }
 
-//
-//    @Then("I hover over the {string} and see search description")
-//    public void iHoverOverTheAndSeeSearchDescription(String arg0) {
-//    }
+    @And("I click on {string} and remove details")
+    public void iClickOnAndRemoveDetails(String arg0) {
+        WebElement parkElement = driver.findElement(By.xpath("//h3[text()='" + arg0 + "']"));
+        parkElement.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
