@@ -406,9 +406,6 @@ public class MyStepdefs_Search extends SharedStepDefs {
     @Then("I see phrase {string}")
     public void iSeePhrase(String arg0) {
         assertTrue(driver.getPageSource().contains(arg0));
-//        WebElement parkElement = driver.findElement(By.id("inFav"));
-//        String actualText = parkElement.getText();
-//        assertEquals(arg0, actualText, "In Favorites doesnt match ");
     }
 
     @And("I click on {string} and remove details")
