@@ -3,7 +3,6 @@ Feature: test favorites functionality
     Given I am on the favorites page
     And I have not added any parks to my favorites list
     Then I should see "This list is empty"
-
   Scenario: view favorites list
     Given I am on the favorites page
     And I have added "Joshua Tree National Preserve" to my favorites list
@@ -17,8 +16,8 @@ Feature: test favorites functionality
     Then I see Location "Twentynine, CA"
     Then I see Entrance Fee "$30.00"
     Then I see Description "Two distinct desert ecosystems, "
-    Then I see Amenities "Automated External Defibrillator (AED)"
-    Then I see Activities "Auto and ATV"
+  Then I see Amenities "Automated External Defibrillator (AED)"
+  Then I see Activities "Auto and ATV"
     Then I see Image alt-ID "The sky turns hues"
 
   Scenario: remove from favorites list
@@ -86,14 +85,14 @@ Feature: test favorites functionality
     And I click confirm on the dialogue window that appears
     Then I should see "This list is empty"
 
-#    Scenario: list is private by default
-#    Given I am on the favorites page
-#    My favorites list should be set to private by default
-#
-#    Scenario: list can be toggled to public, changes are persistent
-#    Given I am on the favorites page
-#    And my list is private
-#    And I toggle the private button
-#    My favorites list should be public
-#    And I navigate away from the page
-#    Then I should see that my changes are persistent
+    Scenario: list is private by default
+    Given I am on the favorites page
+    My favorites list should be set to private by default
+
+    Scenario: list can be toggled to public, changes are persistent
+    Given I am on the favorites page
+    And my list is private
+    And I toggle the private button
+    My favorites list should be public
+    And I navigate away from the page
+    Then I should see that my changes are persistent
