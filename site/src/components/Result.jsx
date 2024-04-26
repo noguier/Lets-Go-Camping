@@ -2,22 +2,26 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios";
 import toast from "react-hot-toast";
-import Search from "../pages/Search";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResults}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [amenityResults, setAmenityResults] = useState([]);
     const [showPlusButton, setShowPlusButton] = useState(false);
     const [inFavorites, setInFavorites] = useState(false);
     const isFavoritesPage = page === "favorites";
+    const isOtherPage = page === "other";
+
+    useEffect(() => {
+        console.log("park details use effect", parkDetails)
+    }, [parkDetails]);
 
     const handleStateCodeClick = async (stateCode) => {
         try {
-            console.log(stateCode)
+            // console.log(stateCode)
             const response = await fetch(`/api/parks?searchTerm=${stateCode}&searchType=state`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
-            console.log(typeof updateSearchResults);
+            // console.log(typeof updateSearchResults);
             updateSearchResults(data.data, 'state'); // Call the callback function to update search results
 
         } catch (error) {
@@ -28,9 +32,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleActivityClick = async (activityName) => {
         try {
-            console.log(activityName)
+            // console.log(activityName)
             const response = await fetch(`/api/parks?searchTerm=${activityName}&searchType=activity`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
             updateSearchResults(data.data, 'activity');
         } catch (error) {
@@ -42,9 +46,9 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
 
     const handleAmenityClick = async (amenityName) => {
         try {
-            console.log(amenityName)
+            // console.log(amenityName)
             const response = await fetch(`/api/parks?searchTerm=${amenityName}&searchType=amenity`);
-            console.log(response)
+            // console.log(response)
             const data = await response.json();
             updateSearchResults(data.data, 'amenity');
         } catch (error) {
@@ -89,6 +93,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
             const data = await response.json();
             console.log("RESULT: Response from fetchParkDetails:", data.data[0]); // Log the response data
             setParkDetails(data.data[0]); // Update parkDetails state
+            console.log("PARK DETAILS: ", parkDetails)
         } catch (error) {
             console.error('Error fetching park details:', error);
             alert('Fetch Error');
@@ -115,15 +120,18 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
         }
     };
     const removeFromFavorites = async (parkCode) => {
+
         try {
-            await axios.post('/api/favorites/remove', parkCode);
-            toast.success('Removed from favorites!');
-            setInFavorites(false);
+            if (confirm("Remove this park from your favorites list?") === true){
+                await axios.post('/api/favorites/remove', parkCode);
+                toast.success('Removed from favorites!');
+                setInFavorites(false);
+                window.location.reload();
+            }
         } catch (error) {
             console.error('Error removing from favorites:', error);
         }
     };
-
     if (parkDetails && parkDetails.fullName === park.fullName) {
     // if (parkDetails ) {///use this if statement to debug
 
@@ -132,7 +140,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                 <div data-testid={"list-element-toggle"} id="expand1" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}
                      onClick={handleToggleDetails}>
                     <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
-                    {showPlusButton && !isExpanded && (
+                    {!isOtherPage && showPlusButton && !isExpanded &&(
                         <a
                             href="#"
                             id="plus"
@@ -159,25 +167,28 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                 {/*)}*/}
                 {isExpanded && (
                     <div>
-                        <a
-                            href="#"
-                            id="plus"
-                            data-testid={"plus-button"}
-                            style={{
-                                position: "relative",
-                                top: "0px",
-                                right: "0px",
-                            }}
-                            onClick={() => {
-                                if (isFavoritesPage) {
-                                    removeFromFavorites(parkDetails.parkCode);
-                                } else {
-                                    addToFavorites(parkDetails.parkCode);
-                                }
-                            }}
-                        >
-                            <FontAwesomeIcon icon={isFavoritesPage ? faMinus : faPlus} /> {/* Render minus icon if on favorites page */}
-                        </a>
+                        { !isOtherPage && (
+                            <a
+                                href="#"
+                                id="plus"
+                                data-testid={"plus-button"}
+                                style={{
+                                    position: "relative",
+                                    top: "0px",
+                                    right: "0px",
+                                }}
+                                onClick={() => {
+                                    if (isFavoritesPage) {
+                                        removeFromFavorites(parkDetails.parkCode);
+                                    } else {
+                                        addToFavorites(parkDetails.parkCode);
+                                    }
+                                }}
+                            >
+                                <FontAwesomeIcon
+                                    icon={isFavoritesPage ? faMinus : faPlus}/> {/* Render minus icon if on favorites page */}
+                            </a>
+                        )}
                         <h3><a id="url" href={parkDetails.url} target="_blank">Website</a></h3>
                         <p>
                             {/*<strong>Location:</strong> {parkDetails.addresses[0].city}, {parkDetails.addresses[0].stateCode}*/}
@@ -265,14 +276,13 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                         </div>
                         <div>
                             {(page === "search" && inFavorites && isExpanded) ?
-                                <p>In Favorites List</p> : null} {/* Conditionally render based on inFavorites state */}
+                                <p id="inFav">In Favorites List</p> : null} {/* Conditionally render based on inFavorites state */}
                         </div>
                         <img src={parkDetails.images[0].url} alt={parkDetails.images[0].altText}
                              style={{maxWidth: "40%", height: "auto"}}
                              title={parkDetails.images[0].title}/>
                     </div>
                 )}
-
             </div>
 
 
@@ -284,7 +294,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                  onMouseLeave={handleMouseLeave}
                  onClick={handleToggleDetails}>
                 <h3 onClick={() => handleParkClick(park.parkCode, setParkDetails)}>{park.fullName}</h3>
-                {showPlusButton && (
+                {showPlusButton && !isOtherPage && (
                     <a
                         href="#"
                         id="plus"
@@ -310,14 +320,14 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
     }
 };
 
-const renderParkInfo = (park, parkDetails, setParkDetails, page) => {
+const renderParkInfo = (park, parkDetails, setParkDetails, page, updateSearchResults) => {
     console.log("Park details:", parkDetails);
-
     return <ParkDetails
         park={park}
         parkDetails={parkDetails}
         setParkDetails={setParkDetails}
-        page={page}/>;
+        page={page}
+        updateSearchResults={updateSearchResults}/>;
 };
 
 export {renderParkInfo};

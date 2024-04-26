@@ -9,11 +9,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @RestController
 public class SearchController {
@@ -27,7 +26,7 @@ public class SearchController {
     public Object searchParks(@RequestParam String searchTerm, @RequestParam String searchType) throws IOException {
         String apiUrl = constructApiUrl(searchTerm, searchType);
         URL url = new URL(apiUrl);
-        System.out.println("DEBUG:"+ url);
+//        System.out.println("DEBUG:"+ url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
@@ -54,11 +53,11 @@ public class SearchController {
                 break;
             case "amenity":
                 endpoint = "/amenities/parksplaces?q=" + encodedSearchTerm;
-                break;
+                break; //no leak
             //"https://developer.nps.gov/api/v1/amenities/parksplaces?parkCode=olsp&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd"
             case "amenity_parkcode":
                 endpoint = "/amenities/parksplaces?parkCode=" + encodedSearchTerm;
-                break;
+                break; //no leak
             //`https://developer.nps.gov/api/v1/parks?parkCode=${parkCode}&limit=1&api_key=0CzaOdikn12w2fMosFVNwri9Wl5ckYMz81l58dsd`;
             case "parkClick":
                 endpoint = "/parks?parkCode=" + encodedSearchTerm + "&limit=1";

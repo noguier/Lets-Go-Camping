@@ -6,9 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -163,6 +161,117 @@ class FavoritesServiceImplTest {
 
         verify(favoritesRepository, never()).save(any());
     }
+
+    @Test
+    void isPublic_UserFavoritesListExists_ReturnsCorrectPrivacyStatus() {
+        String username = "testUser";
+        Favorite existingFavorite = new Favorite(username);
+        existingFavorite.setPublic(true); // Assuming setPublic is a method to set the privacy
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(existingFavorite));
+
+        boolean result = favoritesService.isPublic(username);
+
+        assertTrue(result, "The favorites list should be public.");
+    }
+
+    @Test
+    void isPublic_UserFavoritesListDoesNotExist_ReturnsDefaultPrivacyStatus() {
+        String username = "testUser";
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        boolean result = favoritesService.isPublic(username);
+
+        assertTrue(result, "The default privacy status should be true when the favorite does not exist.");
+    }
+
+
+
+    @Test
+    void updateParkRanking_ParkRankingUpdated_Success() {
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int newRanking = 5;
+        Favorite existingFavorite = new Favorite(username);
+        existingFavorite.getParkRankings().put(parkCode, 3); // Add some initial ranking
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(existingFavorite));
+
+        favoritesService.updateParkRanking(username, parkCode, newRanking);
+
+        assertEquals(newRanking, existingFavorite.getParkRankings().get(parkCode));
+        verify(favoritesRepository, times(1)).save(existingFavorite);
+    }
+
+    @Test
+    void geRankingByUsername_UserFavoritesListExists_ReturnsParkRankings() {
+        String username = "testUser";
+        Map<String, Integer> expectedParkRankings = Collections.singletonMap("ABC123", 3);
+        Favorite existingFavorite = new Favorite(username);
+        existingFavorite.setParkRankings(expectedParkRankings);
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(existingFavorite));
+
+        Map<String, Integer> result = favoritesService.geRankingByUsername(username);
+
+        assertEquals(expectedParkRankings, result);
+    }
+
+    @Test
+    void geRankingByUsername_UserFavoritesListDoesNotExist_ReturnsEmptyMap() {
+        String username = "testUser";
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        Map<String, Integer> result = favoritesService.geRankingByUsername(username);
+
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    void updateParkRanking_UserFavoritesListDoesNotExist_NoActionTaken() {
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int newRanking = 5;
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        favoritesService.updateParkRanking(username, parkCode, newRanking);
+
+        verify(favoritesRepository, never()).save(any());
+    }
+    @Test
+    void getParkRanking_UserFavoritesListExists_ReturnsParkRanking() {
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int expectedRanking = 5;
+        Map<String, Integer> parkRankings = new HashMap<>();
+        parkRankings.put(parkCode, expectedRanking);
+
+        Favorite favorite = new Favorite();
+        favorite.setUsername(username);
+        favorite.setParkRankings(parkRankings);
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.of(favorite));
+
+        int actualRanking = favoritesService.getParkRanking(username, parkCode);
+
+        assertEquals(expectedRanking, actualRanking);
+    }
+
+    @Test
+    void getParkRanking_UserFavoritesListDoesNotExist_ReturnsDefaultRanking() {
+        String username = "testUser";
+        String parkCode = "ABC123";
+        int expectedDefaultRanking = 0;
+
+        when(favoritesRepository.findById(username)).thenReturn(Optional.empty());
+
+        int actualRanking = favoritesService.getParkRanking(username, parkCode);
+
+        assertEquals(expectedDefaultRanking, actualRanking);
+    }
+
 
 
 }

@@ -1,5 +1,6 @@
 package edu.usc.csci310.project;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -11,10 +12,12 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CreateLoginStepDefs {
+public class CreateLoginStepDefs extends SharedStepDefs {
 
-    public static final String ROOT_URL = "http://localhost:8080/";
-    private final WebDriver driver = new ChromeDriver();
+    @Before
+    public void before() {beforeSetup();}
+    @After
+    public void after() {afterCleanUp();}
 
     @Given("I am on the create account page")
     public void iAmOnTheCreateAccountPage(){
@@ -26,14 +29,14 @@ public class CreateLoginStepDefs {
         driver.get(ROOT_URL);
     }
 
-    @After
-    public void after(){
-        driver.quit();
-    }
+//    @After
+//    public void after(){
+//        driver.quit();
+//    }
 
     @When("I click on the already have account button")
     public void iClickOnTheLoginButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[2]")).click();
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/button[2]")).click();
     }
 
     @Then("I should be redirected to the login page")
@@ -44,18 +47,18 @@ public class CreateLoginStepDefs {
 
     @When("I enter the username {string}")
     public void iEnterTheUsername(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[1]/input")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[1]/input")).sendKeys(arg0);
     }
 
     @And("I enter the password {string}")
     public void iEnterThePassword(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[2]/input")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[2]/input")).sendKeys(arg0);
     }
 
 
     @And("I enter the confirm password {string}")
     public void iEnterTheConfirmPassword(String arg0) {
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/div[3]/input")).sendKeys(arg0);
+        driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div/form[2]/div[3]/input")).sendKeys(arg0);
     }
 
 
@@ -95,7 +98,7 @@ public class CreateLoginStepDefs {
 
     @When("I click on the Don't have account button")
     public void iClickOnTheDonTHaveAccountButton() {
-        driver.findElement(By.xpath("/html/body/div/div/div/div/form/button[2]")).click();
+        driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div/form/button[2]")).click();
     }
 
 

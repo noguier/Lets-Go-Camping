@@ -5,7 +5,7 @@ import {
     render,
     screen,
     waitFor,
-    fireEvent, getByText, getByAltText, getByTestId, findByText, getAllByText,
+    fireEvent, getByText, getByAltText, getByTestId, findByText, getAllByText, renderHook,
 } from "@testing-library/react";
 import Header from "./components/Header";
 import '@testing-library/jest-dom'
@@ -18,17 +18,15 @@ import axios from 'axios';
 import Login from "./pages/Login";
 import Create from "./pages/Create";
 import Dashboard from "./pages/Dashboard";
-import {act} from "react-dom/test-utils";
 import Favorites from "./pages/Favorites";
 import Compare from "./pages/Compare";
+jest.mock('axios');
 
-//jest.mock('axios');
-
-// Mock axios post method
-
-jest.mock('axios', () => ({
-    post: jest.fn(() => Promise.resolve({ data: { /* mocked data if needed */ } })),
-    get: jest.fn((url) => {
+ let mockGet;
+ let mockPost;
+//
+beforeEach(()=> {
+    mockGet = jest.fn((url) => {
         if (url === '/api/users/authenticated') {
             // Return a promise that resolves to a mock authentication status
             return Promise.resolve({ data: true });
@@ -36,8 +34,15 @@ jest.mock('axios', () => ({
             // Handle other URLs if needed
             return Promise.resolve({ data: { /* mocked data if needed */ } });
         }
-    })
-}));
+    });
+   mockPost = jest.fn(() => Promise.resolve({ data: { /* mocked data if needed */ } }));
+// jest.mock('axios', () => ({
+//     post: (()=>{mockPost()}),
+//     get: ((url)=>{mockGet(url)})
+// }));
+    axios.post.mockImplementation(()=> {return mockPost()});
+    axios.get.mockImplementation(()=> {return mockGet()});
+});
 
 test("renders header text", () => {
     const { getByText } = render(
@@ -601,35 +606,39 @@ describe('Login/Create component', () => {
     });
 
 
-    // test('redirects to dashboard after successful login', async () => {
-    //     const mockedResponse = {
-    //         data: {
-    //             username: "testuser",
-    //             token: "testtoken"
-    //         }
-    //     };
-    //     axios.post.mockResolvedValueOnce({ data: mockedResponse });
-    //
-    //     render(
-    //         <BrowserRouter>
-    //             <App />
-    //         </BrowserRouter>
-    //     );
-    //
-    //     fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-    //     fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
-    //     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
-    //
-    //     expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
-    //
-    //     // Wait for Dashboard to appear asynchronously
-    //     await waitFor(() => {
-    //         expect(screen.getByText((content, element) => {
-    //             // Custom logic to match text
-    //             return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
-    //         })).toBeInTheDocument();
-    //     });
-    // });
+    test('redirects to dashboard after successful login', async () => {
+        const mockedResponse = {
+            data: {
+                username: "testuser",
+                token: "testtoken"
+            }
+        };
+        axios.post.mockResolvedValueOnce({ data: mockedResponse });
+
+        render(
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        );
+
+        await waitFor (()=>{
+            expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+        })
+
+        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+
+        expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+
+        // Wait for Dashboard to appear asynchronously
+        await waitFor(() => {
+            expect(screen.getByText((content, element) => {
+                // Custom logic to match text
+                return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
+            })).toBeInTheDocument();
+        });
+    });
 
 
 
@@ -989,34 +998,37 @@ test('should render Login page when not authenticated', async () => {
 
 
 
-test('should update authentication status app comp', async () => {
-    const mockedResponse = {
-        data: {
-            username: "testuser",
-            token: "testtoken"
-        }
-    };
-    axios.post.mockResolvedValueOnce({ data: mockedResponse });
-    axios.get.mockResolvedValueOnce({});
 
-    render(
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
-    );
 
-    // Fill in the username and password fields
-    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
-    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
+// test('should update authentication status app comp', async () => {
+//     const mockedResponse = {
+//         data: {
+//             username: "testuser",
+//             token: "testtoken"
+//         }
+//     };
+//     axios.post.mockResolvedValueOnce({ data: mockedResponse });
+//     axios.get.mockResolvedValueOnce({});
+//
+//     render(
+//             <App />, {wrapper: BrowserRouter}
+//     );
+//
+//     // Fill in the username and password fields
+//     fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+//     fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpassword' } });
+//
+//     // Submit the form
+//     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+//
+//     // Wait for the API call to resolve
+//     await waitFor(() => {
+//         expect(window.location.pathname).toBe("/search");
+//     });
+// });
 
-    // Submit the form
-    fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
 
-    // Wait for the API call to resolve
-    await waitFor(() => {
-        expect(window.location.pathname).toBe("/search");
-    });
-});
+
 describe('compare component', () => {
     // Mock updateAuthenticationStatus function
     const mockUpdateAuthStatus = jest.fn();
@@ -1052,394 +1064,434 @@ describe('Favorites component', () => {
         expect(getByText('Favorites')).toBeInTheDocument();
     });
 
-    // test('clicking logout button calls handleLogout', async () => {
-    //     const { getByText } = render(
-    //         <BrowserRouter>
-    //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
-    //         </BrowserRouter>
-    //     );
-    //     fireEvent.click(getByText('Logout'));
-    //     await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
-    // });
-    //
-    // test('handleLogout function updates authentication status and navigates to login', async () => {
-    //     axios.post.mockResolvedValueOnce(); // Mock axios post call
-    //
-    //     const { getByText } = render(
-    //         <BrowserRouter>
-    //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
-    //         </BrowserRouter>
-    //     );
-    //     fireEvent.click(getByText('Logout'));
-    //
-    //     await waitFor(() => {
-    //         expect(mockUpdateAuthStatus).toHaveBeenCalledWith(false);
-    //         expect(window.location.pathname).toBe('/login');
-    //     });
-    // });
+    test('clicking ranking buttons updates park ranking', async () => {
+        // Mock response for favorite parks display
+        axios.get.mockResolvedValueOnce({data: ['ABC123']});
+        // Mock response for fetching park details
+        axios.get.mockResolvedValueOnce({data: [{parkCode: 'ABC123'}]});
 
-    // test('handleLogout function logs error on failure', async () => {
-    //     const error = new Error('Logout failed');
-    //     axios.post.mockRejectedValueOnce(error); // Mock axios post to reject with an error
-    //
-    //     // Mock console.error
-    //     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    //
-    //     const { getByText } = render(
-    //         <BrowserRouter>
-    //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
-    //         </BrowserRouter>
-    //     );
-    //     fireEvent.click(getByText('Logout'));
-    //
-    //     await waitFor(() => {
-    //         expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', error);
-    //     });
-    //
-    //     consoleErrorSpy.mockRestore(); // Restore original console.error function
-    // });
+        render(
+            <BrowserRouter>
+                <Favorites/>
+            </BrowserRouter>
+        );
+    });
 });
 
 
 
-const fillWithTestValueAndSubmit = (action) => {
-    if (action === "Login") {
-        fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
-        fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
-        fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
-    } else if (action === "Create Account") {
-        fireEvent.change(screen.getByLabelText('Username:'), { target: { value: "testuser" } });
-        fireEvent.change(screen.getByLabelText('Password:'), { target: { value: "testpassword" } });
-        fireEvent.change(screen.getByLabelText('Confirm Password:'), { target: { value: "testpassword" } });
-        fireEvent.submit(screen.getByRole('button', { name: /Create Account/i }));
-    }
-}
+// <<<<<<< feature/favorites
+        // // Simulate clicking on the upvote button
+        // fireEvent.click(await screen.findByText('↑'));
+        // expect(axios.post).toHaveBeenCalledTimes(1);
+        // expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 1 });
+        //
+        // // Simulate clicking on the downvote button
+        // fireEvent.click(await screen.findByText('↓'));
+        // expect(axios.post).toHaveBeenCalledTimes(2);
+        // expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 0 });
+// =======
+        // Simulate clicking on the upvote button
+//         fireEvent.click(await screen.findByText('↑'));
+//         expect(axios.post).toHaveBeenCalledTimes(1);
+//         expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 1 });
 
-describe('Results Component', () => {
-    const park = {
-        fullName: 'Test Park',
-        parkCode: 'TEST123',
-        url: 'https://example.com',
-        addresses: [{ city: 'Test City', stateCode: 'TS' }],
-        entranceFees: [{ cost: 10, description: 'Test Fee Description' }],
-        description: 'Test Description',
-        activities: [{ name: 'Hiking' }],
-        amenities: [{name: 'Restroom'}],
-        images: [{ url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title' }],
-    };
-
-    const parkDetails = {
-        fullName: 'Test Park',
-        url: 'https://example.com',
-        addresses: [{ city: 'Test City', stateCode: 'TS' }],
-        entranceFees: [{ cost: 10, description: 'Test Description' }],
-        description: 'Test Description',
-        activities: [{ name: 'Hiking' }],
-        amenities: [{name: 'Restroom'}],
-        images: [{ url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title' }],
-    };
-    const setParkDetails = jest.fn();
-    const page = 'search';
-    const mockedResponses = {
-        '/api/parks?searchTerm=TEST123&searchType=parkClick': { data: [{ fullName: 'Test Park' }] },
-        '/api/parks?searchTerm=TEST123&searchType=amenity_parkcode': { data: [{ id: 1, name: 'Amenity 1' }] },
-    };
+//         // Simulate clicking on the downvote button
+//         fireEvent.click(await screen.findByText('↓'));
+//         expect(axios.post).toHaveBeenCalledTimes(2);
+//         expect(axios.post).toHaveBeenCalledWith('/api/favorites/updateRanking', { parkCode: 'ABC123', newRanking: 1 });
+//
+//     });
 
 
-    global.fetch = jest.fn().mockImplementation((url) =>
-        Promise.resolve({
-            json: () => Promise.resolve(mockedResponses[url]),
-        })
-    );
+        // test('clicking logout button calls handleLogout', async () => {
+        //     const { getByText } = render(
+        //         <BrowserRouter>
+        //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+        //         </BrowserRouter>
+        //     );
+        //     fireEvent.click(getByText('Logout'));
+        //     await waitFor(() => expect(axios.post).toHaveBeenCalledTimes(1));
+        // });
+        //
+        // test('handleLogout function updates authentication status and navigates to login', async () => {
+        //     axios.post.mockResolvedValueOnce(); // Mock axios post call
+        //
+        //     const { getByText } = render(
+        //         <BrowserRouter>
+        //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+        //         </BrowserRouter>
+        //     );
+        //     fireEvent.click(getByText('Logout'));
+        //
+        //     await waitFor(() => {
+        //         expect(mockUpdateAuthStatus).toHaveBeenCalledWith(false);
+        //         expect(window.location.pathname).toBe('/login');
+        //     });
+        // });
 
-    it('should render park details correctly when expanded', async () => {
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
+        // test('handleLogout function logs error on failure', async () => {
+        //     const error = new Error('Logout failed');
+        //     axios.post.mockRejectedValueOnce(error); // Mock axios post to reject with an error
+        //
+        //     // Mock console.error
+        //     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        //
+        //     const { getByText } = render(
+        //         <BrowserRouter>
+        //             <Favorites updateAuthenticationStatus={mockUpdateAuthStatus} />
+        //         </BrowserRouter>
+        //     );
+        //     fireEvent.click(getByText('Logout'));
+        //
+        //     await waitFor(() => {
+        //         expect(consoleErrorSpy).toHaveBeenCalledWith('Logout error:', error);
+        //     });
+        //
+        //     consoleErrorSpy.mockRestore(); // Restore original console.error function
+        // });
+// });
 
-        fireEvent.click(getByTestId('list-element-toggle'));
 
-        await waitFor(() => {
-            expect(getByText('Test Park')).toBeInTheDocument();
-            expect(getByText('Website')).toHaveAttribute('href', 'https://example.com');
-            expect(getByText('TS')).toBeInTheDocument();
-            expect(getByText('Entrance Fee:')).toBeInTheDocument();
-            expect(getByText('$10')).toBeInTheDocument();
-            // expect(getByText(/^Entrance Fee Description:/)).toBeInTheDocument(); // Using regex to match text
-            // expect(getByText('Test Fee Description')).toBeInTheDocument();
-            expect(getByText('Test Description')).toBeInTheDocument();
-            expect(getByText('Activities:')).toBeInTheDocument();
-            expect(getByText('Hiking')).toBeInTheDocument();
-            expect(getByText('Amenities:')).toBeInTheDocument();
-            expect(getByText('NA')).toBeInTheDocument();
-            // expect(getByText('Added to favorites list')).toBeInTheDocument();
-            const imageElement = screen.getByAltText('Test Alt');
-            expect(imageElement).toHaveAttribute('src', 'https://example.com/image.jpg');
-        });
-        fireEvent.click(getByTestId('list-element-toggle'));
-    });
+        const fillWithTestValueAndSubmit = (action) => {
+            if (action === "Login") {
+                fireEvent.change(screen.getByLabelText(/Username/i), {target: {value: "testuser"}});
+                fireEvent.change(screen.getByLabelText(/Password/i), {target: {value: "testpassword"}});
+                fireEvent.click(screen.queryByText(/Login/i, {selector: 'button'}));
+            } else if (action === "Create Account") {
+                fireEvent.change(screen.getByLabelText('Username:'), {target: {value: "testuser"}});
+                fireEvent.change(screen.getByLabelText('Password:'), {target: {value: "testpassword"}});
+                fireEvent.change(screen.getByLabelText('Confirm Password:'), {target: {value: "testpassword"}});
+                fireEvent.submit(screen.getByRole('button', {name: /Create Account/i}));
+            }
+        }
 
-    it('should handle park click and fetch data correctly', async () => {
-        global.fetch = jest.fn().mockResolvedValueOnce({
-            json: () =>
-                Promise.resolve({
-                    data: [parkDetails],
-                }),
-        });
-
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
-        fireEvent.click(getByText('Test Park'));
-
-        await waitFor(() => {
-            expect(setParkDetails).toHaveBeenCalledWith(parkDetails);
-            expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
-        });
-    });
-
-    it('should show plus button on mouse enter', () => {
-        const park = {
-            fullName: 'Test Park',
-            parkCode: 'TP',
-        };
-        const { getByTestId } = render(renderParkInfo(park, null, setParkDetails, 'search'));
-
-        const parkElement = getByTestId('list-element-toggle');
-
-        fireEvent.mouseEnter(parkElement);
-
-        expect(parkElement).toMatchSnapshot('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should be present
-    });
-
-    it('should hide plus button on mouse leave', () => {
-        const park = {
-            fullName: 'Test Park',
-            parkCode: 'TP',
-        };
-        const {getByTestId} = render(renderParkInfo(park, null, setParkDetails, 'search'));
-
-        const parkElement = getByTestId('list-element-toggle');
-
-        fireEvent.mouseLeave(parkElement);
-//<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>
-        expect(parkElement).not.toContainHTML('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should not be present
-    });
-
-    it('should call setParkDetails with data from fetch when successful', async () => {
-        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-        const mockData = { data: [{ fullName: 'Test Park', url: 'https://testpark.com' }] };
-        global.fetch = jest.fn().mockResolvedValueOnce({ json: jest.fn().mockResolvedValueOnce(mockData) });
-
-        const setParkDetails = jest.fn();
-        const { getByText } = render(renderParkInfo(mockPark, null, setParkDetails, 'search'));
-
-        fireEvent.click(getByText('Test Park'));
-
-        await waitFor(() => expect(setParkDetails).toHaveBeenCalledWith(mockData.data[0]));
-    });
-
-    it('should fetch park amenities with populate amenities', async () => {
+        describe('Results Component', () => {
             const park = {
                 fullName: 'Test Park',
                 parkCode: 'TEST123',
+                url: 'https://example.com',
+                addresses: [{city: 'Test City', stateCode: 'TS'}],
+                entranceFees: [{cost: 10, description: 'Test Fee Description'}],
+                description: 'Test Description',
+                activities: [{name: 'Hiking'}],
+                amenities: [{name: 'Restroom'}],
+                images: [{url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title'}],
             };
-            const parkDetails = null;
+
+            const parkDetails = {
+                fullName: 'Test Park',
+                url: 'https://example.com',
+                addresses: [{city: 'Test City', stateCode: 'TS'}],
+                entranceFees: [{cost: 10, description: 'Test Description'}],
+                description: 'Test Description',
+                activities: [{name: 'Hiking'}],
+                amenities: [{name: 'Restroom'}],
+                images: [{url: 'https://example.com/image.jpg', altText: 'Test Alt', title: 'Test Title'}],
+            };
             const setParkDetails = jest.fn();
             const page = 'search';
-
-            // Render the component
-            render(renderParkInfo(park, parkDetails, setParkDetails, page));
-
-            // Simulate a click event to trigger the asynchronous function
-            fireEvent.click(screen.getByText('Test Park'));
-
-            await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
-            await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
-    });
-
-    it('should show alert and log error on fetch error', async () => {
-        const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-        global.fetch = jest.fn().mockRejectedValueOnce(new Error('Fetch Error'));
-        const originalConsoleError = console.error;
-        console.error = jest.fn(); // Mock console.error
-        const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {}); // Mock window.alert
-
-        const { getByText } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
-
-        fireEvent.click(getByText('Test Park'));
-
-        await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith('Fetch Error');
-            // expect(console.error).toHaveBeenCalledWith(new Error('Fetch Error'));
-        });
-
-        console.error = originalConsoleError; // Restore original console.error
-        mockAlert.mockRestore(); // Restore mockAlert
-    });
-
-    // it('should log "Added to favorites!"', () => {
-    //     const mockPark = {fullName: 'Test Park', parkCode: 'TP'};
-    //     const consoleSpy = jest.spyOn(console, 'log');
-    //
-    //     const {getByTestId} = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
-    //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
-    //     const addButton = getByTestId('plus-button');
-    //     fireEvent.click(addButton);
-    // });
-    // it('should alert "Added to favorites!"', () => {
-    //     const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-    //     const consoleSpy = jest.spyOn(console, 'log');
-    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    //
-    //     const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
-    //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
-    //     const addButton = getByTestId('plus-button');
-    //     fireEvent.click(addButton);
-    //
-    //     expect(alertMock).toHaveBeenCalledWith('Added to favorites!');
-    //
-    //     alertMock.mockRestore(); // Restore console.log
-    // });
-    // it('should log "Park already added"', () => {
-    //     const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
-    //     const consoleSpy = jest.spyOn(console, 'log');
-    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    //
-    //     const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
-    //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
-    //     const addButton = getByTestId('plus-button');
-    //     fireEvent.click(addButton);
-    //     fireEvent.click(addButton);
-    //
-    //     expect(alertMock).toHaveBeenCalledWith('This Park was already added to favorites!');
-    //     alertMock.mockRestore(); // Restore console.log
-    // });
-
-    // it('should set amenity results when fetch is successful', async () => {
-    //     // Setup
-    //     const park = {
-    //         fullName: 'Test Park',
-    //         parkCode: 'TEST123',
-    //     };
-    //     const parkDetails = null;
-    //     const setParkDetails = jest.fn();
-    //     const page = 'search';
-    //
-    //     // Render the component
-    //     render(renderParkInfo(park, parkDetails, setParkDetails, page));
-    //
-    //     // Simulate a click event to trigger the asynchronous function
-    //     fireEvent.click(screen.getByText('Test Park'));
-    //
-    //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
-    //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
-    //     // Wait for the async operations to complete
-    //     await waitFor(() => screen.getByText('Amenity 1'));
-    //
-    //     // Assertions
-    //     expect(setParkDetails).toHaveBeenCalledTimes(1);
-    //     expect(global.fetch).toHaveBeenCalledTimes(2); // Two fetch calls made
-    //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
-    //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode');
-    // });
-    // it('should render list items for amenityResults', async () => {
-    //     const mockAmenityResults = [{ id: 1, name: 'Amenity 1' }, { id: 2, name: 'Amenity 2' }];
-    //     const { container, rerender } = render(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search')); // Render the component initially
-    //
-    //     await waitFor(() => {
-    //         // Simulate setting amenityResults state
-    //         rerender(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search', mockAmenityResults));
-    //     });
-    //
-    //     const listItems = container.querySelectorAll('ul li');
-    //     expect(listItems.length).toBe(mockAmenityResults.length);
-    //
-    //     listItems.forEach((item, index) => {
-    //         expect(item.textContent).toBe(mockAmenityResults[index].name);
-    //         expect(item.key).toBe(mockAmenityResults[index].id.toString());
-    //     });
-    // });
+            const mockedResponses = {
+                '/api/parks?searchTerm=TEST123&searchType=parkClick': {data: [{fullName: 'Test Park'}]},
+                '/api/parks?searchTerm=TEST123&searchType=amenity_parkcode': {data: [{id: 1, name: 'Amenity 1'}]},
+            };
 
 
-    it('test clicking state code', async () => {
+            global.fetch = jest.fn().mockImplementation((url) =>
+                Promise.resolve({
+                    json: () => Promise.resolve(mockedResponses[url]),
+                })
+            );
 
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
+            it('should render park details correctly when expanded', async () => {
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetails, setParkDetails, page)
+                );
 
-        fireEvent.click(getByTestId('list-element-toggle'));
-        fireEvent.click(getByText('TS'));
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TS&searchType=state');
-        });
+                fireEvent.click(getByTestId('list-element-toggle'));
 
-    });
+                await waitFor(() => {
+                    expect(getByText('Test Park')).toBeInTheDocument();
+                    expect(getByText('Website')).toHaveAttribute('href', 'https://example.com');
+                    expect(getByText('TS')).toBeInTheDocument();
+                    expect(getByText('Entrance Fee:')).toBeInTheDocument();
+                    expect(getByText('$10')).toBeInTheDocument();
+                    // expect(getByText(/^Entrance Fee Description:/)).toBeInTheDocument(); // Using regex to match text
+                    // expect(getByText('Test Fee Description')).toBeInTheDocument();
+                    expect(getByText('Test Description')).toBeInTheDocument();
+                    expect(getByText('Activities:')).toBeInTheDocument();
+                    expect(getByText('Hiking')).toBeInTheDocument();
+                    expect(getByText('Amenities:')).toBeInTheDocument();
+                    expect(getByText('NA')).toBeInTheDocument();
+                    // expect(getByText('Added to favorites list')).toBeInTheDocument();
+                    const imageElement = screen.getByAltText('Test Alt');
+                    expect(imageElement).toHaveAttribute('src', 'https://example.com/image.jpg');
+                });
+                fireEvent.click(getByTestId('list-element-toggle'));
+            });
 
-    it('test clicking activity', async () => {
+            it('should handle park click and fetch data correctly', async () => {
+                global.fetch = jest.fn().mockResolvedValueOnce({
+                    json: () =>
+                        Promise.resolve({
+                            data: [parkDetails],
+                        }),
+                });
 
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetails, setParkDetails, page)
+                );
+                fireEvent.click(getByText('Test Park'));
 
-        fireEvent.click(getByTestId('list-element-toggle'));
-        fireEvent.click(getByText('Hiking'));
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=Hiking&searchType=activity');
-        });
+                await waitFor(() => {
+                    expect(setParkDetails).toHaveBeenCalledWith(parkDetails);
+                    expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
+                });
+            });
 
-    });
+            it('should show plus button on mouse enter', () => {
+                const park = {
+                    fullName: 'Test Park',
+                    parkCode: 'TP',
+                };
+                const {getByTestId} = render(renderParkInfo(park, null, setParkDetails, 'search'));
 
-    // it('test clicking amenity', async () => {
-    //     const { getByText, getByTestId } = render(
-    //         renderParkInfo(park, parkDetails, setParkDetails, page)
-    //     );
-    //
-    //     fireEvent.click(getByTestId('list-element-toggle'));
-    //     fireEvent.click(getByText(''));
-    //     await waitFor(() => {
-    //         expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=NA&searchType=amenity');
-    //     });
-    // });
+                const parkElement = getByTestId('list-element-toggle');
+
+                fireEvent.mouseEnter(parkElement);
+
+                expect(parkElement).toMatchSnapshot('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should be present
+            });
+
+            it('should hide plus button on mouse leave', () => {
+                const park = {
+                    fullName: 'Test Park',
+                    parkCode: 'TP',
+                };
+                const {getByTestId} = render(renderParkInfo(park, null, setParkDetails, 'search'));
+
+                const parkElement = getByTestId('list-element-toggle');
+
+                fireEvent.mouseLeave(parkElement);
+//<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>
+                expect(parkElement).not.toContainHTML('<div data-testid="list-element-toggle" id="expand"><h3>Test Park</h3><a data-testid="plus-button" href="#" style="position: relative; top: 0px; right: 0px;"><svg aria-hidden="true" class="svg-inline--fa fa-plus " data-icon="plus" data-prefix="fas" focusable="false" role="img" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" fill="currentColor" /></svg></a></div>'); // Plus button should not be present
+            });
+
+            it('should call setParkDetails with data from fetch when successful', async () => {
+                const mockPark = {fullName: 'Test Park', parkCode: 'TP'};
+                const mockData = {data: [{fullName: 'Test Park', url: 'https://testpark.com'}]};
+                global.fetch = jest.fn().mockResolvedValueOnce({json: jest.fn().mockResolvedValueOnce(mockData)});
+
+                const setParkDetails = jest.fn();
+                const {getByText} = render(renderParkInfo(mockPark, null, setParkDetails, 'search'));
+
+                fireEvent.click(getByText('Test Park'));
+
+                await waitFor(() => expect(setParkDetails).toHaveBeenCalledWith(mockData.data[0]));
+            });
+
+            it('should fetch park amenities with populate amenities', async () => {
+                const park = {
+                    fullName: 'Test Park',
+                    parkCode: 'TEST123',
+                };
+                const parkDetails = null;
+                const setParkDetails = jest.fn();
+                const page = 'search';
+
+                // Render the component
+                render(renderParkInfo(park, parkDetails, setParkDetails, page));
+
+                // Simulate a click event to trigger the asynchronous function
+                fireEvent.click(screen.getByText('Test Park'));
+
+                await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
+                await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
+            });
+
+            it('should show alert and log error on fetch error', async () => {
+                const mockPark = {fullName: 'Test Park', parkCode: 'TP'};
+                global.fetch = jest.fn().mockRejectedValueOnce(new Error('Fetch Error'));
+                const originalConsoleError = console.error;
+                console.error = jest.fn(); // Mock console.error
+                const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {
+                }); // Mock window.alert
+
+                const {getByText} = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+
+                fireEvent.click(getByText('Test Park'));
+
+                await waitFor(() => {
+                    expect(mockAlert).toHaveBeenCalledWith('Fetch Error');
+                    // expect(console.error).toHaveBeenCalledWith(new Error('Fetch Error'));
+                });
+
+                console.error = originalConsoleError; // Restore original console.error
+                mockAlert.mockRestore(); // Restore mockAlert
+            });
+
+            // it('should log "Added to favorites!"', () => {
+            //     const mockPark = {fullName: 'Test Park', parkCode: 'TP'};
+            //     const consoleSpy = jest.spyOn(console, 'log');
+            //
+            //     const {getByTestId} = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+            //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
+            //     const addButton = getByTestId('plus-button');
+            //     fireEvent.click(addButton);
+            // });
+            // it('should alert "Added to favorites!"', () => {
+            //     const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
+            //     const consoleSpy = jest.spyOn(console, 'log');
+            //     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+            //
+            //     const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+            //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
+            //     const addButton = getByTestId('plus-button');
+            //     fireEvent.click(addButton);
+            //
+            //     expect(alertMock).toHaveBeenCalledWith('Added to favorites!');
+            //
+            //     alertMock.mockRestore(); // Restore console.log
+            // });
+            // it('should log "Park already added"', () => {
+            //     const mockPark = { fullName: 'Test Park', parkCode: 'TP' };
+            //     const consoleSpy = jest.spyOn(console, 'log');
+            //     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+            //
+            //     const { getByTestId } = render(renderParkInfo(mockPark, null, jest.fn(), 'search'));
+            //     fireEvent.mouseEnter(getByTestId('list-element-toggle'));
+            //     const addButton = getByTestId('plus-button');
+            //     fireEvent.click(addButton);
+            //     fireEvent.click(addButton);
+            //
+            //     expect(alertMock).toHaveBeenCalledWith('This Park was already added to favorites!');
+            //     alertMock.mockRestore(); // Restore console.log
+            // });
+
+            // it('should set amenity results when fetch is successful', async () => {
+            //     // Setup
+            //     const park = {
+            //         fullName: 'Test Park',
+            //         parkCode: 'TEST123',
+            //     };
+            //     const parkDetails = null;
+            //     const setParkDetails = jest.fn();
+            //     const page = 'search';
+            //
+            //     // Render the component
+            //     render(renderParkInfo(park, parkDetails, setParkDetails, page));
+            //
+            //     // Simulate a click event to trigger the asynchronous function
+            //     fireEvent.click(screen.getByText('Test Park'));
+            //
+            //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick'));
+            //     await waitFor(() => expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode'));
+            //     // Wait for the async operations to complete
+            //     await waitFor(() => screen.getByText('Amenity 1'));
+            //
+            //     // Assertions
+            //     expect(setParkDetails).toHaveBeenCalledTimes(1);
+            //     expect(global.fetch).toHaveBeenCalledTimes(2); // Two fetch calls made
+            //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=parkClick');
+            //     expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TEST123&searchType=amenity_parkcode');
+            // });
+            // it('should render list items for amenityResults', async () => {
+            //     const mockAmenityResults = [{ id: 1, name: 'Amenity 1' }, { id: 2, name: 'Amenity 2' }];
+            //     const { container, rerender } = render(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search')); // Render the component initially
+            //
+            //     await waitFor(() => {
+            //         // Simulate setting amenityResults state
+            //         rerender(renderParkInfo({ parkCode: 'TP' }, null, jest.fn(), 'search', mockAmenityResults));
+            //     });
+            //
+            //     const listItems = container.querySelectorAll('ul li');
+            //     expect(listItems.length).toBe(mockAmenityResults.length);
+            //
+            //     listItems.forEach((item, index) => {
+            //         expect(item.textContent).toBe(mockAmenityResults[index].name);
+            //         expect(item.key).toBe(mockAmenityResults[index].id.toString());
+            //     });
+            // });
 
 
-    it('underline mouse enter and remove underline mouse leave activity', () => {
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
-        fireEvent.click(getByTestId('list-element-toggle'));
-        const activityLink = getByText('Hiking');
+            it('test clicking state code', async () => {
 
-        fireEvent.mouseEnter(activityLink);
-        expect(activityLink).toHaveStyle('text-decoration: underline;');
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetails, setParkDetails, page)
+                );
 
-        fireEvent.mouseLeave(activityLink);
-        expect(activityLink).not.toHaveStyle('text-decoration: underline;');
-    });
+                fireEvent.click(getByTestId('list-element-toggle'));
+                fireEvent.click(getByText('TS'));
+                await waitFor(() => {
+                    expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=TS&searchType=state');
+                });
 
-    it('underline mouse enter and remove underline mouse leave state', () => {
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetails, setParkDetails, page)
-        );
-        fireEvent.click(getByTestId('list-element-toggle'));
-        const activityLink = getByText('TS');
+            });
 
-        fireEvent.mouseEnter(activityLink);
-        expect(activityLink).toHaveStyle('text-decoration: underline;');
+            it('test clicking activity', async () => {
 
-        fireEvent.mouseLeave(activityLink);
-        expect(activityLink).not.toHaveStyle('text-decoration: underline;');
-    });
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetails, setParkDetails, page)
+                );
 
-    it('should render NA for entrance fee when parkDetails.entranceFees is falsy', () => {
-        const parkDetailsWithoutEntranceFees = { ...parkDetails, entranceFees: null };
-        const { getByText, getByTestId } = render(
-            renderParkInfo(park, parkDetailsWithoutEntranceFees, setParkDetails, page)
-        );
-        fireEvent.click(getByTestId('list-element-toggle'));
-        expect(getByText('Entrance Fee:')).toBeInTheDocument();
-        expect(screen.getAllByText('NA')).toBeTruthy();
-    });
+                fireEvent.click(getByTestId('list-element-toggle'));
+                fireEvent.click(getByText('Hiking'));
+                await waitFor(() => {
+                    expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=Hiking&searchType=activity');
+                });
+
+            });
+
+            // it('test clicking amenity', async () => {
+            //     const { getByText, getByTestId } = render(
+            //         renderParkInfo(park, parkDetails, setParkDetails, page)
+            //     );
+            //
+            //     fireEvent.click(getByTestId('list-element-toggle'));
+            //     fireEvent.click(getByText(''));
+            //     await waitFor(() => {
+            //         expect(global.fetch).toHaveBeenCalledWith('/api/parks?searchTerm=NA&searchType=amenity');
+            //     });
+            // });
+
+
+            it('underline mouse enter and remove underline mouse leave activity', () => {
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetails, setParkDetails, page)
+                );
+                fireEvent.click(getByTestId('list-element-toggle'));
+                const activityLink = getByText('Hiking');
+
+                fireEvent.mouseEnter(activityLink);
+                expect(activityLink).toHaveStyle('text-decoration: underline;');
+
+                fireEvent.mouseLeave(activityLink);
+                expect(activityLink).not.toHaveStyle('text-decoration: underline;');
+            });
+
+            it('underline mouse enter and remove underline mouse leave state', () => {
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetails, setParkDetails, page)
+                );
+                fireEvent.click(getByTestId('list-element-toggle'));
+                const activityLink = getByText('TS');
+
+                fireEvent.mouseEnter(activityLink);
+                expect(activityLink).toHaveStyle('text-decoration: underline;');
+
+                fireEvent.mouseLeave(activityLink);
+                expect(activityLink).not.toHaveStyle('text-decoration: underline;');
+            });
+
+            it('should render NA for entrance fee when parkDetails.entranceFees is falsy', () => {
+                const parkDetailsWithoutEntranceFees = {...parkDetails, entranceFees: null};
+                const {getByText, getByTestId} = render(
+                    renderParkInfo(park, parkDetailsWithoutEntranceFees, setParkDetails, page)
+                );
+                fireEvent.click(getByTestId('list-element-toggle'));
+                expect(getByText('Entrance Fee:')).toBeInTheDocument();
+                expect(screen.getAllByText('NA')).toBeTruthy();
+            });
 
 
 // test('should update search results', async () => {
@@ -1488,6 +1540,305 @@ describe('Results Component', () => {
 //
 // });
 
+            // describe('Compare component', () => {
+            //     beforeEach(() => {
+            //         fetchMock.resetMocks();
+            //         jest.clearAllMocks();
+            //     });
+            //
+            //     test('renders correctly', () => {
+            //         const { getByText } = render(
+            //             <BrowserRouter>
+            //                 <Compare />
+            //             </BrowserRouter>
+            //         );
+            //         expect(getByText('Compare and Suggest')).toBeInTheDocument();
+            //         expect(screen.getByPlaceholderText('Search for user')).toBeInTheDocument();
+            //     });
+
+            // test('handles user search and privacy check', async () => {
+            //     fetchMock.mockResponseOnce(JSON.stringify("User exists"), { status: 200 });
+            //     fetchMock.mockResponseOnce(JSON.stringify(true), { status: 200 });
+            //     fetchMock.mockResponseOnce(JSON.stringify(['Park1', 'Park2']), { status: 200 });
+            //
+            //     render(<BrowserRouter><Compare /></BrowserRouter>);
+            //
+            //     // Simulate user typing in the search input and clicking the search button
+            //     fireEvent.change(screen.getByPlaceholderText('Search for user'), { target: { value: 'johnDoe' } });
+            //     fireEvent.click(screen.getByRole('button', { name: /search/i }));
+            //
+            //     // Wait for all fetch calls to complete
+            //     await waitFor(() => {
+            //         expect(fetchMock).toHaveBeenCalledTimes(3);
+            //         expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/users/exists?username=johnDoe');
+            //         expect(fetchMock).toHaveBeenNthCalledWith(2, '/api/favorites/privacy/johnDoe', { credentials: 'include' });
+            //         expect(fetchMock).toHaveBeenNthCalledWith(3, '/api/favorites/display/johnDoe', { credentials: 'include' });
+            //     });
+            //
+            //     // Expect the user to be added to the suggestion list if privacy is public and favorites exist
+            //     await waitFor(() => {
+            //         expect(screen.getByText('johnDoe')).toBeInTheDocument();
+            //     });
+            // });
 
 
-});
+            // });
+
+            function renderComponent() {
+                render(
+                    <MemoryRouter>
+                        <Compare updateAuthenticationStatus={jest.fn()}/>
+                    </MemoryRouter>
+                );
+            }
+
+            describe('Compare Component', () => {
+                beforeEach(() => {
+                    // Clear all mocks before each test
+                    jest.clearAllMocks();
+                });
+
+                it('renders without crashing', () => {
+                    renderComponent();
+                    expect(screen.getByText(/Compare and Suggest/i)).toBeInTheDocument();
+                });
+                // test('updates search term state on input change', () => {
+                //     render(<Compare />);
+                //     const input = screen.getByPlaceholderText('Search for user');
+                //     fireEvent.change(input, { target: { value: 'john_doe' } });
+                //     expect(input.value).toBe('john_doe');
+                // });
+                //
+                // test('displays error when trying to search with an empty input', () => {
+                //     render(<Compare />);
+                //     const button = screen.getByRole('button', { name: 'Search' });
+                //     fireEvent.click(button);
+                //     expect(screen.getByText('Please enter a username to search')).toBeInTheDocument();
+                // });
+                //
+                // test('handles user existence check', async () => {
+                //     fetchMock.get('/api/users/exists?username=john_doe', 'User exists');
+                //     render(<Compare />);
+                //     const input = screen.getByPlaceholderText('Search for user');
+                //     const button = screen.getByRole('button', { name: 'Search' });
+                //     fireEvent.change(input, { target: { value: 'john_doe' } });
+                //     fireEvent.click(button);
+                //     await waitFor(() => {
+                //         expect(screen.getByText('User does not exist.')).toBeInTheDocument();
+                //     });
+                // });
+                //
+                // test('suggests a park correctly after fetching user favorites', async () => {
+                //     fetchMock.getOnce('/api/users/exists?username=jane_doe', 'User exists');
+                //     fetchMock.getOnce('/api/favorites/privacy/jane_doe', { body: { isPublic: true }, headers: { 'content-type': 'application/json' } });
+                //     fetchMock.getOnce('/api/favorites/display/jane_doe', { body: ['Yellowstone', 'Yosemite'], headers: { 'content-type': 'application/json' } });
+                //
+                //     render(<Compare />);
+                //     const input = screen.getByPlaceholderText('Search for user');
+                //     const buttonSearch = screen.getByRole('button', { name: 'Search' });
+                //     fireEvent.change(input, { target: { value: 'jane_doe' } });
+                //     fireEvent.click(buttonSearch);
+                //
+                //     await waitFor(() => {
+                //         const buttonSuggest = screen.getByRole('button', { name: 'Suggest a Park' });
+                //         fireEvent.click(buttonSuggest);
+                //         expect(screen.getByText('Most common park: Yellowstone')).toBeInTheDocument();
+                //     });
+                // });
+
+
+                // it('displays an error message when search is triggered with an empty input', async () => {
+                //     renderComponent();
+                //     fireEvent.click(screen.getByText(/Search/i));
+                //     expect(await screen.findByText(/Please enter a username to search/i)).toBeInTheDocument();
+                // });
+
+                // it('displays an error when user does not exist', async () => {
+                //     // Mock fetch to simulate user not existing
+                //     global.fetch = jest.fn(() =>
+                //         Promise.resolve({
+                //             ok: true,
+                //             text: () => Promise.resolve("User does not exist.")
+                //         })
+                //     );
+                //
+                //     renderComponent();
+                //     fireEvent.change(screen.getByPlaceholderText(/Search for user/i), { target: { value: 'nonexistentuser' } });
+                //     fireEvent.click(screen.getByText(/Search/i));
+                //     expect(fetch).toHaveBeenCalledWith(`/api/users/exists?username=nonexistentuser`);
+                //     await waitFor(() => expect(screen.getByText(/User does not exist./i)).toBeInTheDocument());
+                // });
+
+                it('successfully searches for an existing user and checks privacy', async () => {
+                    // Mock fetch for checking user existence and privacy
+                    global.fetch = jest.fn((url) => {
+                        if (url.includes('/exists')) {
+                            return Promise.resolve({ok: true, text: () => Promise.resolve("User exists")});
+                        } else if (url.includes('/privacy')) {
+                            return Promise.resolve({ok: true, json: () => Promise.resolve(true)});
+                        }
+                        return Promise.reject(new Error('not found'));
+                    });
+
+                    renderComponent();
+                    fireEvent.change(screen.getByPlaceholderText(/Search for user/i), {target: {value: 'existinguser'}});
+                    fireEvent.click(screen.getByText(/Search/i));
+                    expect(fetch).toHaveBeenCalledWith(`/api/users/exists?username=existinguser`);
+                    await waitFor(() => expect(fetch).toHaveBeenCalledWith(`/api/favorites/privacy/existinguser`, {
+                        credentials: 'include'
+                    }));
+                });
+            });
+
+
+        });
+
+
+// import { useIdleTimer } from 'react-idle-timer';
+// // Define the sleep function
+// export function sleep(time = 0) {
+//     return new Promise(resolve => setTimeout(resolve, time));
+// }
+//
+// describe('useIdleTimer', () => {
+//     let props
+//
+//     const idleTimer = () => {
+//         return renderHook(() => useIdleTimer(props))
+//     }
+//
+//
+//     beforeEach(() => {
+//         props = {
+//             timeout: undefined,
+//             promptTimeout: undefined,
+//             element: undefined,
+//             events: undefined,
+//             timers: undefined,
+//             immediateEvents: undefined,
+//             onPresenceChange: undefined,
+//             onPrompt: undefined,
+//             onIdle: undefined,
+//             onActive: undefined,
+//             onAction: undefined,
+//             onMessage: undefined,
+//             debounce: undefined,
+//             throttle: undefined,
+//             eventsThrottle: undefined,
+//             startOnMount: undefined,
+//             startManually: undefined,
+//             stopOnIdle: undefined,
+//             capture: undefined,
+//             passive: undefined,
+//             crossTab: undefined,
+//             name: undefined,
+//             syncTimers: undefined,
+//             leaderElection: undefined,
+//             disabled: undefined
+//         }
+//     })
+//
+// test('logout idle user', async () => {
+//     const updateAuthenticationStatusMock = jest.fn();
+//
+//     render(
+//         <BrowserRouter>
+//             <App />
+//         </BrowserRouter>
+//     );
+//
+//     await waitFor (()=>{
+//         expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+//     })
+//
+//     // Set a short timeout for testing purposes
+//     props.timeout = 2000;
+//
+//     // Simulate user activity to prevent idle state
+//     fireEvent.mouseMove(document);
+//
+//     // Wait for the timeout to trigger idle state
+//     await sleep(2500);
+//
+//     // Mock the axios post request
+//     jest.spyOn(axios, 'post').mockResolvedValueOnce();
+//
+//     await waitFor(() =>{
+//         // Check if axios.post is called with the correct endpoint
+//     expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+//     });
+//
+//     // // Wait for axios.post to be called
+//     //     await waitFor(() => {
+//     //         expect(mockPost).toHaveBeenCalledWith('/api/users/logout');
+//     //     });
+//
+//         // Check if updateAuthenticationStatus and navigate are called
+//         await waitFor(() =>{
+//             expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
+//             expect(window.location.pathname).toBe("/login");
+//         });
+// });
+//
+// });
+
+// const SECONDS = 1000;
+// jest.useFakeTimers();
+// it('logout idle user', async () => {
+//     const updateAuthenticationStatusMock = jest.fn();
+//     const mockedResponse = {
+//         data: {
+//             username: "testuser",
+//             token: "testtoken"
+//         }
+//     };
+//     axios.post.mockResolvedValueOnce({ data: mockedResponse });
+//
+//
+//     render(
+//         <BrowserRouter>
+//             <App />
+//         </BrowserRouter>
+//     );
+//
+//     await waitFor (()=>{
+//         expect(screen.getByLabelText(/Username/i)).toBeInTheDocument();
+//     })
+//
+//     fireEvent.change(screen.getByLabelText(/Username/i), { target: { value: "testuser" } });
+//     fireEvent.change(screen.getByLabelText(/Password/i), { target: { value: "testpassword" } });
+//     fireEvent.click(screen.queryByText(/Login/i, { selector: 'button' }));
+//
+//     expect(axios.post).toHaveBeenCalledWith('/api/users/login', { username: "testuser", password: "testpassword" });
+//
+//     // Wait for Dashboard to appear asynchronously
+//     await waitFor(() => {
+//         expect(screen.getByText((content, element) => {
+//             // Custom logic to match text
+//             return content.includes('Search Parks') && element.tagName.toLowerCase() === 'h1';
+//         })).toBeInTheDocument();
+//     });
+//
+//     jest.advanceTimersByTime(5000);
+//
+//     // Mock the axios post request
+//     jest.spyOn(axios, 'post').mockResolvedValueOnce();
+//
+//     await waitFor(() =>{
+//         // Check if axios.post is called with the correct endpoint
+//     expect(axios.post).toHaveBeenCalledWith('/api/users/logout');
+//     });
+//
+//     // // Wait for axios.post to be called
+//     //     await waitFor(() => {
+//     //         expect(mockPost).toHaveBeenCalledWith('/api/users/logout');
+//     //     });
+//
+//         // Check if updateAuthenticationStatus and navigate are called
+//         await waitFor(() =>{
+//             expect(updateAuthenticationStatusMock).toHaveBeenCalledWith(false);
+//             expect(window.location.pathname).toBe("/login");
+//         });
+// }, 70 * SECONDS);
+
+

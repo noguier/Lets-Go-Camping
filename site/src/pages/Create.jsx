@@ -123,7 +123,7 @@ const Create = () => {
             </form>
             {error && <div>{error}</div>}
             <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="create-username" className="my-2">
+                <Form.Group id="usernameCreate" controlId="create-username" className="my-2">
                     <Form.Label>Username:</Form.Label>
                     <Form.Control
                         type="text"

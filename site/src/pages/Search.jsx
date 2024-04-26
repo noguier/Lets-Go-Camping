@@ -196,7 +196,7 @@ const Search = ({ updateAuthenticationStatus }) => {
             {searchType === 'activity' && (
                 <div className="row mt-4">
                     {searchResults.map((activity, index) => (
-                        <div key={index} className="col-12">
+                        <div id="park" key={index} className="col-12">
                             {activity.parks && (
                                 <div>
                                     {activity.parks.slice(0, resultsToShow).map((park, parkIndex) => (
@@ -211,7 +211,7 @@ const Search = ({ updateAuthenticationStatus }) => {
                                     {activity.parks.length > resultsToShow && (
                                         <div className="row mt-4">
                                             <div className="col-12">
-                                                <button className="btn btn-primary" onClick={loadMoreResults}>
+                                                <button id = "loadMore" className="btn btn-primary" onClick={loadMoreResults}>
                                                     Load More
                                                 </button>
                                             </div>
@@ -244,7 +244,7 @@ const Search = ({ updateAuthenticationStatus }) => {
                                             {amenity.parks.length > resultsToShow && (
                                                 <div className="row mt-4">
                                                     <div className="col-12">
-                                                        <button className="btn btn-primary" onClick={loadMoreResults}>
+                                                        <button id = "loadMore" className="btn btn-primary" onClick={loadMoreResults}>
                                                             Load More
                                                         </button>
                                                     </div>
@@ -274,7 +274,7 @@ const Search = ({ updateAuthenticationStatus }) => {
                     {searchResults.length > resultsToShow && (
                         <div className="row mt-4">
                             <div className="col-12">
-                                <button className="btn btn-primary" onClick={loadMoreResults}>
+                                <button id = "loadMore" className="btn btn-primary" onClick={loadMoreResults}>
                                     Load More
                                 </button>
                             </div>
