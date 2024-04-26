@@ -87,12 +87,12 @@ Feature: test favorites functionality
 
     Scenario: list is private by default
     Given I am on the favorites page
-    My favorites list should be set to private by default
+    And My favorites list should be set to private by default
 
     Scenario: list can be toggled to public, changes are persistent
     Given I am on the favorites page
     And my list is private
     And I toggle the private button
-    My favorites list should be public
+    And My favorites list should be public
     And I navigate away from the page
     Then I should see that my changes are persistent
