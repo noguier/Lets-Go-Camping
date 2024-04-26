@@ -7,7 +7,6 @@ Feature: Test search functionality
     Then List of parks such as "Castle Mountains National Monument"
 
   Scenario: Perform Search based on park location, two letters
-
     Given I am on the search page
     And I click the dropdown State
     When I enter "CA" in the search bar
@@ -53,7 +52,6 @@ Feature: Test search functionality
     And I press enter
     Then List of parks such as "Castle Mountains National Monument"
 
-
 #  Scenario: Perform Search and see details
 #    Given I am on the search page
 #    And I click the dropdown Name
@@ -76,9 +74,9 @@ Feature: Test search functionality
     And I click the dropdown Name
     When I enter "Joshua" in the search bar
     And I click the Search button
-    Then List of parks such as "Joshua Tree National Park"
+    And List of parks such as "Joshua Tree National Park"
     And I hover over "Joshua Tree National Park" container
-    Then I click the plus button
+    And I click the plus button
     Then I should get an alert saying "Added to favorites!"
 
   Scenario: expanded plus button, park not already in favorites
@@ -86,10 +84,10 @@ Feature: Test search functionality
     And I click the dropdown Name
     When I enter "Joshua" in the search bar
     And I click the Search button
-    Then List of parks such as "Joshua Tree National Park"
+    And List of parks such as "Joshua Tree National Park"
     And I click on "Joshua Tree National Park" and see details
-    Then I should not see "In Favorites List"
-    Then I click the plus button
+    And I should not see "In Favorites List"
+    And I click the plus button
     Then I should get an alert saying "Added to favorites!"
 
   Scenario: park already in favorites
@@ -97,13 +95,13 @@ Feature: Test search functionality
     And I click the dropdown Name
     When I enter "Joshua" in the search bar
     And I click the Search button
-    Then List of parks such as "Joshua Tree National Park"
+    And List of parks such as "Joshua Tree National Park"
     And "Joshua Tree National Park" is already in my favorites
-    When I click on "Joshua Tree National Park" and see details
+    And I click on "Joshua Tree National Park" and see details
     #timing issue
     And I wait a little
-    Then I see phrase "In Favorites List"
-    Then I click the plus button
+    And I see phrase "In Favorites List"
+    And I click the plus button
     Then I should get an alert saying "This Park was already added to favorites"
 
   Scenario: Perform Search by Name and choose Load More
@@ -111,7 +109,7 @@ Feature: Test search functionality
     And I click the dropdown Name
     When I enter "Park" in the search bar
     And I click the Search button
-    Then List of parks such as "Acadia National Park"
+    And List of parks such as "Acadia National Park"
     And I click the Load More button
     Then List of parks such as "Amache National Historic Site"
 
@@ -120,7 +118,7 @@ Feature: Test search functionality
     And I click the dropdown State
     When I enter "CA" in the search bar
     And I click the Search button
-    Then List of parks such as "Butterfield Overland National Historic Trail"
+    And List of parks such as "Butterfield Overland National Historic Trail"
     And I click the Load More button
     Then List of parks such as "Golden Gate National Recreation Area"
 
@@ -129,7 +127,7 @@ Feature: Test search functionality
     And I click the dropdown Activity
     When I enter "Swimming" in the search bar
     And I click the Search button
-    Then List of parks such as "Acadia National Park"
+    And List of parks such as "Acadia National Park"
     And I click the Load More button for Activity
     Then List of parks such as "Cape Lookout National Seashore"
 
@@ -138,7 +136,7 @@ Feature: Test search functionality
     And I click the dropdown amenities
     When I enter "Braille" in the search bar
     And I click the Search button
-    Then List of parks such as "Acadia National Park"
+    And List of parks such as "Acadia National Park"
     And I click the Load More button for Amenity
     Then List of parks such as "Grand Canyon National Park"
 
@@ -147,7 +145,7 @@ Feature: Test search functionality
     And I click the dropdown Activity
     When I enter "Swimming" in the search bar
     And I click the Search button
-    Then List of parks such as "Acadia National Park"
+    And List of parks such as "Acadia National Park"
     And I click the Load More button for Activity
     And I click the Load More button Again for Activity
     Then List of parks such as "Cape Lookout National Seashore"
@@ -158,16 +156,16 @@ Feature: Test search functionality
     When I enter "Swimming" in the search bar
     And I click the Search button
     Then List of ten parks such as "Acadia National Park"
+
   Scenario:Click the park name to remove detail window
     Given I am on the search page
     And I click the dropdown Name
     When I enter "Joshua" in the search bar
     And I click the Search button
-    Then List of parks such as "Joshua Tree National Park"
+    And List of parks such as "Joshua Tree National Park"
     And I click on "Joshua Tree National Park" and see details
     And I click on "Joshua Tree National Park" and remove details
     Then I should not see "Twentynine Palms "
-
 
 #  Scenario: Perform Search and see Inline description
 #    Given I am on the search page
