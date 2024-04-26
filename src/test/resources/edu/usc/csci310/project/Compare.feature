@@ -1,12 +1,12 @@
 Feature: test compare a park functionality
-#  Scenario: compare a park for two users
-#    Given I am on the compare a park page
-#    When I enter a username "TommyTrojan"
-#    And I click add a user button
-#    And "TommyTrojan" has a public list of favorites
-#    And I see "User successfully added" displayed on the page
-#    And I click suggest button
-#    Then I should see the all the parks that are on Favorite list of at least one user
+  Scenario: compare a park for two users
+    Given I am on the compare a park page
+    When I enter a username "TommyTrojan"
+    And I click add a user button
+    And "TommyTrojan" has a public list of favorites
+    And I see "User successfully added" displayed on the page
+    And I click suggest button
+    Then I should see the all the parks that are on Favorite list of at least one user
 #
 #  Scenario: compare a park for a user with private Favorites list
 #    Given I am on the compare a park page

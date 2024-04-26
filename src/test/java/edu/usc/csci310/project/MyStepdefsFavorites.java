@@ -74,10 +74,8 @@ public class MyStepdefsFavorites {
         //go to search page
         driver.get(ROOT_URL + "search");
         Thread.sleep(5000);
-
-        //put string in search bar
+        //put in search bar
         driver.findElement(By.id("search-term")).sendKeys(arg0);
-
         //click the search button
         try {
             Thread.sleep(2000);
@@ -87,14 +85,34 @@ public class MyStepdefsFavorites {
         driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[2]/form/div[1]/div[2]/button")).click();
         Thread.sleep(2000);
 
-        //hover over the park
-        WebElement parkNameDiv = driver.findElement(By.id("expand"));
-        Actions actions = new Actions(driver);
-        actions.moveToElement(parkNameDiv).perform();
 
-        //click the plus button
+        //see park
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        assertTrue(driver.getPageSource().contains(arg0));
+
+        //hover over park
+            WebElement parkNameDiv = driver.findElement(By.id("expand"));
+            Actions actions = new Actions(driver);
+            actions.moveToElement(parkNameDiv).perform();
+        //click the plus
         WebElement plusButton = driver.findElement(By.id("plus"));
         plusButton.click();
+
+        //added to favoirtes successfully
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        driver.findElement(By.xpath("/html/body/div/div/div[1]")).isDisplayed();
+        assertTrue(driver.getPageSource().contains("Added to favorites!"));
+
+
     }
 
     @Then("I should see a list of parks including {string}")
