@@ -276,7 +276,7 @@ const ParkDetails = ({ park, parkDetails, setParkDetails, page, updateSearchResu
                         </div>
                         <div>
                             {(page === "search" && inFavorites && isExpanded) ?
-                                <p>In Favorites List</p> : null} {/* Conditionally render based on inFavorites state */}
+                                <p id="inFav">In Favorites List</p> : null} {/* Conditionally render based on inFavorites state */}
                         </div>
                         <img src={parkDetails.images[0].url} alt={parkDetails.images[0].altText}
                              style={{maxWidth: "40%", height: "auto"}}

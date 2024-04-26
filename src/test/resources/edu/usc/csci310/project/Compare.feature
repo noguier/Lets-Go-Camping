@@ -73,5 +73,3 @@ Feature: test compare a park functionality
 #    Then I see Description "On March 1, 1872,"
 #    Then I see Amenities "Arts and Culture"
 #    Then I see Image alt-ID "Brilliant blues and greens"
-#
-#

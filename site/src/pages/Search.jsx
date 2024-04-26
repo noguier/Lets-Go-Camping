@@ -196,7 +196,7 @@ const Search = ({ updateAuthenticationStatus }) => {
             {searchType === 'activity' && (
                 <div className="row mt-4">
                     {searchResults.map((activity, index) => (
-                        <div key={index} className="col-12">
+                        <div id="park" key={index} className="col-12">
                             {activity.parks && (
                                 <div>
                                     {activity.parks.slice(0, resultsToShow).map((park, parkIndex) => (
