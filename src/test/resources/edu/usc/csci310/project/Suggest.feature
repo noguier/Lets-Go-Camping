@@ -1,10 +1,11 @@
 Feature: test suggest a park functionality
-#  Scenario: suggest a park for two users
+  Scenario: suggest a park for two users
 #    Given I am on the suggest a park page
 #    When I enter a username "TommyTrojan"
 #    And I click add a user button
 #    And "TommyTrojan" has a public list of favorites
 #    And I see "User successfully added" displayed on the page
+#    When I enter a username "TallyTrojan"
 #    And I click compare button
 #    Then I should see the information about one park that is on Favorite list of both users
 #
@@ -17,7 +18,6 @@ Feature: test suggest a park functionality
 #
 #  Scenario: suggest a park for three users
 #    Given I am on the suggest a park page
-#    And I have "Joshua tree" park on my favorite list
 #    When I enter a username "TommyTrojan"
 #    And "Tommy Trojan" has "Joshua tree" park on his favorite list
 #    And I click add a user button
@@ -28,8 +28,15 @@ Feature: test suggest a park functionality
 #    And I click add a user button
 #    And "TallyTrojan" has a public list of favorites
 #    And I see "User successfully added" displayed on the page
-#    And I click compare button
+  #    And I enter username "TullyTrojan"
+  #   And "Tully Trojan" has "Joshua tree" park on her favorite list
+  #   And I click add a user button
+  #    And "TullyTrojan" has a public list of favorites
+  #   And I see "User successfully added" displayed on the page
+#    And I click suggest button
 #    Then I should see the park name that is on all of the selected users favorite lists such as "Joshua Tree"
+      #And I should see the location of the "Joshua Tree" park such as "Twentynine Palms, CA"
+      #And I should see the three photoes of "Joshua Tree park"
 #
 #  Scenario: suggest a park for users with more than 1 match
 #    Given I am on the suggest a park page
@@ -47,15 +54,32 @@ Feature: test suggest a park functionality
 #    And I click add a user button
 #    And "TallyTrojan" has a public list of favorites
 #    And I see "User successfully added" displayed on the page
-#    And I click compare button
+#    And I click suggest button
 #    Then I should see the park name that is on all of the selected users favorite lists with the highest ranking such as "Joshua Tree"
 #
-#  Scenario: suggest a park for a user that doesn't exist
+   # Scenario: suggest a park for users with more than 0 matches
 #    Given I am on the suggest a park page
-#    When I enter a username "NotAUser"
+#    When I enter a username "TommyTrojan"
+#    And "Tommy Trojan" has "Joshua tree" park on his favorite list with the rank 1
+#    And "Tommy Trojan" has "Alcatraz" park on his favorite list with the rank 2
 #    And I click add a user button
-#    And that user doesnt exist in the database
-#    Then I should see "The User doesn't exist" displayed on the page
+#    And "TommyTrojan" has a public list of favorites
+#    And I see "User successfully added" displayed on the page
+#    And I enter username "TallyTrojan"
+#    And "Tally Trojan" has "Yosemity" park on her favorite list with the rank 1
+#    And "Tally Trojan" has "Mojave Desert" park on her favorite list with the rank 2
+#    And I click add a user button
+#    And "TallyTrojan" has a public list of favorites
+#    And I see "User successfully added" displayed on the page
+#    And I click suggest button
+#    Then I should see the park name with the highest ranking from the most popular state displaed on the page such as "Joshua Tree"
+
+  Scenario: suggest a park for a user that doesn't exist
+    Given I am on the suggest a park page
+    When I enter a username "NotAUser"
+    And I click add a user button
+    And that user doesnt exist in the database
+    Then I should see "User does not exist" displayed on the page
 
 #  Scenario: See the details of the park
 #    Given I am on the suggest a park page

@@ -107,6 +107,19 @@ public class UserController {
 
         return ResponseEntity.ok(authenticated);
     }
+    @GetMapping("/exists")
+    public ResponseEntity<String> checkUserExists(@RequestParam String username) throws NoSuchAlgorithmException {
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Username is required");
+        }
+
+        boolean exists = userService.usernameExists(username);
+        if (exists) {
+            return ResponseEntity.ok("User exists");
+        } else {
+            return ResponseEntity.ok("User does not exist");
+        }
+    }
 
 }
 

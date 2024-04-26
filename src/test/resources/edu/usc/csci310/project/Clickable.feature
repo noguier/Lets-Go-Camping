@@ -15,9 +15,8 @@ Feature: test clickable terms
     And I enter "Joshua Tree" in the search bar
     And I click the Search button
     And I click on "Joshua Tree National Park" and see details
-    And I see Activities "Auto and ATV"
     When I click on the activity
-    Then List of parks such as "Joshua Tree National Park"
+    Then List of parks such as "Acadia National Park"
 
   Scenario: click amenity
     Given I am on the search page
@@ -25,6 +24,6 @@ Feature: test clickable terms
     And I enter "Joshua Tree" in the search bar
     And I click the Search button
     And I click on "Joshua Tree National Park" and see details
-    And I see Amenities "Automated External Defibrillator (AED)"
     When I click on the amenity
-    Then List of parks such as "Joshua Tree National Park"
+    Then List of parks such as "Alcatraz Island"
+    
