@@ -7,7 +7,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -375,7 +374,7 @@ public class MyStepdefs_Search extends SharedStepDefs {
             throw new RuntimeException(e);
         }
 
-        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[2]/ul/li[1]/a"));
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/div[2]/ul/li[1]/a"));
 
         Actions actions = new Actions(driver);
 
@@ -394,7 +393,7 @@ public class MyStepdefs_Search extends SharedStepDefs {
             throw new RuntimeException(e);
         }
 
-        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[2]/div/div[2]/div[3]/ul/li[1]/a"));
+        WebElement element = driver.findElement(By.xpath("/html/body/div/div/div/div[2]/div[3]/div[3]/div/div[2]/div[3]/ul/li[1]/a"));
 
         Actions actions = new Actions(driver);
 
