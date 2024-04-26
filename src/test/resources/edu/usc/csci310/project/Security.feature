@@ -1,4 +1,4 @@
-Feature: Secure Transmission of User Data - login page inaccessible without SSL for every page
+Feature: Security
 Scenario: User login with encrypted data transmission
 Given I try to access our landing page with http
 Then the server should reject the connection
